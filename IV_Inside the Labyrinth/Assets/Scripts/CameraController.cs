@@ -4,102 +4,93 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public float zoomSpeed;
+    public float thirdViewZoomSpeed, mapViewZoomSpeed;
 
-    public Transform firsrViewPoint, thirdViewMinPoint, thirdViewMaxPoint, mapViewPoint, currentViewPoint;
+    public Transform firsrViewPoint, thirdViewMinPoint, thirdViewMaxPoint,
+        mapViewMinPoint, mapViewMaxPoint;
 
-    (Vector3, Vector3) firstView, thirdViewMin, thirdViewMax, mapView, currentView;
+    // Preset of positions and rotations for all camera views
+    (Vector3, Vector3) firstView, thirdViewMin, thirdViewMax, mapViewMin, mapViewMax,
+        currentThirdView, currentMapView;
 
-    float posYStep, posZStep, rotXStep;
+    // Steps' values for smooth Camera zoom
+    float posYStep, posZStep, rotXStep, mapZoomStep;
+
+    float scrollSweelInput;
 
     ViewMode viewMode = ViewMode.thirdViewMode;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (firsrViewPoint == null)
-        {
-            firstView.Item1 = new Vector3(0, 1.5f, 0);
-            firstView.Item2 = new Vector3(11, 0, 0);
-        }
-        else
-        {
-            firstView.Item1 = firsrViewPoint.localPosition;
-            firstView.Item2 = firsrViewPoint.localRotation.eulerAngles;
-        }
+        // Adjusting Camera values
+        firstView = InitViewPoint(firsrViewPoint, (new Vector3(0, 0.6f, 0.2f), new Vector3(8, 0, 0)));
+        thirdViewMin = InitViewPoint(thirdViewMinPoint, (new Vector3(0, 2, -2), new Vector3(12, 0, 0)));
+        thirdViewMax = InitViewPoint(thirdViewMaxPoint, (new Vector3(0, 10, -10), new Vector3(23, 0, 0)));
+        mapViewMin = InitViewPoint(mapViewMinPoint, (new Vector3(0, 10, 0), new Vector3(90, 0, 0)));
+        mapViewMax = InitViewPoint(mapViewMaxPoint, (new Vector3(0, 100, 0), new Vector3(90, 0, 0)));
+        currentThirdView = thirdViewMax;
+        currentMapView = mapViewMax;
 
-        if (thirdViewMinPoint == null)
-        {
-            thirdViewMin.Item1 = new Vector3(0, 2.3f, -2);
-            thirdViewMin.Item2 = new Vector3(15, 0, 0);
-        }
-        else
-        {
-            thirdViewMin.Item1 = thirdViewMinPoint.localPosition;
-            thirdViewMin.Item2 = thirdViewMinPoint.localRotation.eulerAngles;
-        }
-
-        if (thirdViewMaxPoint == null)
-        {
-            thirdViewMax.Item1 = new Vector3(0, 8, -7);
-            thirdViewMax.Item2 = new Vector3(27, 0, 0);
-        }
-        else
-        {
-            thirdViewMax.Item1 = thirdViewMaxPoint.localPosition;
-            thirdViewMax.Item2 = thirdViewMaxPoint.localRotation.eulerAngles;
-        }
-
-        if (mapViewPoint == null)
-        {
-            mapView.Item1 = new Vector3(0, 120, 0);
-            mapView.Item2 = new Vector3(90, 0, 0);
-        }
-        else
-        {
-            mapView.Item1 = mapViewPoint.localPosition;
-            mapView.Item2 = mapViewPoint.localRotation.eulerAngles;
-        }
-
-        if (currentViewPoint == null)
-        {
-            currentView = thirdViewMin;
-        }
-        else
-        {
-            currentView.Item1 = currentViewPoint.localPosition;
-            currentView.Item2 = currentViewPoint.localRotation.eulerAngles;
-        }
-
-        transform.localPosition = currentView.Item1;
-        transform.localRotation = Quaternion.Euler(currentView.Item2);
+        transform.localPosition = currentThirdView.Item1;
+        transform.localRotation = Quaternion.Euler(currentThirdView.Item2);
 
         posYStep = Mathf.Abs(thirdViewMax.Item1.y - thirdViewMin.Item1.y);
         posZStep = Mathf.Abs(thirdViewMax.Item1.z - thirdViewMin.Item1.z);
         rotXStep = Mathf.Abs(thirdViewMax.Item2.x - thirdViewMin.Item2.x);
+        mapZoomStep = Mathf.Abs(mapViewMax.Item1.y - mapViewMin.Item1.y);
 
-        if (zoomSpeed == 0)
+        if (thirdViewZoomSpeed == 0)
         {
-            zoomSpeed = 5;
+            thirdViewZoomSpeed = 2.5f;
+        }
+        if (mapViewZoomSpeed == 0)
+        {
+            mapViewZoomSpeed = 2.5f;
+        }
+    }
+
+    // Initializing Camera view points with Transform position and rotation, or with altValue if Transform is null
+    private (Vector3, Vector3) InitViewPoint(Transform viewPoint, (Vector3, Vector3) altValue)
+    {
+        if ((viewPoint == null) || (viewPoint.localPosition == Vector3.zero
+            && viewPoint.localRotation == Quaternion.identity))
+        {
+            return altValue;
+        }
+        else
+        {
+            return (viewPoint.localPosition, viewPoint.localRotation.eulerAngles);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        // TODO: to create smooth view toggle
+        scrollSweelInput = Input.GetAxis("Mouse ScrollWheel");
 
         // Toggle First person view
         if (Input.GetKeyDown(KeyCode.V))
         {
             if (viewMode == ViewMode.firstViewMode)
             {
-                transform.localPosition = currentView.Item1;
-                transform.localRotation = Quaternion.Euler(currentView.Item2);
+                transform.localPosition = currentThirdView.Item1;
+                transform.localRotation = Quaternion.Euler(currentThirdView.Item2);
                 viewMode = ViewMode.thirdViewMode;
             }
             else
             {
+                if (viewMode == ViewMode.thirdViewMode)
+                {
+                    currentThirdView.Item1 = transform.localPosition;
+                    currentThirdView.Item2 = transform.localRotation.eulerAngles;
+                }
+                else if (viewMode == ViewMode.mapViewMode)
+                {
+                    currentMapView.Item1 = transform.localPosition;
+                    currentMapView.Item2 = transform.localRotation.eulerAngles;
+                }
+
                 transform.localPosition = firstView.Item1;
                 transform.localRotation = Quaternion.Euler(firstView.Item2);
                 viewMode = ViewMode.firstViewMode;
@@ -111,14 +102,22 @@ public class CameraController : MonoBehaviour
         {
             if (viewMode == ViewMode.mapViewMode)
             {
-                transform.localPosition = currentView.Item1;
-                transform.localRotation = Quaternion.Euler(currentView.Item2);
+                currentMapView.Item1 = transform.localPosition;
+                currentMapView.Item2 = transform.localRotation.eulerAngles;
+                transform.localPosition = currentThirdView.Item1;
+                transform.localRotation = Quaternion.Euler(currentThirdView.Item2);
                 viewMode = ViewMode.thirdViewMode;
             }
             else
             {
-                transform.localPosition = mapView.Item1;
-                transform.localRotation = Quaternion.Euler(mapView.Item2);
+                if (viewMode == ViewMode.thirdViewMode)
+                {
+                    currentThirdView.Item1 = transform.localPosition;
+                    currentThirdView.Item2 = transform.localRotation.eulerAngles;
+                }
+
+                transform.localPosition = currentMapView.Item1;
+                transform.localRotation = Quaternion.Euler(currentMapView.Item2);
                 viewMode = ViewMode.mapViewMode;
             }
             
@@ -128,36 +127,45 @@ public class CameraController : MonoBehaviour
     private void LateUpdate()
     {
         // Camera zoom due to ScrollWheel input
-        // Zoom forward
-        if (Input.GetAxis("Mouse ScrollWheel") > 0 && viewMode == ViewMode.thirdViewMode)
+        if (viewMode == ViewMode.thirdViewMode)
         {
-            transform.localPosition = new Vector3(0,
-                Mathf.MoveTowards(transform.localPosition.y, thirdViewMax.Item1.y,
-                posYStep * Time.deltaTime * zoomSpeed),
-                Mathf.MoveTowards(transform.localPosition.z, thirdViewMax.Item1.z,
-                posZStep * Time.deltaTime * zoomSpeed));
+            if (scrollSweelInput > 0)
+            {
+                transform.localPosition = new Vector3(0,
+                    Mathf.MoveTowards(transform.localPosition.y, thirdViewMax.Item1.y,
+                    posYStep * Time.deltaTime * thirdViewZoomSpeed),
+                    Mathf.MoveTowards(transform.localPosition.z, thirdViewMax.Item1.z,
+                    posZStep * Time.deltaTime * thirdViewZoomSpeed));
 
-            transform.localRotation = Quaternion.Euler(Vector3.MoveTowards(transform.localRotation.eulerAngles,
-                thirdViewMax.Item2, rotXStep * Time.deltaTime * zoomSpeed));
+                transform.localRotation = Quaternion.Euler(Vector3.MoveTowards(transform.localRotation.eulerAngles,
+                    thirdViewMax.Item2, rotXStep * Time.deltaTime * thirdViewZoomSpeed));
+            }
+            else if (scrollSweelInput < 0)
+            {
+                transform.localPosition = new Vector3(0,
+                    Mathf.MoveTowards(transform.localPosition.y, thirdViewMin.Item1.y,
+                    posYStep * Time.deltaTime * thirdViewZoomSpeed),
+                    Mathf.MoveTowards(transform.localPosition.z, thirdViewMin.Item1.z,
+                    posZStep * Time.deltaTime * thirdViewZoomSpeed));
 
-            currentView.Item1 = transform.localPosition;
-            currentView.Item2 = transform.localRotation.eulerAngles;
+                transform.localRotation = Quaternion.Euler(Vector3.MoveTowards(transform.localRotation.eulerAngles,
+                    thirdViewMin.Item2, rotXStep * Time.deltaTime * thirdViewZoomSpeed));
+            }
         }
-
-        // Zoom back
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0 && viewMode == ViewMode.thirdViewMode)
+        else if (viewMode == ViewMode.mapViewMode)
         {
-            transform.localPosition = new Vector3(0,
-                Mathf.MoveTowards(transform.localPosition.y, thirdViewMin.Item1.y,
-                posYStep * Time.deltaTime * zoomSpeed),
-                Mathf.MoveTowards(transform.localPosition.z, thirdViewMin.Item1.z,
-                posZStep * Time.deltaTime * zoomSpeed));
-
-            transform.localRotation = Quaternion.Euler(Vector3.MoveTowards(transform.localRotation.eulerAngles,
-                thirdViewMin.Item2, rotXStep * Time.deltaTime * zoomSpeed));
-
-            currentView.Item1 = transform.localPosition;
-            currentView.Item2 = transform.localRotation.eulerAngles;
+            if (scrollSweelInput > 0)
+            {
+                transform.localPosition = new Vector3(0,
+                    Mathf.MoveTowards(transform.localPosition.y, mapViewMax.Item1.y,
+                    mapZoomStep * Time.deltaTime * mapViewZoomSpeed), 0);
+            }
+            else if (scrollSweelInput < 0)
+            {
+                transform.localPosition = new Vector3(0,
+                    Mathf.MoveTowards(transform.localPosition.y, mapViewMin.Item1.y,
+                    mapZoomStep * Time.deltaTime * mapViewZoomSpeed), 0);
+            }
         }
     }
 
