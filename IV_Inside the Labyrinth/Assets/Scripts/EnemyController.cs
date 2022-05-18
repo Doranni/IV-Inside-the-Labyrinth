@@ -1,94 +1,277 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    public float movementSpeed;
-    public float rotationSpeed;
-    public LayerMask layerMask;
+    Transform player;
+    public LayerMask playerLMask, hidingObstacleLMask;
+    NavMeshAgent navMeshAgent;
+    ActionStatus actionStatus = ActionStatus.walking;
 
-    float timeForMovement = 0;
-    float timeForRotation = 0;
-    float minRotationTime;
-    float maxRotationTime;
-    RotationSide side;
-    bool needToRotate = false;
-    bool checkForward;
+    // Walking
+    Vector3 walkPoint;
+    bool isWalkPointSet = false;
+    public float walkPointRange, pathRange;
+    public float walkingSpeed;
 
-    Rigidbody enemyRB;
-    Vector3 enemyExtents;
+    // Idle
+    float idleTime;
+    bool isIdleTimeSet = false, wasIdle = false;
+    public float maxIdleTime, minIdleTime;
 
-    // Start is called before the first frame update
-    void Start()
+    // Chasing
+    public float seeRange, feelRange;
+    bool isPlayerSeen = false;
+    public float chasingSpeed;
+
+    // Attacking
+    public float attackRange;
+    bool isPlayerInAttackRange = false;
+
+    // Seaching for Player
+    public float searchTime;
+    float searchTimeLeft;
+
+    private void Awake()
     {
-        enemyRB = GetComponent<Rigidbody>();
-        enemyExtents = GetComponent<Collider>().bounds.extents;
-        minRotationTime = 30 / rotationSpeed;
-        maxRotationTime = 180 / rotationSpeed;
+        player = GameObject.Find("Player").transform;
+        navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        checkForward = Physics.CheckBox(transform.position + Vector3.forward, enemyExtents, Quaternion.identity, layerMask);
+        ChooseAction();
 
-        // Rotating 
-        if (needToRotate)
+        switch (actionStatus)
         {
-            if (timeForRotation <= 0)
-            {
-                needToRotate = false;
-                timeForMovement = Random.Range(1f, 8f);
-            }
-            else
-            {
-                
-                timeForRotation -= Time.deltaTime;
-            }
+            case ActionStatus.walking:
+                {
+                    Walking();
+                    break;
+                }
+            case ActionStatus.idle:
+                {
+                    Idling();
+                    break;
+                }
+            case ActionStatus.chasing:
+                {
+                    Chasing();
+                    break;
+                }
+            case ActionStatus.attacking:
+                {
+                    Attaking();
+                    break;
+                }
+            case ActionStatus.searching:
+                {
+                    Seaching();
+                    break;
+                }
         }
-        // Moving forward
+
+        // TODO: to add interaction with other enemies
+
+    }
+
+    private void CheckPlayer()
+    {
+        Vector3 toPlayer = player.position - transform.position;
+
+        // If player is inside feel range
+        if (Physics.CheckSphere(transform.position, feelRange, playerLMask))
+        {
+            isPlayerSeen = true;
+        }
+        // If player is inside see range
+        else if (Physics.CheckSphere(transform.position, seeRange, playerLMask))
+        {
+            Vector3 playerLocal = transform.InverseTransformPoint(player.position);
+            bool isPlayerAhead = playerLocal.z > 0 && playerLocal.x >= - playerLocal.z
+                && playerLocal.x <= playerLocal.z;
+            bool isPlayerHiden = Physics.Raycast(transform.position, toPlayer.normalized, toPlayer.magnitude,
+                hidingObstacleLMask);
+            isPlayerSeen = isPlayerAhead && !isPlayerHiden;
+            Debug.DrawRay(transform.position, transform.TransformDirection(new Vector3(-1, 0, 1)) * seeRange, Color.green);
+            Debug.DrawRay(transform.position, transform.TransformDirection(new Vector3(1, 0, 1)) * seeRange, Color.green);
+        }
         else
         {
-            if (timeForMovement <= 0 || checkForward)
-            {
-                needToRotate = true;
-                side = (RotationSide)Random.Range(0, 2);
-                timeForRotation = Random.Range(minRotationTime, maxRotationTime);
-            }
-            else
-            {
-                timeForMovement -= Time.deltaTime;
-            }
+            isPlayerSeen = false;
+        }
+        isPlayerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLMask);
+
+        // Debug
+        if (isPlayerInAttackRange)
+        {
+            Debug.DrawRay(transform.position, toPlayer, Color.red);
+        }
+        else if (isPlayerSeen)
+        {
+            Debug.DrawRay(transform.position, toPlayer, Color.magenta);
         }
     }
 
-    private void FixedUpdate()
+    private void ChooseAction()
     {
-        if (needToRotate)
+        CheckPlayer();
+        if (isPlayerSeen)
         {
-            if (side == RotationSide.left)
+            if (isPlayerInAttackRange)
             {
-                enemyRB.MoveRotation(transform.rotation * Quaternion.Euler(Vector3.down * rotationSpeed * Time.fixedDeltaTime));
+                if (actionStatus != ActionStatus.attacking)
+                {
+                    // Starting attacking
+                    actionStatus = ActionStatus.attacking;
+                    isWalkPointSet = false;
+                    navMeshAgent.ResetPath();
+                    Debug.Log(name + "'s action status: " + actionStatus);
+                    return;
+                }
             }
             else
             {
-                enemyRB.MoveRotation(transform.rotation * Quaternion.Euler(Vector3.up * rotationSpeed * Time.fixedDeltaTime));
-            }
-            
+                if (actionStatus != ActionStatus.chasing)
+                {
+                    // Starting chasing
+                    actionStatus = ActionStatus.chasing;
+                    isWalkPointSet = false;
+                    Debug.Log(name + "'s action status: " + actionStatus);
+                    return;
+                }
+            } 
         }
         else
         {
-            enemyRB.MovePosition(transform.position + transform.forward * movementSpeed * Time.fixedDeltaTime);
+            if (actionStatus == ActionStatus.attacking || actionStatus == ActionStatus.chasing)
+            {
+                // And of attacking or chasing
+                actionStatus = ActionStatus.searching;
+                isWalkPointSet = false;
+                navMeshAgent.ResetPath();
+                searchTimeLeft = searchTime;
+                Debug.Log(name + "'s Action status: " + actionStatus.ToString());
+            }
+        }
+
+        if (actionStatus == ActionStatus.undefined)
+        {
+            isWalkPointSet = false;
+            isIdleTimeSet = false;
+            navMeshAgent.ResetPath();
+            if (wasIdle)
+            {
+                actionStatus = ActionStatus.walking;
+                wasIdle = false;
+            }
+            else
+            {
+                actionStatus = (ActionStatus)Random.Range(1, 3);
+            }
+            Debug.Log(name + "'s Action status: " + actionStatus.ToString());
+        }
+        
+    }
+
+    private void Idling()
+    {
+        if (isIdleTimeSet)
+        {
+            if (idleTime > 0)
+            {
+                idleTime -= Time.deltaTime;
+            }
+            else
+            {
+                wasIdle = true;
+                Debug.Log(name + "'s idle time is over.");
+                actionStatus = ActionStatus.undefined;
+            }
+        }
+        else
+        {
+            idleTime = Random.Range(minIdleTime, maxIdleTime);
+            isIdleTimeSet = true;
+            Debug.Log(name + "'s idle time " + idleTime);
         }
     }
 
-    enum RotationSide
+    private void Walking()
     {
-        left,
-        right
+        if (isWalkPointSet)
+        {
+            Debug.DrawRay(walkPoint, Vector3.up * 3, Color.green);
+            if (!navMeshAgent.hasPath || !(navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete))
+            {
+                actionStatus = ActionStatus.undefined;
+            }
+        }
+        else
+        {
+            ChooseWalkPoint();
+        }
+
+        // TODO: to fix detecting if enemy stacked
     }
 
-    // TODO: to fix moving and rotating
-    // TODO: reaction to the player
+    private void Chasing()
+    {
+        navMeshAgent.SetDestination(player.position);
+        // TODO: To complete Chasing method
+    }
+
+    private void Attaking()
+    {
+        // TODO: To complete Attaking method
+    }
+
+    private void Seaching()
+    {
+        if (searchTimeLeft > 0)
+        {
+            searchTimeLeft -= Time.deltaTime; 
+        }
+        else
+        {
+            Debug.Log(name + "'ve lost the player.");
+            actionStatus = ActionStatus.undefined;
+        }
+        // TODO: To complete Seaching method
+    }
+
+    private void ChooseWalkPoint()
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            Vector2 pointV2 = Random.insideUnitCircle * walkPointRange;
+            Vector3 point = new Vector3(transform.position.x + pointV2.x, transform.position.y,
+                transform.position.z + pointV2.y);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(point, out hit, 1.0f, NavMesh.AllAreas))
+            {
+                walkPoint = hit.position; 
+                if (navMeshAgent.SetDestination(walkPoint))
+                {
+                    isWalkPointSet = true;
+                    Debug.Log(name + "'s walking point: " + walkPoint);
+                }
+                return;
+            }
+        }
+        // TODO: To check if the path is too long
+    }
+
+    enum ActionStatus
+    {
+        undefined,
+        walking,
+        idle,
+        chasing,
+        attacking,
+        searching
+    }
 }

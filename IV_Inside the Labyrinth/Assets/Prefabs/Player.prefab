@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6313752417268126001}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: First View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 1927124818997728496}
   - component: {fileID: 1927124818997728497}
   - component: {fileID: 963194229}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 1927124819442821057}
   - component: {fileID: 1927124819442821058}
   - component: {fileID: 1927124819442821059}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -275,7 +275,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5987987581733388930}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera Points
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1795508464738217024}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Thitd View Min
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -340,7 +340,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8345852224134359649}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Map View Max
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,7 +370,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5234860296966949727}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Third View Max
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -400,7 +400,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 970218843401200127}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Map View Min
   m_TagString: Untagged
   m_Icon: {fileID: 0}
