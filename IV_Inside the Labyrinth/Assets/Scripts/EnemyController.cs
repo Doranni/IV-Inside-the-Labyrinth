@@ -8,13 +8,15 @@ public class EnemyController : MonoBehaviour
     Transform player;
     public LayerMask playerLMask, hidingObstacleLMask;
     NavMeshAgent navMeshAgent;
-    ActionStatus actionStatus = ActionStatus.walking;
+    ActionStatus actionStatus = ActionStatus.undefined;
+    Vector3 environmentExtents, environmentCenter;
+    float yRange;
 
     // Walking
     Vector3 walkPoint;
     bool isWalkPointSet = false;
-    public float walkPointRange, pathRange;
     public float walkingSpeed;
+    public float walkPointRange;
 
     // Idle
     float idleTime;
@@ -33,10 +35,16 @@ public class EnemyController : MonoBehaviour
     // Seaching for Player
     public float searchTime;
     float searchTimeLeft;
+    public float searchPointRange;
+    Vector3 searchingPoint;
 
     private void Awake()
     {
         player = GameObject.Find("Player").transform;
+        Bounds environmentBounds = GameObject.Find("Plane").GetComponent<Collider>().bounds;
+        environmentExtents = environmentBounds.extents;
+        environmentCenter = environmentBounds.center;
+        yRange = 2 * environmentExtents.y + 0.5f;
         navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
@@ -73,9 +81,6 @@ public class EnemyController : MonoBehaviour
                     break;
                 }
         }
-
-        // TODO: to add interaction with other enemies
-
     }
 
     private void CheckPlayer()
@@ -121,6 +126,7 @@ public class EnemyController : MonoBehaviour
         CheckPlayer();
         if (isPlayerSeen)
         {
+            searchingPoint = player.position;
             if (isPlayerInAttackRange)
             {
                 if (actionStatus != ActionStatus.attacking)
@@ -128,6 +134,7 @@ public class EnemyController : MonoBehaviour
                     // Starting attacking
                     actionStatus = ActionStatus.attacking;
                     isWalkPointSet = false;
+                    navMeshAgent.speed = chasingSpeed;
                     navMeshAgent.ResetPath();
                     Debug.Log(name + "'s action status: " + actionStatus);
                     return;
@@ -140,21 +147,23 @@ public class EnemyController : MonoBehaviour
                     // Starting chasing
                     actionStatus = ActionStatus.chasing;
                     isWalkPointSet = false;
+                    navMeshAgent.speed = chasingSpeed;
                     Debug.Log(name + "'s action status: " + actionStatus);
                     return;
                 }
-            } 
+            }
         }
         else
         {
             if (actionStatus == ActionStatus.attacking || actionStatus == ActionStatus.chasing)
             {
-                // And of attacking or chasing
+                // And of attacking or chasing, starting to search for the player
                 actionStatus = ActionStatus.searching;
-                isWalkPointSet = false;
-                navMeshAgent.ResetPath();
+                walkPoint = searchingPoint;
+                isWalkPointSet = navMeshAgent.SetDestination(walkPoint);
                 searchTimeLeft = searchTime;
                 Debug.Log(name + "'s Action status: " + actionStatus.ToString());
+                return;
             }
         }
 
@@ -163,6 +172,7 @@ public class EnemyController : MonoBehaviour
             isWalkPointSet = false;
             isIdleTimeSet = false;
             navMeshAgent.ResetPath();
+            navMeshAgent.speed = walkingSpeed;
             if (wasIdle)
             {
                 actionStatus = ActionStatus.walking;
@@ -205,23 +215,21 @@ public class EnemyController : MonoBehaviour
         if (isWalkPointSet)
         {
             Debug.DrawRay(walkPoint, Vector3.up * 3, Color.green);
-            if (!navMeshAgent.hasPath || !(navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete))
+            
+            if (!navMeshAgent.pathPending && !navMeshAgent.hasPath)
             {
                 actionStatus = ActionStatus.undefined;
             }
         }
         else
         {
-            ChooseWalkPoint();
+            ChooseWalkPoint(transform.position, walkPointRange);
         }
-
-        // TODO: to fix detecting if enemy stacked
     }
 
     private void Chasing()
     {
         navMeshAgent.SetDestination(player.position);
-        // TODO: To complete Chasing method
     }
 
     private void Attaking()
@@ -233,36 +241,67 @@ public class EnemyController : MonoBehaviour
     {
         if (searchTimeLeft > 0)
         {
-            searchTimeLeft -= Time.deltaTime; 
+            searchTimeLeft -= Time.deltaTime;
+            if (isWalkPointSet)
+            {
+                Debug.DrawRay(walkPoint, Vector3.up * 3, Color.yellow);
+
+                if (!navMeshAgent.pathPending && !navMeshAgent.hasPath)
+                {
+                    isWalkPointSet = false;
+                    ChooseWalkPoint(searchingPoint, searchPointRange);
+                }
+            }
+            else
+            {
+                ChooseWalkPoint(searchingPoint, searchPointRange);
+            }
         }
         else
         {
             Debug.Log(name + "'ve lost the player.");
             actionStatus = ActionStatus.undefined;
         }
-        // TODO: To complete Seaching method
     }
 
-    private void ChooseWalkPoint()
+    private void ChooseWalkPoint(Vector3 startingPoint, float range)
     {
         for (int i = 0; i < 30; i++)
         {
-            Vector2 pointV2 = Random.insideUnitCircle * walkPointRange;
-            Vector3 point = new Vector3(transform.position.x + pointV2.x, transform.position.y,
-                transform.position.z + pointV2.y);
+            float x = Random.Range(-range, range);
+            if (x > environmentExtents.x)
+            {
+                x = environmentExtents.x;
+            }
+            else if (x < -environmentExtents.x)
+            {
+                x = -environmentExtents.x;
+            }
+
+            float z = Random.Range(-range, range);
+            if (z > environmentExtents.z)
+            {
+                z = environmentExtents.z;
+            }
+            else if (z < -environmentExtents.z)
+            {
+                z = -environmentExtents.z;
+            }
+
+            Vector3 point = new Vector3(startingPoint.x + x, environmentCenter.y, startingPoint.z + z);
+            Debug.Log(name + ": ChooseWalkPoint - " + point);
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(point, out hit, 1.0f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(point, out hit, yRange, navMeshAgent.areaMask))
             {
                 walkPoint = hit.position; 
                 if (navMeshAgent.SetDestination(walkPoint))
                 {
                     isWalkPointSet = true;
                     Debug.Log(name + "'s walking point: " + walkPoint);
+                    return;
                 }
-                return;
             }
         }
-        // TODO: To check if the path is too long
     }
 
     enum ActionStatus
