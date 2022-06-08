@@ -1261,7 +1261,7 @@ MonoBehaviour:
   movementSpeed: 5
   rotationSpeed: 170
   jumpUpForce: 5
-  jumpAsideForce: 5
+  jumpForwardForce: 5
   floorLM:
     serializedVersion: 2
     m_Bits: 9

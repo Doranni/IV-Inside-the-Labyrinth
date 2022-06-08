@@ -5,14 +5,15 @@ using UnityEngine;
 public class AnimationAndMovementController : MonoBehaviour
 {
     [SerializeField] private float movementSpeed, rotationSpeed;
-    [SerializeField] private float jumpUpForce, jumpAsideForce;
+    [SerializeField] private float jumpUpForce, jumpForwardForce;
     [SerializeField] private LayerMask floorLM;
 
     private CharacterController characterController;
     private Animator animator;
     private GameInput gameInput;
 
-    private float rotationInput, verticalInput;
+    private Vector2 movementInput;
+    private float rotationInput;
     private bool accelerationInput;
 
     private Vector3 moveDirection, jumpDirection;
@@ -24,7 +25,9 @@ public class AnimationAndMovementController : MonoBehaviour
     private bool isFalling = false;
     private bool isJumpingUp = false;
 
-    int animHashVelocity, animHashJump, animHashFalling, animHashLanding;
+    int animHashVecticalVelocity, animHashHorizontalVelocity,
+        animHashFallingVelocity, animHashAngle,
+        animHashJump, animHashFalling, animHashLanding;
 
     private void Awake()
     {
@@ -32,15 +35,15 @@ public class AnimationAndMovementController : MonoBehaviour
 
         gameInput.Player.Move.started += context =>
         {
-            verticalInput = context.ReadValue<float>();
+            movementInput = context.ReadValue<Vector2>();
         };
         gameInput.Player.Move.performed += context =>
         {
-            verticalInput = context.ReadValue<float>();
+            movementInput = context.ReadValue<Vector2>();
         };
         gameInput.Player.Move.canceled += context =>
         {
-            verticalInput = context.ReadValue<float>();
+            movementInput = context.ReadValue<Vector2>();
         };
 
         gameInput.Player.Rotate.started += context =>
@@ -68,7 +71,10 @@ public class AnimationAndMovementController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
-        animHashVelocity = Animator.StringToHash("Velocity");
+        animHashVecticalVelocity = Animator.StringToHash("Vertical Velocity");
+        animHashHorizontalVelocity = Animator.StringToHash("Horizontal Velocity");
+        animHashFallingVelocity = Animator.StringToHash("Falling Velocity");
+        animHashAngle = Animator.StringToHash("Angle");
         animHashJump = Animator.StringToHash("Jump");
         animHashFalling = Animator.StringToHash("Falling");
         animHashLanding = Animator.StringToHash("Landing");
@@ -100,11 +106,37 @@ public class AnimationAndMovementController : MonoBehaviour
                 Vector3 p1 = transform.position + characterController.center
                     - new Vector3(0, characterController.height * 0.5f - 0.5f, 0);
                 Vector3 p2 = p1 + new Vector3(0, characterController.height - 1, 0);
+
+                // Falling
                 if (!Physics.CapsuleCast(p1, p2, characterController.radius,
                     Vector3.down, 2f, floorLM))
                 {
                     isFalling = true;
                     isMovementLocked = true;
+                    float rotAngle = 0;
+                    if (movementInput.magnitude > 0)
+                    {
+                        Vector3 movementInputVec3 = new Vector3(movementInput.x, 0, movementInput.y);
+
+                        // Falling Forward
+                        if (movementInput.y >= 0)
+                        {
+                            rotAngle = Vector3.SignedAngle(Vector3.forward, movementInputVec3, Vector3.up);
+                            animator.SetFloat(animHashFallingVelocity, 1);
+                        }
+                        // Falling Backward
+                        else
+                        {
+                            rotAngle = Vector3.SignedAngle(Vector3.back, movementInputVec3, Vector3.up);
+                            animator.SetFloat(animHashFallingVelocity, -1);
+                        }
+                    }
+                    // Falling Up
+                    else
+                    {
+                        animator.SetFloat(animHashFallingVelocity, 0);
+                    }
+                    animator.SetFloat(animHashAngle, rotAngle);
                     animator.SetTrigger(animHashFalling);
                 }
             }
@@ -135,28 +167,48 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void HandleMovement()
     {
+        Vector3 movementInputVec3 = new Vector3(movementInput.x, 0, movementInput.y) * acceleration;
+        moveDirection = transform.TransformDirection(movementInputVec3);
+
+        // Jumping
         if (gameInput.Player.JumpUp.WasPressedThisFrame())
         {
             isMovementLocked = true;
-            jumpDirection = transform.forward * verticalInput * movementSpeed
-                * acceleration + Vector3.up * jumpUpForce;
+            float rotAngle = 0;
+            if (movementInput.magnitude > 0)
+            {
+                jumpDirection = moveDirection * jumpForwardForce + Vector3.up * jumpUpForce;
+
+                // Jumping Forward
+                if (movementInput.y >= 0)
+                {
+                    rotAngle = Vector3.SignedAngle(Vector3.forward, movementInputVec3, Vector3.up);
+                    animator.SetFloat(animHashFallingVelocity, 1);
+                }
+                // Jumping Backward
+                else
+                {
+                    rotAngle = Vector3.SignedAngle(Vector3.back, movementInputVec3, Vector3.up);
+                    animator.SetFloat(animHashFallingVelocity, -1);
+                }
+            }
+            // Jumping Up
+            else
+            {
+                jumpDirection = Vector3.up * jumpUpForce;
+                animator.SetFloat(animHashFallingVelocity, 0);
+            }
+            animator.SetFloat(animHashAngle, rotAngle);
             animator.SetTrigger(animHashJump);
         }
-        // Jumping left
-        else if (gameInput.Player.JumpLeft.WasPressedThisFrame())
-        {
-
-        }
-        // Jumping right
-        else if (gameInput.Player.JumpRight.WasPressedThisFrame())
-        {
-
-        }
+        // Running
         else
         {
-            moveDirection = transform.forward * verticalInput * movementSpeed * acceleration;
+            moveDirection *= movementSpeed;
             characterController.SimpleMove(moveDirection);
-            animator.SetFloat(animHashVelocity, verticalInput * acceleration);
+
+            animator.SetFloat(animHashVecticalVelocity, movementInputVec3.z);
+            animator.SetFloat(animHashHorizontalVelocity, movementInputVec3.x);
         }
     }
 
@@ -184,14 +236,15 @@ public class AnimationAndMovementController : MonoBehaviour
     public void JumpUpStart()
     {
         isJumpingUp = true;
-        Debug.Log($"Player is Jumping");
     }
 
     public void JumpUpFinish()
     {
         isJumpingUp = false;
         isFalling = true;
-        Debug.Log($"Player is Jumping: velocity - {animator.GetFloat(animHashVelocity)}, high - {transform.position.y}");
+
+        // Debug
+        Debug.Log($"Player is Jumping: velocity - {animator.GetFloat(animHashVecticalVelocity)}, high - {transform.position.y}");
     }
 
     public void UnlockMovement()
