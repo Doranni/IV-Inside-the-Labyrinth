@@ -1,170 +1,185 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
+using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    public float thirdViewZoomSpeed, mapViewZoomSpeed;
+    private CameraInput cameraInput;
 
-    public Transform firsrViewPoint, thirdViewMinPoint, thirdViewMaxPoint,
-        mapViewMinPoint, mapViewMaxPoint;
+    public CinemachineFreeLook firstViewCamera, thirdViewCamera;
+    public CinemachineVirtualCamera mapViewCamera;
 
-    // Preset of positions and rotations for all camera views
-    (Vector3, Vector3) firstView, thirdViewMin, thirdViewMax, mapViewMin, mapViewMax,
-        currentThirdView, currentMapView;
+    public float thirdViewZoomingSpeed;
+    public float thirdViewHeightMin, thirdViewHeightMax,
+        thirdViewRadiusMin, thirdViewRadiusMax;
+    private float thirdViewHeightStep, thirdViewHeightMid,
+        thirdViewRadiusStep, thirdViewRadiusMid;
+    private float neededThirdViewRadius, neededThirdViewHeight;
 
-    // Steps' values for smooth Camera zoom
-    float posYStep, posZStep, rotXStep, mapZoomStep;
+    public float mapViewZoomingSpeed;
+    public float mapViewOffsetMin, mapViewOffsetMax;
+    private float mapViewOffsetStep, mapViewOffsetMid;
+    private float neededmapViewOffset;
+    private CinemachineFramingTransposer mapViewTranspoder;
 
-    float scrollSweelInput;
+    private float scrollWheelInput = 0;
+    public float scrollWheelMin, scrollWheelMax;
+    private bool needToZoomCamera = false;
 
     ViewMode viewMode = ViewMode.thirdViewMode;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        // Adjusting Camera values
-        firstView = InitViewPoint(firsrViewPoint, (new Vector3(0, 0.6f, 0.2f), new Vector3(8, 0, 0)));
-        thirdViewMin = InitViewPoint(thirdViewMinPoint, (new Vector3(0, 2, -2), new Vector3(12, 0, 0)));
-        thirdViewMax = InitViewPoint(thirdViewMaxPoint, (new Vector3(0, 10, -10), new Vector3(23, 0, 0)));
-        mapViewMin = InitViewPoint(mapViewMinPoint, (new Vector3(0, 10, 0), new Vector3(90, 0, 0)));
-        mapViewMax = InitViewPoint(mapViewMaxPoint, (new Vector3(0, 100, 0), new Vector3(90, 0, 0)));
-        currentThirdView = thirdViewMax;
-        currentMapView = mapViewMax;
+        cameraInput = new CameraInput();
+        cameraInput.Camera.Zoom.started += context => HandleScrollWheelInput(context);
+        cameraInput.Camera.Zoom.performed += context => HandleScrollWheelInput(context);
+        cameraInput.Camera.Zoom.canceled += context => HandleScrollWheelInput(context);
 
-        transform.localPosition = currentThirdView.Item1;
-        transform.localRotation = Quaternion.Euler(currentThirdView.Item2);
+        float scrollStep = scrollWheelMax - scrollWheelMin;
+        thirdViewHeightStep = (thirdViewHeightMax - thirdViewHeightMin) / scrollStep;
+        thirdViewRadiusStep = (thirdViewRadiusMax - thirdViewRadiusMin) / scrollStep;
+        thirdViewHeightMid = (thirdViewHeightMax + thirdViewHeightMin) / 2;
+        thirdViewRadiusMid = (thirdViewRadiusMax + thirdViewRadiusMin) / 2;
+        mapViewOffsetStep = (mapViewOffsetMax - mapViewOffsetMin) / scrollStep;
+        mapViewOffsetMid = (mapViewOffsetMax + mapViewOffsetMin) / 2;
 
-        posYStep = Mathf.Abs(thirdViewMax.Item1.y - thirdViewMin.Item1.y);
-        posZStep = Mathf.Abs(thirdViewMax.Item1.z - thirdViewMin.Item1.z);
-        rotXStep = Mathf.Abs(thirdViewMax.Item2.x - thirdViewMin.Item2.x);
-        mapZoomStep = Mathf.Abs(mapViewMax.Item1.y - mapViewMin.Item1.y);
-
-        if (thirdViewZoomSpeed == 0)
-        {
-            thirdViewZoomSpeed = 2.5f;
-        }
-        if (mapViewZoomSpeed == 0)
-        {
-            mapViewZoomSpeed = 2.5f;
-        }
+        mapViewTranspoder = mapViewCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
-    // Initializing Camera view points with Transform position and rotation, or with altValue if Transform is null
-    private (Vector3, Vector3) InitViewPoint(Transform viewPoint, (Vector3, Vector3) altValue)
+    private void HandleScrollWheelInput(InputAction.CallbackContext context)
     {
-        if ((viewPoint == null) || (viewPoint.localPosition == Vector3.zero
-            && viewPoint.localRotation == Quaternion.identity))
+        if (viewMode == ViewMode.firstViewMode)
         {
-            return altValue;
+            return;
+        }
+        float input = scrollWheelInput + context.ReadValue<float>();
+        if (input > scrollWheelMax)
+        {
+            scrollWheelInput = scrollWheelMax;
+        }
+        else if (input < scrollWheelMin)
+        {
+            scrollWheelInput = scrollWheelMin;
         }
         else
         {
-            return (viewPoint.localPosition, viewPoint.localRotation.eulerAngles);
+            scrollWheelInput = input;
         }
+        if (viewMode == ViewMode.thirdViewMode)
+        {
+            neededThirdViewHeight = thirdViewHeightMid + thirdViewHeightStep * scrollWheelInput;
+            neededThirdViewRadius = thirdViewRadiusMid + thirdViewRadiusStep * scrollWheelInput; 
+        }
+        else if (viewMode == ViewMode.mapViewMode)
+        {
+            neededmapViewOffset = mapViewOffsetMid + mapViewOffsetStep * scrollWheelInput;
+        }
+        needToZoomCamera = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-        scrollSweelInput = Input.GetAxis("Mouse ScrollWheel");
-
-        // Toggle First person view
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            if (viewMode == ViewMode.firstViewMode)
-            {
-                transform.localPosition = currentThirdView.Item1;
-                transform.localRotation = Quaternion.Euler(currentThirdView.Item2);
-                viewMode = ViewMode.thirdViewMode;
-            }
-            else
-            {
-                if (viewMode == ViewMode.thirdViewMode)
-                {
-                    currentThirdView.Item1 = transform.localPosition;
-                    currentThirdView.Item2 = transform.localRotation.eulerAngles;
-                }
-                else if (viewMode == ViewMode.mapViewMode)
-                {
-                    currentMapView.Item1 = transform.localPosition;
-                    currentMapView.Item2 = transform.localRotation.eulerAngles;
-                }
-
-                transform.localPosition = firstView.Item1;
-                transform.localRotation = Quaternion.Euler(firstView.Item2);
-                viewMode = ViewMode.firstViewMode;
-            }
-        }
-
-        // Toggle Map view
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            if (viewMode == ViewMode.mapViewMode)
-            {
-                currentMapView.Item1 = transform.localPosition;
-                currentMapView.Item2 = transform.localRotation.eulerAngles;
-                transform.localPosition = currentThirdView.Item1;
-                transform.localRotation = Quaternion.Euler(currentThirdView.Item2);
-                viewMode = ViewMode.thirdViewMode;
-            }
-            else
-            {
-                if (viewMode == ViewMode.thirdViewMode)
-                {
-                    currentThirdView.Item1 = transform.localPosition;
-                    currentThirdView.Item2 = transform.localRotation.eulerAngles;
-                }
-
-                transform.localPosition = currentMapView.Item1;
-                transform.localRotation = Quaternion.Euler(currentMapView.Item2);
-                viewMode = ViewMode.mapViewMode;
-            }
-            
-        }
+        viewMode = ViewMode.thirdViewMode;
+        thirdViewCamera.enabled = true;
+        firstViewCamera.enabled = false;
+        mapViewCamera.enabled = false;
     }
 
     private void LateUpdate()
     {
         // Camera zoom due to ScrollWheel input
-        if (viewMode == ViewMode.thirdViewMode)
+        if (needToZoomCamera)
         {
-            if (scrollSweelInput > 0)
+            if (viewMode == ViewMode.thirdViewMode)
             {
-                transform.localPosition = new Vector3(0,
-                    Mathf.MoveTowards(transform.localPosition.y, thirdViewMax.Item1.y,
-                    posYStep * Time.deltaTime * thirdViewZoomSpeed),
-                    Mathf.MoveTowards(transform.localPosition.z, thirdViewMax.Item1.z,
-                    posZStep * Time.deltaTime * thirdViewZoomSpeed));
-
-                transform.localRotation = Quaternion.Euler(Vector3.MoveTowards(transform.localRotation.eulerAngles,
-                    thirdViewMax.Item2, rotXStep * Time.deltaTime * thirdViewZoomSpeed));
+                for (int i = 0; i < thirdViewCamera.m_Orbits.Length; i++)
+                {
+                    thirdViewCamera.m_Orbits[i].m_Height =
+                        Mathf.MoveTowards(thirdViewCamera.m_Orbits[i].m_Height,
+                        neededThirdViewHeight, Time.deltaTime * thirdViewZoomingSpeed);
+                    thirdViewCamera.m_Orbits[i].m_Radius =
+                        Mathf.MoveTowards(thirdViewCamera.m_Orbits[i].m_Radius,
+                        neededThirdViewRadius, Time.deltaTime * thirdViewZoomingSpeed);
+                }
+                needToZoomCamera = CheckThirdViewCameraNeedToZoom();
             }
-            else if (scrollSweelInput < 0)
+            else if (viewMode == ViewMode.mapViewMode)
             {
-                transform.localPosition = new Vector3(0,
-                    Mathf.MoveTowards(transform.localPosition.y, thirdViewMin.Item1.y,
-                    posYStep * Time.deltaTime * thirdViewZoomSpeed),
-                    Mathf.MoveTowards(transform.localPosition.z, thirdViewMin.Item1.z,
-                    posZStep * Time.deltaTime * thirdViewZoomSpeed));
-
-                transform.localRotation = Quaternion.Euler(Vector3.MoveTowards(transform.localRotation.eulerAngles,
-                    thirdViewMin.Item2, rotXStep * Time.deltaTime * thirdViewZoomSpeed));
+                mapViewTranspoder.m_TrackedObjectOffset.y =
+                    Mathf.MoveTowards(mapViewTranspoder.m_TrackedObjectOffset.y,
+                    neededmapViewOffset, Time.deltaTime * mapViewZoomingSpeed);
+                needToZoomCamera = CheckMapViewCameraNeedToZoom();
             }
         }
-        else if (viewMode == ViewMode.mapViewMode)
+    }
+
+    private bool CheckThirdViewCameraNeedToZoom()
+    {
+        for (int i = 0; i < thirdViewCamera.m_Orbits.Length; i++)
         {
-            if (scrollSweelInput > 0)
+            if (thirdViewCamera.m_Orbits[i].m_Height != neededThirdViewHeight||
+                thirdViewCamera.m_Orbits[i].m_Radius != neededThirdViewRadius)
             {
-                transform.localPosition = new Vector3(0,
-                    Mathf.MoveTowards(transform.localPosition.y, mapViewMax.Item1.y,
-                    mapZoomStep * Time.deltaTime * mapViewZoomSpeed), 0);
+                return true;
             }
-            else if (scrollSweelInput < 0)
+        }
+        return false;
+    }
+
+    private bool CheckMapViewCameraNeedToZoom()
+    {
+        return mapViewTranspoder.m_TrackedObjectOffset.y != neededmapViewOffset;
+    }
+
+    void Update()
+    {
+        // Toggle First person view
+        if (cameraInput.Camera.FirstViewToggle.WasPressedThisFrame())
+        {
+            if (viewMode == ViewMode.firstViewMode)
             {
-                transform.localPosition = new Vector3(0,
-                    Mathf.MoveTowards(transform.localPosition.y, mapViewMin.Item1.y,
-                    mapZoomStep * Time.deltaTime * mapViewZoomSpeed), 0);
+                thirdViewCamera.enabled = true;
+                firstViewCamera.enabled = false;
+                viewMode = ViewMode.thirdViewMode;
+            }
+            else
+            {
+                if (viewMode == ViewMode.thirdViewMode)
+                {
+                    thirdViewCamera.enabled = false;
+                }
+                else if (viewMode == ViewMode.mapViewMode)
+                {
+                    mapViewCamera.enabled = false; 
+                }
+                firstViewCamera.enabled = true;
+                viewMode = ViewMode.firstViewMode;
+            }
+        }
+        //Toggle Map view
+        if (cameraInput.Camera.MapViewToggle.WasPressedThisFrame())
+        {
+            if (viewMode == ViewMode.mapViewMode)
+            {
+                thirdViewCamera.enabled = true;
+                mapViewCamera.enabled = false;
+                viewMode = ViewMode.thirdViewMode;
+            }
+            else
+            {
+                if (viewMode == ViewMode.thirdViewMode)
+                {
+                    thirdViewCamera.enabled = false;
+                }
+                else if (viewMode == ViewMode.firstViewMode)
+                {
+                    firstViewCamera.enabled = false;
+                }
+
+                mapViewCamera.enabled = true;
+                viewMode = ViewMode.mapViewMode;
             }
         }
     }
@@ -174,5 +189,15 @@ public class CameraController : MonoBehaviour
         firstViewMode,
         thirdViewMode,
         mapViewMode
+    }
+
+    private void OnEnable()
+    {
+        cameraInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        cameraInput.Disable();
     }
 }

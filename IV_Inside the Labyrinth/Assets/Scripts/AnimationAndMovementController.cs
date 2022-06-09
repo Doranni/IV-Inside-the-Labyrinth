@@ -10,7 +10,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private CharacterController characterController;
     private Animator animator;
-    private GameInput gameInput;
+    private PlayerInput playerInput;
 
     private Vector2 movementInput;
     private float rotationInput;
@@ -31,39 +31,39 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void Awake()
     {
-        gameInput = new GameInput();
+        playerInput = new PlayerInput();
 
-        gameInput.Player.Move.started += context =>
+        playerInput.Player.Move.started += context =>
         {
             movementInput = context.ReadValue<Vector2>();
         };
-        gameInput.Player.Move.performed += context =>
+        playerInput.Player.Move.performed += context =>
         {
             movementInput = context.ReadValue<Vector2>();
         };
-        gameInput.Player.Move.canceled += context =>
+        playerInput.Player.Move.canceled += context =>
         {
             movementInput = context.ReadValue<Vector2>();
         };
 
-        gameInput.Player.Rotate.started += context =>
+        playerInput.Player.Rotate.started += context =>
         {
             rotationInput = context.ReadValue<float>();
         };
-        gameInput.Player.Rotate.performed += context =>
+        playerInput.Player.Rotate.performed += context =>
         {
             rotationInput = context.ReadValue<float>();
         };
-        gameInput.Player.Rotate.canceled += context =>
+        playerInput.Player.Rotate.canceled += context =>
         {
             rotationInput = context.ReadValue<float>();
         };
 
-        gameInput.Player.Acceleration.started += context =>
+        playerInput.Player.Acceleration.started += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
-        gameInput.Player.Acceleration.canceled += context =>
+        playerInput.Player.Acceleration.canceled += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
@@ -147,12 +147,6 @@ public class AnimationAndMovementController : MonoBehaviour
                 HandleMovement();
             }
         }
-
-        // Debug
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            Debug.Log("Player: isGrounded - " + characterController.isGrounded);
-        }
     }
 
 
@@ -171,7 +165,7 @@ public class AnimationAndMovementController : MonoBehaviour
         moveDirection = transform.TransformDirection(movementInputVec3);
 
         // Jumping
-        if (gameInput.Player.JumpUp.WasPressedThisFrame())
+        if (playerInput.Player.JumpUp.WasPressedThisFrame())
         {
             isMovementLocked = true;
             float rotAngle = 0;
@@ -254,11 +248,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void OnEnable()
     {
-        gameInput.Enable();
+        playerInput.Enable();
     }
 
     private void OnDisable()
     {
-        gameInput.Disable();
+        playerInput.Disable();
     }
 }

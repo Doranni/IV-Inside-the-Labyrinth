@@ -1,5 +1,5 @@
 {
-    "name": "GameInput",
+    "name": "PlayerInput",
     "maps": [
         {
             "name": "Player",
@@ -174,54 +174,6 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
-                }
-            ]
-        },
-        {
-            "name": "Camera",
-            "id": "928bc7fa-7803-487d-b6a5-ded4f5022ea7",
-            "actions": [
-                {
-                    "name": "LookAt",
-                    "type": "Value",
-                    "id": "ada68dd9-ca7d-4b1f-ac35-662fa07df548",
-                    "expectedControlType": "Vector2",
-                    "processors": "Clamp(min=-1,max=1)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Zoom",
-                    "type": "PassThrough",
-                    "id": "624689fb-c21d-4807-bcc4-f1e632da5d19",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "1708e220-2fbf-4c85-b1ce-a51d01969acd",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "LookAt",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6601f12d-ad8d-45b2-bd36-e4c141fa6717",
-                    "path": "<Mouse>/scroll",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
