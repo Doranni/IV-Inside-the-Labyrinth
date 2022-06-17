@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class AnimationAndMovementController : MonoBehaviour
 {
     [SerializeField] private float movementSpeed, rotationSpeed;
     [SerializeField] private float jumpUpForce, jumpForwardForce;
     [SerializeField] private LayerMask floorLM;
+
+    [SerializeField] private TMP_Text mouseDeltaValue, mousePositionValue;
 
     private CharacterController characterController;
     private Animator animator;
@@ -16,7 +19,8 @@ public class AnimationAndMovementController : MonoBehaviour
     private float rotationInput;
     private bool accelerationInput;
 
-    private Vector3 moveDirection, jumpDirection;
+    private Vector3 moveDirection;
+    private float moveGravity;
 
     private float acceleration = 1f;
     private float maxAcceleration = 2f;
@@ -25,7 +29,7 @@ public class AnimationAndMovementController : MonoBehaviour
     private bool isFalling = false;
     private bool isJumpingUp = false;
 
-    int animHashVecticalVelocity, animHashHorizontalVelocity,
+    private int animHashVecticalVelocity, animHashHorizontalVelocity,
         animHashFallingVelocity, animHashAngle,
         animHashJump, animHashFalling, animHashLanding;
 
@@ -49,14 +53,17 @@ public class AnimationAndMovementController : MonoBehaviour
         playerInput.Player.Rotate.started += context =>
         {
             rotationInput = context.ReadValue<float>();
+            mouseDeltaValue.text = rotationInput.ToString();
         };
         playerInput.Player.Rotate.performed += context =>
         {
             rotationInput = context.ReadValue<float>();
+            mouseDeltaValue.text = rotationInput.ToString();
         };
         playerInput.Player.Rotate.canceled += context =>
         {
             rotationInput = context.ReadValue<float>();
+            mouseDeltaValue.text = rotationInput.ToString();
         };
 
         playerInput.Player.Acceleration.started += context =>
@@ -82,7 +89,9 @@ public class AnimationAndMovementController : MonoBehaviour
 
     void Start()
     {
+        moveGravity = Physics.gravity.y;
         characterController.Move(Vector3.down);
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
@@ -97,7 +106,7 @@ public class AnimationAndMovementController : MonoBehaviour
         }
         else if (isJumpingUp)
         {
-            characterController.Move(jumpDirection * Time.deltaTime);
+            HandleJumping();
         }
         else if (!isMovementLocked)
         {
@@ -111,33 +120,7 @@ public class AnimationAndMovementController : MonoBehaviour
                 if (!Physics.CapsuleCast(p1, p2, characterController.radius,
                     Vector3.down, 2f, floorLM))
                 {
-                    isFalling = true;
-                    isMovementLocked = true;
-                    float rotAngle = 0;
-                    if (movementInput.magnitude > 0)
-                    {
-                        Vector3 movementInputVec3 = new Vector3(movementInput.x, 0, movementInput.y);
-
-                        // Falling Forward
-                        if (movementInput.y >= 0)
-                        {
-                            rotAngle = Vector3.SignedAngle(Vector3.forward, movementInputVec3, Vector3.up);
-                            animator.SetFloat(animHashFallingVelocity, 1);
-                        }
-                        // Falling Backward
-                        else
-                        {
-                            rotAngle = Vector3.SignedAngle(Vector3.back, movementInputVec3, Vector3.up);
-                            animator.SetFloat(animHashFallingVelocity, -1);
-                        }
-                    }
-                    // Falling Up
-                    else
-                    {
-                        animator.SetFloat(animHashFallingVelocity, 0);
-                    }
-                    animator.SetFloat(animHashAngle, rotAngle);
-                    animator.SetTrigger(animHashFalling);
+                    HandleFalling();
                 }
             }
             else
@@ -149,6 +132,41 @@ public class AnimationAndMovementController : MonoBehaviour
         }
     }
 
+    private void HandleJumping()
+    {
+        characterController.Move(moveDirection * Time.deltaTime);
+    }
+
+    private void HandleFalling()
+    {
+        isFalling = true;
+        isMovementLocked = true;
+        float rotAngle = 0;
+        if (movementInput.magnitude > 0)
+        {
+            Vector3 movementInputVec3 = new Vector3(movementInput.x, 0, movementInput.y);
+
+            // Falling Forward
+            if (movementInput.y >= 0)
+            {
+                rotAngle = Vector3.SignedAngle(Vector3.forward, movementInputVec3, Vector3.up);
+                animator.SetFloat(animHashFallingVelocity, 1);
+            }
+            // Falling Backward
+            else
+            {
+                rotAngle = Vector3.SignedAngle(Vector3.back, movementInputVec3, Vector3.up);
+                animator.SetFloat(animHashFallingVelocity, -1);
+            }
+        }
+        // Falling Up
+        else
+        {
+            animator.SetFloat(animHashFallingVelocity, 0);
+        }
+        animator.SetFloat(animHashAngle, rotAngle);
+        animator.SetTrigger(animHashFalling);
+    }
 
     private void HandleRotation()
     {
@@ -171,7 +189,7 @@ public class AnimationAndMovementController : MonoBehaviour
             float rotAngle = 0;
             if (movementInput.magnitude > 0)
             {
-                jumpDirection = moveDirection * jumpForwardForce + Vector3.up * jumpUpForce;
+                moveDirection = moveDirection * jumpForwardForce + Vector3.up * jumpUpForce;
 
                 // Jumping Forward
                 if (movementInput.y >= 0)
@@ -189,7 +207,7 @@ public class AnimationAndMovementController : MonoBehaviour
             // Jumping Up
             else
             {
-                jumpDirection = Vector3.up * jumpUpForce;
+                moveDirection = Vector3.up * jumpUpForce;
                 animator.SetFloat(animHashFallingVelocity, 0);
             }
             animator.SetFloat(animHashAngle, rotAngle);
@@ -198,8 +216,9 @@ public class AnimationAndMovementController : MonoBehaviour
         // Running
         else
         {
-            moveDirection *= movementSpeed;
-            characterController.SimpleMove(moveDirection);
+            moveDirection.y = moveGravity;
+            moveDirection *= movementSpeed * Time.deltaTime;
+            characterController.Move(moveDirection);
 
             animator.SetFloat(animHashVecticalVelocity, movementInputVec3.z);
             animator.SetFloat(animHashHorizontalVelocity, movementInputVec3.x);
