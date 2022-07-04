@@ -8,24 +8,27 @@ public class CameraController : MonoBehaviour
 {
     private CameraInput cameraInput;
 
-    public CinemachineFreeLook firstViewCamera, thirdViewCamera;
+    [SerializeField] private CinemachineFreeLook firstViewCamera, thirdViewCamera;
     public CinemachineVirtualCamera mapViewCamera;
 
-    public float thirdViewZoomingSpeed;
-    public float thirdViewHeightMin, thirdViewHeightMax,
+    [SerializeField] private float thirdViewZoomingSpeed;
+    [SerializeField] private float thirdViewHeightMin, thirdViewHeightMax,
         thirdViewRadiusMin, thirdViewRadiusMax;
     private float thirdViewHeightStep, thirdViewHeightMid,
         thirdViewRadiusStep, thirdViewRadiusMid;
     private float neededThirdViewRadius, neededThirdViewHeight;
+    private CinemachineVirtualCamera[] thirdViewRigs = new CinemachineVirtualCamera[3];
+    private CinemachineOrbitalTransposer[] thirdViewTransposers = new CinemachineOrbitalTransposer[3];
+    private CinemachineComposer[] thirdViewComposers = new CinemachineComposer[3];
 
-    public float mapViewZoomingSpeed;
-    public float mapViewOffsetMin, mapViewOffsetMax;
+    [SerializeField] private float mapViewZoomingSpeed;
+    [SerializeField] private float mapViewOffsetMin, mapViewOffsetMax;
     private float mapViewOffsetStep, mapViewOffsetMid;
     private float neededmapViewOffset;
     private CinemachineFramingTransposer mapViewTranspoder;
 
     private float scrollWheelInput = 0;
-    public float scrollWheelMin, scrollWheelMax;
+    [SerializeField] private float scrollWheelMin, scrollWheelMax;
     private bool needToZoomCamera = false;
 
     ViewMode viewMode = ViewMode.thirdViewMode;
@@ -37,6 +40,12 @@ public class CameraController : MonoBehaviour
         cameraInput.Camera.Zoom.performed += context => HandleScrollWheelInput(context);
         cameraInput.Camera.Zoom.canceled += context => HandleScrollWheelInput(context);
 
+        cameraInput.Camera.FirstViewToggle.performed += FirstViewToggle_performed;
+        cameraInput.Camera.MapViewToggle.performed += MapViewToggle_performed;
+
+        cameraInput.Camera.StartRotation.started += StartRotation_started;
+        cameraInput.Camera.StartRotation.canceled += StartRotation_canceled;
+
         float scrollStep = scrollWheelMax - scrollWheelMin;
         thirdViewHeightStep = (thirdViewHeightMax - thirdViewHeightMin) / scrollStep;
         thirdViewRadiusStep = (thirdViewRadiusMax - thirdViewRadiusMin) / scrollStep;
@@ -46,6 +55,76 @@ public class CameraController : MonoBehaviour
         mapViewOffsetMid = (mapViewOffsetMax + mapViewOffsetMin) / 2;
 
         mapViewTranspoder = mapViewCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+
+        for (int i = 0; i < thirdViewTransposers.Length; i++)
+        {
+            thirdViewRigs[i] = thirdViewCamera.GetRig(i);
+            thirdViewTransposers[i] = thirdViewRigs[i].GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            thirdViewComposers[i] = thirdViewRigs[i].GetCinemachineComponent<CinemachineComposer>();
+        }
+    }
+
+    private void StartRotation_canceled(InputAction.CallbackContext obj)
+    {
+        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse)
+        {
+            thirdViewCamera.m_XAxis.m_MaxSpeed = 0;
+        }
+    }
+
+    private void StartRotation_started(InputAction.CallbackContext obj)
+    {
+        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse)
+        {
+            thirdViewCamera.m_XAxis.m_MaxSpeed = Preferences.camRotSpeed;
+        }
+    }
+
+    private void MapViewToggle_performed(InputAction.CallbackContext obj)
+    {
+        if (viewMode == ViewMode.mapViewMode)
+        {
+            thirdViewCamera.enabled = true;
+            mapViewCamera.enabled = false;
+            viewMode = ViewMode.thirdViewMode;
+        }
+        else
+        {
+            if (viewMode == ViewMode.thirdViewMode)
+            {
+                thirdViewCamera.enabled = false;
+            }
+            else if (viewMode == ViewMode.firstViewMode)
+            {
+                firstViewCamera.enabled = false;
+            }
+
+            mapViewCamera.enabled = true;
+            viewMode = ViewMode.mapViewMode;
+        }
+    }
+
+    private void FirstViewToggle_performed(InputAction.CallbackContext obj)
+    {
+        if (viewMode == ViewMode.firstViewMode)
+        {
+            thirdViewCamera.enabled = true;
+            firstViewCamera.enabled = false;
+            viewMode = ViewMode.thirdViewMode;
+        }
+        else
+        {
+            if (viewMode == ViewMode.thirdViewMode)
+            {
+                thirdViewCamera.enabled = false;
+            }
+            else if (viewMode == ViewMode.mapViewMode)
+            {
+                mapViewCamera.enabled = false;
+            }
+            firstViewCamera.enabled = true;
+            viewMode = ViewMode.firstViewMode;
+        }
     }
 
     private void HandleScrollWheelInput(InputAction.CallbackContext context)
@@ -81,6 +160,8 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
+        UpdateRotation();
+        UpdateDamping();
         viewMode = ViewMode.thirdViewMode;
         thirdViewCamera.enabled = true;
         firstViewCamera.enabled = false;
@@ -133,57 +214,6 @@ public class CameraController : MonoBehaviour
         return mapViewTranspoder.m_TrackedObjectOffset.y != neededmapViewOffset;
     }
 
-    void Update()
-    {
-        // Toggle First person view
-        if (cameraInput.Camera.FirstViewToggle.WasPressedThisFrame())
-        {
-            if (viewMode == ViewMode.firstViewMode)
-            {
-                thirdViewCamera.enabled = true;
-                firstViewCamera.enabled = false;
-                viewMode = ViewMode.thirdViewMode;
-            }
-            else
-            {
-                if (viewMode == ViewMode.thirdViewMode)
-                {
-                    thirdViewCamera.enabled = false;
-                }
-                else if (viewMode == ViewMode.mapViewMode)
-                {
-                    mapViewCamera.enabled = false; 
-                }
-                firstViewCamera.enabled = true;
-                viewMode = ViewMode.firstViewMode;
-            }
-        }
-        //Toggle Map view
-        if (cameraInput.Camera.MapViewToggle.WasPressedThisFrame())
-        {
-            if (viewMode == ViewMode.mapViewMode)
-            {
-                thirdViewCamera.enabled = true;
-                mapViewCamera.enabled = false;
-                viewMode = ViewMode.thirdViewMode;
-            }
-            else
-            {
-                if (viewMode == ViewMode.thirdViewMode)
-                {
-                    thirdViewCamera.enabled = false;
-                }
-                else if (viewMode == ViewMode.firstViewMode)
-                {
-                    firstViewCamera.enabled = false;
-                }
-
-                mapViewCamera.enabled = true;
-                viewMode = ViewMode.mapViewMode;
-            }
-        }
-    }
-
     enum ViewMode
     {
         firstViewMode,
@@ -199,5 +229,46 @@ public class CameraController : MonoBehaviour
     private void OnDisable()
     {
         cameraInput.Disable();
+    }
+
+    public void UpdateRotation()
+    {
+        switch (Preferences.camRotStyle)
+        {
+            case Preferences.CameraRotationStyle.followPlayer:
+                {
+                    thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.LockToTargetWithWorldUp;
+                    thirdViewCamera.m_XAxis.m_MaxSpeed = 0;
+                    break;
+                }
+            case Preferences.CameraRotationStyle.withMouse:
+                {
+                    thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+                    thirdViewCamera.m_XAxis.m_MaxSpeed = Preferences.camRotSpeed;
+                    break;
+                }
+            case Preferences.CameraRotationStyle.withRightClickMouse:
+                {
+                    thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+                    thirdViewCamera.m_XAxis.m_MaxSpeed = 0;
+                    break;
+                }
+        }
+    }
+
+    public void UpdateDamping()
+    {
+        foreach (CinemachineOrbitalTransposer transposer in thirdViewTransposers)
+        {
+            transposer.m_XDamping = Preferences.camFollowDamping_X;
+            transposer.m_YDamping = Preferences.camFollowDamping_Y;
+            transposer.m_ZDamping = Preferences.camFollowDamping_Z;
+            transposer.m_YawDamping = Preferences.camFollowDamping_Yaw;
+        }
+        foreach (CinemachineComposer composer in thirdViewComposers)
+        {
+            composer.m_HorizontalDamping = Preferences.camRotDamping_Horizontal;
+            composer.m_VerticalDamping = Preferences.camRotDamping_Vertical;
+        }
     }
 }

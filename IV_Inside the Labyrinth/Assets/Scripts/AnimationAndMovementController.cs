@@ -5,25 +5,24 @@ using TMPro;
 
 public class AnimationAndMovementController : MonoBehaviour
 {
-    [SerializeField] private float movementSpeed, rotationSpeed;
+    [SerializeField] private float movementSpeed;
     [SerializeField] private float jumpUpForce, jumpForwardForce;
     [SerializeField] private LayerMask floorLM;
 
-    [SerializeField] private TMP_Text mouseDeltaValue, mousePositionValue;
-
     private CharacterController characterController;
     private Animator animator;
-    private PlayerInput playerInput;
+    private PlayerMovementInput playerMovementInput;
 
-    private Vector2 movementInput;
-    private float rotationInput;
+    private float movementForwardInput;
+    private float rotationMouseInput, rotationKeyboardInput;
     private bool accelerationInput;
 
-    private Vector3 moveDirection;
+    private Vector3 moveDirectionGlobal, moveDirectionLocal;
     private float moveGravity;
 
     private float acceleration = 1f;
     private float maxAcceleration = 2f;
+    private float currentRotationSpeed;
 
     private bool isMovementLocked = false;
     private bool isFalling = false;
@@ -35,45 +34,60 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void Awake()
     {
-        playerInput = new PlayerInput();
+        playerMovementInput = new PlayerMovementInput();
 
-        playerInput.Player.Move.started += context =>
+        playerMovementInput.Movement.MoveForward.started += context =>
         {
-            movementInput = context.ReadValue<Vector2>();
+            movementForwardInput = context.ReadValue<float>();
         };
-        playerInput.Player.Move.performed += context =>
+        playerMovementInput.Movement.MoveForward.performed += context =>
         {
-            movementInput = context.ReadValue<Vector2>();
+            movementForwardInput = context.ReadValue<float>();
         };
-        playerInput.Player.Move.canceled += context =>
+        playerMovementInput.Movement.MoveForward.canceled += context =>
         {
-            movementInput = context.ReadValue<Vector2>();
-        };
-
-        playerInput.Player.Rotate.started += context =>
-        {
-            rotationInput = context.ReadValue<float>();
-            mouseDeltaValue.text = rotationInput.ToString();
-        };
-        playerInput.Player.Rotate.performed += context =>
-        {
-            rotationInput = context.ReadValue<float>();
-            mouseDeltaValue.text = rotationInput.ToString();
-        };
-        playerInput.Player.Rotate.canceled += context =>
-        {
-            rotationInput = context.ReadValue<float>();
-            mouseDeltaValue.text = rotationInput.ToString();
+            movementForwardInput = context.ReadValue<float>();
         };
 
-        playerInput.Player.Acceleration.started += context =>
+        playerMovementInput.Movement.RotateMouse.started += context =>
+        {
+            rotationMouseInput = context.ReadValue<float>();
+        };
+        playerMovementInput.Movement.RotateMouse.performed += context =>
+        {
+            rotationMouseInput = context.ReadValue<float>();
+        };
+        playerMovementInput.Movement.RotateMouse.canceled += context =>
+        {
+            rotationMouseInput = context.ReadValue<float>();
+        };
+
+        playerMovementInput.Movement.RotateKeyboard.started += context =>
+        {
+            rotationKeyboardInput = context.ReadValue<float>();
+        };
+        playerMovementInput.Movement.RotateKeyboard.performed += context =>
+        {
+            rotationKeyboardInput = context.ReadValue<float>();
+        };
+        playerMovementInput.Movement.RotateKeyboard.canceled += context =>
+        {
+            rotationKeyboardInput = context.ReadValue<float>();
+        };
+
+        playerMovementInput.Movement.Acceleration.started += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
-        playerInput.Player.Acceleration.canceled += context =>
+        playerMovementInput.Movement.Acceleration.canceled += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
+
+        playerMovementInput.Movement.MouseRightClick.started += MouseRightClick_started;
+        playerMovementInput.Movement.MouseRightClick.canceled += MouseRightClick_canceled;
+
+        playerMovementInput.Movement.JumpUp.performed += JumpUp_performed;
 
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
@@ -87,11 +101,61 @@ public class AnimationAndMovementController : MonoBehaviour
         animHashLanding = Animator.StringToHash("Landing");
     }
 
+    private void MouseRightClick_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        currentRotationSpeed = Preferences.plRotSpeed;
+    }
+
+    private void MouseRightClick_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse 
+            && Preferences.plRotStyle == Preferences.PlayerRotationStyle.withMouse)
+        {
+            currentRotationSpeed = 0;
+        } 
+    }
+
+    private void JumpUp_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (!isMovementLocked && characterController.isGrounded)
+        {
+            SetMoveDirection();
+            isMovementLocked = true;
+            float rotAngle = 0;
+            if (moveDirectionLocal.magnitude > 0)
+            {
+                moveDirectionGlobal = moveDirectionGlobal * jumpForwardForce + Vector3.up * jumpUpForce;
+
+                // Jumping Forward
+                if (moveDirectionLocal.z >= 0)
+                {
+                    rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
+                    animator.SetFloat(animHashFallingVelocity, 1);
+                }
+                // Jumping Backward
+                else
+                {
+                    rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
+                    animator.SetFloat(animHashFallingVelocity, -1);
+                }
+            }
+            // Jumping Up
+            else
+            {
+                moveDirectionGlobal = Vector3.up * jumpUpForce;
+                animator.SetFloat(animHashFallingVelocity, 0);
+            }
+            animator.SetFloat(animHashAngle, rotAngle);
+            animator.SetTrigger(animHashJump);
+        }
+    }
+
     void Start()
     {
+        UpdatePlayerRotation();
         moveGravity = Physics.gravity.y;
         characterController.Move(Vector3.down);
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update()
@@ -127,6 +191,7 @@ public class AnimationAndMovementController : MonoBehaviour
             {
                 HandleRotation();
                 SetAcceleration();
+                SetMoveDirection();
                 HandleMovement();
             }
         }
@@ -134,7 +199,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void HandleJumping()
     {
-        characterController.Move(moveDirection * Time.deltaTime);
+        characterController.Move(moveDirectionGlobal * Time.deltaTime);
     }
 
     private void HandleFalling()
@@ -142,20 +207,20 @@ public class AnimationAndMovementController : MonoBehaviour
         isFalling = true;
         isMovementLocked = true;
         float rotAngle = 0;
-        if (movementInput.magnitude > 0)
+        if (moveDirectionLocal.magnitude > 0)
         {
-            Vector3 movementInputVec3 = new Vector3(movementInput.x, 0, movementInput.y);
+            moveDirectionLocal = new Vector3(rotationKeyboardInput, 0, movementForwardInput);
 
             // Falling Forward
-            if (movementInput.y >= 0)
+            if (moveDirectionLocal.z >= 0)
             {
-                rotAngle = Vector3.SignedAngle(Vector3.forward, movementInputVec3, Vector3.up);
+                rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
                 animator.SetFloat(animHashFallingVelocity, 1);
             }
             // Falling Backward
             else
             {
-                rotAngle = Vector3.SignedAngle(Vector3.back, movementInputVec3, Vector3.up);
+                rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
                 animator.SetFloat(animHashFallingVelocity, -1);
             }
         }
@@ -172,57 +237,51 @@ public class AnimationAndMovementController : MonoBehaviour
     {
         if (characterController.isGrounded)
         {
-            transform.Rotate(Vector3.up, Mathf.Lerp(0, rotationInput * rotationSpeed,
+            switch (Preferences.plRotStyle)
+            {
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        transform.Rotate(Vector3.up, Mathf.Lerp(0, rotationMouseInput * currentRotationSpeed,
                 Time.deltaTime), Space.Self);
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        transform.Rotate(Vector3.up, Mathf.Lerp(0, rotationKeyboardInput * currentRotationSpeed,
+                Time.deltaTime), Space.Self);
+                        break;
+                    }
+            }
+            
         }
     }
 
     private void HandleMovement()
     {
-        Vector3 movementInputVec3 = new Vector3(movementInput.x, 0, movementInput.y) * acceleration;
-        moveDirection = transform.TransformDirection(movementInputVec3);
+        moveDirectionGlobal.y = moveGravity;
+        moveDirectionGlobal *= movementSpeed * Time.deltaTime;
+        characterController.Move(moveDirectionGlobal);
 
-        // Jumping
-        if (playerInput.Player.JumpUp.WasPressedThisFrame())
+        animator.SetFloat(animHashVecticalVelocity, moveDirectionLocal.z);
+        animator.SetFloat(animHashHorizontalVelocity, moveDirectionLocal.x);
+    }
+
+    private void SetMoveDirection()
+    {
+        switch (Preferences.plRotStyle)
         {
-            isMovementLocked = true;
-            float rotAngle = 0;
-            if (movementInput.magnitude > 0)
-            {
-                moveDirection = moveDirection * jumpForwardForce + Vector3.up * jumpUpForce;
-
-                // Jumping Forward
-                if (movementInput.y >= 0)
+            case Preferences.PlayerRotationStyle.withMouse:
                 {
-                    rotAngle = Vector3.SignedAngle(Vector3.forward, movementInputVec3, Vector3.up);
-                    animator.SetFloat(animHashFallingVelocity, 1);
+                    moveDirectionLocal = new Vector3(rotationKeyboardInput, 0, movementForwardInput) * acceleration;
+                    break;
                 }
-                // Jumping Backward
-                else
+            case Preferences.PlayerRotationStyle.withKeyboard:
                 {
-                    rotAngle = Vector3.SignedAngle(Vector3.back, movementInputVec3, Vector3.up);
-                    animator.SetFloat(animHashFallingVelocity, -1);
+                    moveDirectionLocal = new Vector3(0, 0, movementForwardInput) * acceleration;
+                    break;
                 }
-            }
-            // Jumping Up
-            else
-            {
-                moveDirection = Vector3.up * jumpUpForce;
-                animator.SetFloat(animHashFallingVelocity, 0);
-            }
-            animator.SetFloat(animHashAngle, rotAngle);
-            animator.SetTrigger(animHashJump);
         }
-        // Running
-        else
-        {
-            moveDirection.y = moveGravity;
-            moveDirection *= movementSpeed * Time.deltaTime;
-            characterController.Move(moveDirection);
-
-            animator.SetFloat(animHashVecticalVelocity, movementInputVec3.z);
-            animator.SetFloat(animHashHorizontalVelocity, movementInputVec3.x);
-        }
+        moveDirectionGlobal = transform.TransformDirection(moveDirectionLocal);
     }
 
     private void SetAcceleration()
@@ -260,6 +319,11 @@ public class AnimationAndMovementController : MonoBehaviour
         Debug.Log($"Player is Jumping: velocity - {animator.GetFloat(animHashVecticalVelocity)}, high - {transform.position.y}");
     }
 
+    public void UpdatePlayerRotation()
+    {
+        currentRotationSpeed = Preferences.plRotSpeed;
+    }
+
     public void UnlockMovement()
     {
         isMovementLocked = false;
@@ -267,11 +331,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void OnEnable()
     {
-        playerInput.Enable();
+        playerMovementInput.Enable();
     }
 
     private void OnDisable()
     {
-        playerInput.Disable();
+        playerMovementInput.Disable();
     }
 }

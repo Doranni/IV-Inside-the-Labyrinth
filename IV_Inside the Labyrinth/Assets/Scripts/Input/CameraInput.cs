@@ -62,6 +62,15 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StartRotation"",
+                    ""type"": ""Button"",
+                    ""id"": ""22884006-4810-4148-9336-66d5ca5082e9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -108,6 +117,17 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
                     ""action"": ""MapViewToggle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""43b7b867-8022-4ad8-aea4-8546a71aa98d"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -120,6 +140,7 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
         m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
         m_Camera_FirstViewToggle = m_Camera.FindAction("FirstViewToggle", throwIfNotFound: true);
         m_Camera_MapViewToggle = m_Camera.FindAction("MapViewToggle", throwIfNotFound: true);
+        m_Camera_StartRotation = m_Camera.FindAction("StartRotation", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -183,6 +204,7 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Camera_Zoom;
     private readonly InputAction m_Camera_FirstViewToggle;
     private readonly InputAction m_Camera_MapViewToggle;
+    private readonly InputAction m_Camera_StartRotation;
     public struct CameraActions
     {
         private @CameraInput m_Wrapper;
@@ -191,6 +213,7 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
         public InputAction @Zoom => m_Wrapper.m_Camera_Zoom;
         public InputAction @FirstViewToggle => m_Wrapper.m_Camera_FirstViewToggle;
         public InputAction @MapViewToggle => m_Wrapper.m_Camera_MapViewToggle;
+        public InputAction @StartRotation => m_Wrapper.m_Camera_StartRotation;
         public InputActionMap Get() { return m_Wrapper.m_Camera; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -212,6 +235,9 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
                 @MapViewToggle.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnMapViewToggle;
                 @MapViewToggle.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnMapViewToggle;
                 @MapViewToggle.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnMapViewToggle;
+                @StartRotation.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnStartRotation;
+                @StartRotation.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnStartRotation;
+                @StartRotation.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnStartRotation;
             }
             m_Wrapper.m_CameraActionsCallbackInterface = instance;
             if (instance != null)
@@ -228,6 +254,9 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
                 @MapViewToggle.started += instance.OnMapViewToggle;
                 @MapViewToggle.performed += instance.OnMapViewToggle;
                 @MapViewToggle.canceled += instance.OnMapViewToggle;
+                @StartRotation.started += instance.OnStartRotation;
+                @StartRotation.performed += instance.OnStartRotation;
+                @StartRotation.canceled += instance.OnStartRotation;
             }
         }
     }
@@ -238,5 +267,6 @@ public partial class @CameraInput : IInputActionCollection2, IDisposable
         void OnZoom(InputAction.CallbackContext context);
         void OnFirstViewToggle(InputAction.CallbackContext context);
         void OnMapViewToggle(InputAction.CallbackContext context);
+        void OnStartRotation(InputAction.CallbackContext context);
     }
 }
