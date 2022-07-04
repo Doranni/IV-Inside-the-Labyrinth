@@ -1,0 +1,34 @@
+{
+    "name": "GameManagerInput",
+    "maps": [
+        {
+            "name": "Game",
+            "id": "6bff93d3-8a38-4817-b640-e16de28d25aa",
+            "actions": [
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "11575440-2ec6-40c2-b57f-43e1f9a36120",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fe3f6f21-026e-46dc-8228-cc1aae5c8831",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
