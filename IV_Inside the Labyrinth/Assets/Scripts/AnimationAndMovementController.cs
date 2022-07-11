@@ -11,7 +11,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private CharacterController characterController;
     private Animator animator;
-    private PlayerMovementInput playerMovementInput;
+    private InputManager inputManager;
 
     private float movementForwardInput;
     private float rotationMouseInput, rotationKeyboardInput;
@@ -28,66 +28,71 @@ public class AnimationAndMovementController : MonoBehaviour
     private bool isFalling = false;
     private bool isJumpingUp = false;
 
+    private EffectsListController effectsListController;
+    Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
+    private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
+    private float speedEffectMultiplier = 1;
+
     private int animHashVecticalVelocity, animHashHorizontalVelocity,
         animHashFallingVelocity, animHashAngle,
         animHashJump, animHashFalling, animHashLanding;
 
     private void Awake()
     {
-        playerMovementInput = new PlayerMovementInput();
+        inputManager = InputManager.instance;
 
-        playerMovementInput.Movement.MoveForward.started += context =>
+        inputManager.OnMoveForward_started += context =>
         {
             movementForwardInput = context.ReadValue<float>();
         };
-        playerMovementInput.Movement.MoveForward.performed += context =>
+        inputManager.OnMoveForward_performed += context =>
         {
             movementForwardInput = context.ReadValue<float>();
         };
-        playerMovementInput.Movement.MoveForward.canceled += context =>
+        inputManager.OnMoveForward_canceled += context =>
         {
             movementForwardInput = context.ReadValue<float>();
         };
 
-        playerMovementInput.Movement.RotateMouse.started += context =>
+        inputManager.OnRotateMouse_started += context =>
         {
             rotationMouseInput = context.ReadValue<float>();
         };
-        playerMovementInput.Movement.RotateMouse.performed += context =>
+        inputManager.OnRotateMouse_performed += context =>
         {
             rotationMouseInput = context.ReadValue<float>();
         };
-        playerMovementInput.Movement.RotateMouse.canceled += context =>
+        inputManager.OnRotateMouse_canceled += context =>
         {
             rotationMouseInput = context.ReadValue<float>();
         };
 
-        playerMovementInput.Movement.RotateKeyboard.started += context =>
+        inputManager.OnRotateKeyboard_started += context =>
         {
             rotationKeyboardInput = context.ReadValue<float>();
         };
-        playerMovementInput.Movement.RotateKeyboard.performed += context =>
+        inputManager.OnRotateKeyboard_performed += context =>
         {
             rotationKeyboardInput = context.ReadValue<float>();
         };
-        playerMovementInput.Movement.RotateKeyboard.canceled += context =>
+        inputManager.OnRotateKeyboard_canceled += context =>
         {
             rotationKeyboardInput = context.ReadValue<float>();
         };
 
-        playerMovementInput.Movement.Acceleration.started += context =>
+        inputManager.OnAcceleration_started += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
-        playerMovementInput.Movement.Acceleration.canceled += context =>
+        inputManager.OnAcceleration_canceled += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
 
-        playerMovementInput.Movement.MouseRightClick.started += MouseRightClick_started;
-        playerMovementInput.Movement.MouseRightClick.canceled += MouseRightClick_canceled;
+        inputManager.OnMouseRightClick_started += MouseRightClick_started;
+        inputManager.OnMouseRightClick_canceled += MouseRightClick_canceled;
 
-        playerMovementInput.Movement.JumpUp.performed += JumpUp_performed;
+        inputManager.OnJumpUp_performed += JumpUp_performed;
 
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
@@ -152,6 +157,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     void Start()
     {
+        effectsListController = GetComponent<EffectsListController>();
         UpdatePlayerRotation();
         moveGravity = Physics.gravity.y;
         characterController.Move(Vector3.down);
@@ -199,7 +205,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void HandleJumping()
     {
-        characterController.Move(moveDirectionGlobal * Time.deltaTime);
+        characterController.Move(moveDirectionGlobal * speedEffectMultiplier * Time.deltaTime);
     }
 
     private void HandleFalling()
@@ -259,7 +265,7 @@ public class AnimationAndMovementController : MonoBehaviour
     private void HandleMovement()
     {
         moveDirectionGlobal.y = moveGravity;
-        moveDirectionGlobal *= movementSpeed * Time.deltaTime;
+        moveDirectionGlobal *= movementSpeed * speedEffectMultiplier * Time.deltaTime;
         characterController.Move(moveDirectionGlobal);
 
         animator.SetFloat(animHashVecticalVelocity, moveDirectionLocal.z);
@@ -319,6 +325,16 @@ public class AnimationAndMovementController : MonoBehaviour
         Debug.Log($"Player is Jumping: velocity - {animator.GetFloat(animHashVecticalVelocity)}, high - {transform.position.y}");
     }
 
+    private void UpdateSpeedEffectMultiplier()
+    {
+        float res = 1;
+        foreach (KeyValuePair<int, Effect> effect in effects)
+        {
+            res *= effect.Value.effectValue;
+        }
+        speedEffectMultiplier = res;
+    }
+
     public void UpdatePlayerRotation()
     {
         currentRotationSpeed = Preferences.plRotSpeed;
@@ -329,13 +345,34 @@ public class AnimationAndMovementController : MonoBehaviour
         isMovementLocked = false;
     }
 
-    private void OnEnable()
+    public bool AddEffect(Effect effect)
     {
-        playerMovementInput.Enable();
+        Effect newEffect = new Effect(effect);
+        if (effect.type != Effect.EffectType.movement)
+        {
+            return false;
+        }
+        int id = GameManager.NewId();
+        id = effectsListController.Add(newEffect, id);
+        effects.Add(id, newEffect);
+        UpdateSpeedEffectMultiplier();
+        effectCoroutines.Add(id, StartCoroutine(EffectRoutine(id)));
+        return true;
     }
 
-    private void OnDisable()
+    private IEnumerator EffectRoutine(int id)
     {
-        playerMovementInput.Disable();
+        while (effects[id].TimeLeft > 0)
+        {
+            yield return new WaitForSeconds(1);
+            effects[id].ChangeTimeLeft(-1);
+            effectsListController.UpdateEffects();
+        }
+        effectsListController.RemoveEffect(id);
+        speedEffectMultiplier = 1;
+        effects.Remove(id);
+        UpdateSpeedEffectMultiplier();
+        StopCoroutine(effectCoroutines[id]);
+        effectCoroutines.Remove(id);
     }
 }

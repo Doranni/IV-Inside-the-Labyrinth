@@ -20,8 +20,7 @@ public class Settings : MonoBehaviour
     private AnimationAndMovementController movementController;
     private CameraController cameraController;
 
-    private delegate void Func(float value);
-    private delegate void UpdateFunc();
+    List<TMP_Dropdown.OptionData> playerRotList, cameraRotList;
 
     private void Awake()
     {
@@ -31,6 +30,8 @@ public class Settings : MonoBehaviour
         pauseToggle.isOn = Preferences.isPausedWhileInMenu;
         pauseToggle.onValueChanged.AddListener(SetPauseBehavior);
 
+        playerRotList = new List<TMP_Dropdown.OptionData>();
+        cameraRotList = new List<TMP_Dropdown.OptionData>();
         PopulatePlayerRotationDropdown();
         PopulateCameraRotationDropdown();
         plRotStyleDropdown.onValueChanged.AddListener(ChangePlayerRotationStyle);
@@ -100,10 +101,10 @@ public class Settings : MonoBehaviour
 
     private void PopulatePlayerRotationDropdown()
     {
-        List<TMP_Dropdown.OptionData> playerRotList = new List<TMP_Dropdown.OptionData>();
-        foreach ((Preferences.PlayerRotationStyle, string name) style in Preferences.plRotStyles)
+        playerRotList.Clear();
+        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles)
         {
-            playerRotList.Add(new TMP_Dropdown.OptionData(style.name));
+            playerRotList.Add(new TMP_Dropdown.OptionData(style.Value));
         }
         plRotStyleDropdown.options = playerRotList;
         for (int i = 0; i < playerRotList.Count; i++)
@@ -117,24 +118,26 @@ public class Settings : MonoBehaviour
 
     private void PopulateCameraRotationDropdown()
     {
-        List<TMP_Dropdown.OptionData> cameraRotList = new List<TMP_Dropdown.OptionData>();
+        cameraRotList.Clear();
         switch (Preferences.plRotStyle)
         {
             case Preferences.PlayerRotationStyle.withMouse:
                 {
-                    foreach ((Preferences.CameraRotationStyle style, string name, bool isAvailableWithPlRot_Mouse, bool) style in Preferences.camRotStyles)
+                    foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool isAvailableWithPlRot_Mouse, bool)> 
+                        style in Preferences.camRotStyles)
                     {
-                        if (style.isAvailableWithPlRot_Mouse)
-                            cameraRotList.Add(new TMP_Dropdown.OptionData(style.name));
+                        if (style.Value.isAvailableWithPlRot_Mouse)
+                            cameraRotList.Add(new TMP_Dropdown.OptionData(style.Value.name));
                     }
                     break;
                 }
             case Preferences.PlayerRotationStyle.withKeyboard:
                 {
-                    foreach ((Preferences.CameraRotationStyle style, string name, bool, bool isAvailableWithPlRot_Keyboard) style in Preferences.camRotStyles)
+                    foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool, bool isAvailableWithPlRot_Keyboard)> 
+                        style in Preferences.camRotStyles)
                     {
-                        if (style.isAvailableWithPlRot_Keyboard)
-                            cameraRotList.Add(new TMP_Dropdown.OptionData(style.name));
+                        if (style.Value.isAvailableWithPlRot_Keyboard)
+                            cameraRotList.Add(new TMP_Dropdown.OptionData(style.Value.name));
                     }
                     break;
                 }
@@ -151,11 +154,11 @@ public class Settings : MonoBehaviour
 
     private void ChangePlayerRotationStyle(int dropdownValue)
     {
-        for (int i = 0; i < Preferences.plRotStyles.Count; i++)
+        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles)
         {
-            if (plRotStyleDropdown.options[dropdownValue].text.Equals(Preferences.plRotStyles[i].name))
+            if (plRotStyleDropdown.options[dropdownValue].text.Equals(style.Value))
             {
-                Preferences.SetPlayerRotationStyle((int)Preferences.plRotStyles[i].style);
+                Preferences.SetPlayerRotationStyle((int)style.Key);
                 break;
             }
         }
@@ -166,11 +169,12 @@ public class Settings : MonoBehaviour
 
     private void ChangeCameraRotationStyle(int dropdownValue)
     {
-        for (int i = 0; i < Preferences.camRotStyles.Count; i++)
+        foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool, bool)> 
+            style in Preferences.camRotStyles)
         {
-            if (camRotStyleDropdown.options[dropdownValue].text.Equals(Preferences.camRotStyles[i].name))
+            if (camRotStyleDropdown.options[dropdownValue].text.Equals(style.Value.name))
             {
-                Preferences.SetCameraRotationStyle((int)Preferences.camRotStyles[i].style);
+                Preferences.SetCameraRotationStyle((int)style.Key);
                 break;
             }
         }

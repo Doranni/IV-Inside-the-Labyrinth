@@ -6,7 +6,14 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    private CameraInput cameraInput;
+    enum ViewMode
+    {
+        firstViewMode,
+        thirdViewMode,
+        mapViewMode
+    }
+
+    private InputManager inputManager;
 
     [SerializeField] private CinemachineFreeLook firstViewCamera, thirdViewCamera;
     public CinemachineVirtualCamera mapViewCamera;
@@ -34,17 +41,19 @@ public class CameraController : MonoBehaviour
     ViewMode viewMode = ViewMode.thirdViewMode;
 
     private void Awake()
+
     {
-        cameraInput = new CameraInput();
-        cameraInput.Camera.Zoom.started += context => HandleScrollWheelInput(context);
-        cameraInput.Camera.Zoom.performed += context => HandleScrollWheelInput(context);
-        cameraInput.Camera.Zoom.canceled += context => HandleScrollWheelInput(context);
+        inputManager = InputManager.instance;
 
-        cameraInput.Camera.FirstViewToggle.performed += FirstViewToggle_performed;
-        cameraInput.Camera.MapViewToggle.performed += MapViewToggle_performed;
+        inputManager.OnZoom_started += HandleScrollWheelInput;
+        inputManager.OnZoom_performed += HandleScrollWheelInput;
+        inputManager.OnZoom_canceled += HandleScrollWheelInput;
 
-        cameraInput.Camera.StartRotation.started += StartRotation_started;
-        cameraInput.Camera.StartRotation.canceled += StartRotation_canceled;
+        inputManager.OnFirstViewToggle_performed += FirstViewToggle_performed;
+        inputManager.OnMapViewToggle_performed += MapViewToggle_performed;
+
+        inputManager.OnStartRotation_started += StartRotation_started;
+        inputManager.OnStartRotation_canceled += StartRotation_canceled;
 
         float scrollStep = scrollWheelMax - scrollWheelMin;
         thirdViewHeightStep = (thirdViewHeightMax - thirdViewHeightMin) / scrollStep;
@@ -212,23 +221,6 @@ public class CameraController : MonoBehaviour
     private bool CheckMapViewCameraNeedToZoom()
     {
         return mapViewTranspoder.m_TrackedObjectOffset.y != neededmapViewOffset;
-    }
-
-    enum ViewMode
-    {
-        firstViewMode,
-        thirdViewMode,
-        mapViewMode
-    }
-
-    private void OnEnable()
-    {
-        cameraInput.Enable();
-    }
-
-    private void OnDisable()
-    {
-        cameraInput.Disable();
     }
 
     public void UpdateRotation()
