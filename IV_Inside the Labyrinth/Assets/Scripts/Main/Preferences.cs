@@ -4,11 +4,23 @@ using UnityEngine;
 
 public class Preferences
 {
-    public static PlayerRotationStyle plRotStyle { get; private set; }
-    public static CameraRotationStyle camRotStyle { get; set; }
+    public enum PlayerRotationStyle
+    {
+        withMouse,
+        withKeyboard
+    }
+    public enum CameraRotationStyle
+    {
+        followPlayer,
+        withMouse,
+        withRightClickMouse
+    }
 
-    public static List<(PlayerRotationStyle style, string name)> plRotStyles { get; private set; }
-    public static List<(CameraRotationStyle style, string name, bool isAvailableWithPlRot_Mouse, bool isAvailableWithPlRot_Keyboard)>
+    public static PlayerRotationStyle plRotStyle { get; private set; }
+    public static CameraRotationStyle camRotStyle { get; private set; }
+
+    public static Dictionary<PlayerRotationStyle, string> plRotStyles { get; private set; }
+    public static Dictionary<CameraRotationStyle, (string name, bool isAvailableWithPlRot_Mouse, bool isAvailableWithPlRot_Keyboard)>
         camRotStyles { get; private set; }
 
     public static float plRotSpeed, plRotSpeedMin = 100, plRotSpeedMax = 300,
@@ -42,14 +54,14 @@ public class Preferences
 
     static Preferences()
     {
-        plRotStyles = new List<(PlayerRotationStyle, string)>();
-        plRotStyles.Add((PlayerRotationStyle.withMouse, "Mouse"));
-        plRotStyles.Add((PlayerRotationStyle.withKeyboard, "AD keys or arrow keys"));
+        plRotStyles = new Dictionary<PlayerRotationStyle, string>();
+        plRotStyles.Add(PlayerRotationStyle.withMouse, "Mouse");
+        plRotStyles.Add(PlayerRotationStyle.withKeyboard, "AD keys or arrow keys");
 
-        camRotStyles = new List<(CameraRotationStyle, string, bool, bool)>();
-        camRotStyles.Add((CameraRotationStyle.followPlayer, "Follow player", true, true));
-        camRotStyles.Add((CameraRotationStyle.withMouse, "Mouse", false, true));
-        camRotStyles.Add((CameraRotationStyle.withRightClickMouse, "Right click mouses", true, true));
+        camRotStyles = new Dictionary<CameraRotationStyle, (string, bool, bool)>();
+        camRotStyles.Add(CameraRotationStyle.followPlayer, ("Follow player", true, true));
+        camRotStyles.Add(CameraRotationStyle.withMouse, ("Mouse", false, true));
+        camRotStyles.Add(CameraRotationStyle.withRightClickMouse, ("Right click mouses", true, true));
 
         _isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
         SetPlayerRotationStyle(PlayerPrefs.GetInt(plRotStyleKey, 0));
@@ -65,32 +77,21 @@ public class Preferences
 
     public static string GetPlayerRotationStyleName()
     {
-        return plRotStyles[(int)plRotStyle].name;
+        return plRotStyles[plRotStyle];
     }
 
     public static string GetCameraRotationStyleName()
     {
-        return camRotStyles[(int)camRotStyle].name;
+        return camRotStyles[camRotStyle].name;
     }
 
-    public static void SetPlayerRotationStyle(int index)
+    public static void SetPlayerRotationStyle(int key)
     {
-        Debug.Log("SetPlayerRotationStyle: index - " + index);
-        switch (index)
+        if (!plRotStyles.ContainsKey((PlayerRotationStyle)key))
         {
-            case 1:
-                {
-                    plRotStyle = PlayerRotationStyle.withKeyboard;
-                    Debug.Log("SetPlayerRotationStyle - withKeyboard");
-                    break;
-                }
-            default:
-                {
-                    plRotStyle = PlayerRotationStyle.withMouse;
-                    Debug.Log("SetPlayerRotationStyle - withMouse");
-                    break;
-                }   
+            plRotStyle = PlayerRotationStyle.withMouse;
         }
+        plRotStyle = (PlayerRotationStyle)key;
         SetCameraRotationStyle(PlayerPrefs.GetInt(camRotStyleKey, (int)camRotStyle));
         PlayerPrefs.SetInt(plRotStyleKey, (int)plRotStyle);
         PlayerPrefs.SetInt(camRotStyleKey, (int)camRotStyle);
@@ -174,17 +175,5 @@ public class Preferences
     {
         camRotDamping_Vertical = Mathf.Clamp(damping, camDampingMin, camDampingMax);
         PlayerPrefs.SetFloat(camRotDamping_VerticalKey, camRotDamping_Vertical);
-    }
-
-    public enum PlayerRotationStyle
-    {
-        withMouse,
-        withKeyboard
-    }
-    public enum CameraRotationStyle
-    {
-        followPlayer,
-        withMouse,
-        withRightClickMouse
     }
 }

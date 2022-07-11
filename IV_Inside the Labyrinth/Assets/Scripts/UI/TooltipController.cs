@@ -38,7 +38,6 @@ public class TooltipController : MonoBehaviour
         text_TMP.text = tooltipText;
         Vector2 size = new Vector2(Mathf.Clamp(text_TMP.preferredWidth, 10, maxtWidth) + 2 * textOffset, 
             text_TMP.preferredHeight + 2 * textOffset);
-        //text_TMP.GetComponent<RectTransform>().sizeDelta = size;
         rectTransform.sizeDelta = size;
         rectTransform.position = position;
         gameObject.SetActive(true);
