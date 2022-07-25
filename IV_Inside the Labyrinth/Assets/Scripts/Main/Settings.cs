@@ -24,7 +24,7 @@ public class Settings : MonoBehaviour
 
     private void Awake()
     {
-        movementController = GameObject.Find("Player").GetComponent<AnimationAndMovementController>();
+        movementController = GameObject.FindGameObjectWithTag(GameManager.playerTag).GetComponent<AnimationAndMovementController>();
         cameraController = GameObject.Find("MainCamera").GetComponent<CameraController>();
 
         pauseToggle.isOn = Preferences.isPausedWhileInMenu;

@@ -9,9 +9,7 @@ public class TrapController : MonoBehaviour
     [SerializeField] private Effect[] effects;
 
     private HealthController trapHealth;
-
     private float rechargingTimeLeft;
-
     private bool isCharged = true;
 
     public float HealthDamage_Immediate => healthDamage_Immediate;

@@ -12,13 +12,14 @@ public class AnimationAndMovementController : MonoBehaviour
     private CharacterController characterController;
     private Animator animator;
     private InputManager inputManager;
+    public float playerRadius => characterController.radius;
 
     private float movementForwardInput;
     private float rotationMouseInput, rotationKeyboardInput;
     private bool accelerationInput;
 
     private Vector3 moveDirectionGlobal, moveDirectionLocal;
-    private float moveGravity;
+    [SerializeField] private float moveGravity;
 
     private float acceleration = 1f;
     private float maxAcceleration = 2f;
@@ -36,6 +37,9 @@ public class AnimationAndMovementController : MonoBehaviour
     private int animHashVecticalVelocity, animHashHorizontalVelocity,
         animHashFallingVelocity, animHashAngle,
         animHashJump, animHashFalling, animHashLanding;
+
+    // For debug
+    public bool isGrounded;
 
     private void Awake()
     {
@@ -159,19 +163,25 @@ public class AnimationAndMovementController : MonoBehaviour
     {
         effectsListController = GetComponent<EffectsListController>();
         UpdatePlayerRotation();
-        moveGravity = Physics.gravity.y;
-        characterController.Move(Vector3.down);
-        Cursor.lockState = CursorLockMode.Confined;
+        if (moveGravity >= 0)
+        {
+            moveGravity = Physics.gravity.y;
+        }
     }
 
     void Update()
     {
+        isGrounded = characterController.isGrounded;
         if (isFalling)
         {
             if (characterController.isGrounded)
             {
                 isFalling = false;
                 animator.SetTrigger(animHashLanding);
+            }
+            else
+            {
+                HandleFalling();
             }
         }
         else if (isJumpingUp)
@@ -182,13 +192,15 @@ public class AnimationAndMovementController : MonoBehaviour
         {
             if (!characterController.isGrounded)
             {
-                Vector3 p1 = transform.position + characterController.center
-                    - new Vector3(0, characterController.height * 0.5f - 0.5f, 0);
-                Vector3 p2 = p1 + new Vector3(0, characterController.height - 1, 0);
+                (Vector3 p1, Vector3 p2) capsulePoints = GetColliderPoints();
 
-                // Falling
-                if (!Physics.CapsuleCast(p1, p2, characterController.radius,
+                // Falling with animation (from high distance)
+                if (!Physics.CapsuleCast(capsulePoints.p1, capsulePoints.p2, characterController.radius,
                     Vector3.down, 2f, floorLM))
+                {
+                    StartFalling();
+                }
+                else
                 {
                     HandleFalling();
                 }
@@ -203,13 +215,29 @@ public class AnimationAndMovementController : MonoBehaviour
         }
     }
 
+    public (Vector3 point1, Vector3 point2) GetColliderPoints()
+    {
+        Vector3 p1 = transform.position + characterController.center
+                    - new Vector3(0, characterController.height * 0.5f - 0.5f, 0);
+        Vector3 p2 = p1 + new Vector3(0, characterController.height - 1, 0);
+        return (p1, p2);
+    }
+
     private void HandleJumping()
     {
         characterController.Move(moveDirectionGlobal * speedEffectMultiplier * Time.deltaTime);
+        moveDirectionGlobal.y += moveGravity * Time.deltaTime;
     }
 
     private void HandleFalling()
     {
+        characterController.Move(moveDirectionGlobal * Time.deltaTime);
+        moveDirectionGlobal.y += moveGravity * Time.deltaTime;
+    }
+
+    private void StartFalling()
+    {
+        moveDirectionGlobal.y = moveGravity;
         isFalling = true;
         isMovementLocked = true;
         float rotAngle = 0;
@@ -319,10 +347,7 @@ public class AnimationAndMovementController : MonoBehaviour
     public void JumpUpFinish()
     {
         isJumpingUp = false;
-        isFalling = true;
-
-        // Debug
-        Debug.Log($"Player is Jumping: velocity - {animator.GetFloat(animHashVecticalVelocity)}, high - {transform.position.y}");
+        StartFalling();
     }
 
     private void UpdateSpeedEffectMultiplier()

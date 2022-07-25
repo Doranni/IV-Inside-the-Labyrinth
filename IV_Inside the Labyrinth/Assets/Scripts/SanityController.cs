@@ -5,7 +5,6 @@ using UnityEngine;
 public class SanityController : MonoBehaviour
 {
     [SerializeField] private float maxSanity;
-
     private float sanity;
 
     public float Sanity => sanity;
@@ -14,7 +13,6 @@ public class SanityController : MonoBehaviour
     private EffectsListController effectsListController;
     Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
     private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
-    private int lastId = 0;
 
     public delegate void Delegate();
     public delegate void ChangeSanityDelegate(float value, float maxValue);
@@ -28,11 +26,7 @@ public class SanityController : MonoBehaviour
     private void Awake()
     {
         sanity = maxSanity;
-    }
-
-    public void AddEffectListController(EffectsListController controller)
-    {
-        effectsListController = controller;
+        TryGetComponent(out effectsListController);
     }
 
     private IEnumerator EffectRoutine(int id)
@@ -104,10 +98,5 @@ public class SanityController : MonoBehaviour
         {
             OnLoseMind();
         }
-    }
-
-    int NewId()
-    {
-        return lastId++;
     }
 }

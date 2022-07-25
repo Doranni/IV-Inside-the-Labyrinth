@@ -5,7 +5,6 @@ using UnityEngine;
 public class HealthController : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
-
     private float health;
 
     public float Health => health;
@@ -14,7 +13,8 @@ public class HealthController : MonoBehaviour
     private EffectsListController effectsListController;
     Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
     private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
-    private int lastId = 0;
+
+    private HealingController healingController;
 
     public delegate void Delegate();
     public delegate void ChangeHealthDelegate(float value, float maxValue);
@@ -28,11 +28,8 @@ public class HealthController : MonoBehaviour
     private void Awake()
     {
         health = maxHealth;
-    }
-
-    public void AddEffectListController(EffectsListController controller)
-    {
-        effectsListController = controller;
+        TryGetComponent(out effectsListController);
+        TryGetComponent(out healingController);
     }
 
     private IEnumerator EffectRoutine(int id)
@@ -88,6 +85,10 @@ public class HealthController : MonoBehaviour
     public void ChangeHealth(float value)
     {
         health = Mathf.Clamp(health + value, 0, maxHealth);
+        if(value < 0 && healingController != null)
+        {
+            healingController.RegisterDamage();
+        }
         if (OnChangeHealth != null)
         {
             OnChangeHealth(health, maxHealth);
@@ -104,10 +105,5 @@ public class HealthController : MonoBehaviour
         {
             OnDeath();
         }
-    }
-
-    int NewId()
-    {
-        return lastId++;
     }
 }
