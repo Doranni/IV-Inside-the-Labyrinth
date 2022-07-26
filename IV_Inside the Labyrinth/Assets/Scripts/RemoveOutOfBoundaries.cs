@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class RemoveOutOfBoundaries : MonoBehaviour
 {
-    public Vector3 minBorder, maxBorder;
+    [SerializeField] private Vector3 minBorder, maxBorder;
 
     // Start is called before the first frame update
     void Start()
     {
         if (minBorder == Vector3.zero || maxBorder == Vector3.zero)
         {
+            // TODO: to refactor this script
             Collider planeCollider = GameObject.Find("Plane").GetComponent<Collider>();
             Collider cubeCollider = GameObject.Find("Cube").GetComponent<Collider>();
             Vector3 planeCenter = planeCollider.bounds.center;

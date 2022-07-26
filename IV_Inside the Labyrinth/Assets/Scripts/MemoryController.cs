@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MemoryController : MonoBehaviour
 {
-    public float attitude;
+    [SerializeField] private float attitude;
     Rigidbody memoryRB;
 
     // Start is called before the first frame update

@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class TorchController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Light torchLight;
+    [SerializeField] private SphereCollider torchEffectRange;
 
-    // Update is called once per frame
-    void Update()
+    public void ChangeIntensity(float lightValue, float rangeValue)
     {
-        
+        torchLight.intensity = lightValue;
+        torchEffectRange.radius = rangeValue;
     }
-
-    // TODO: changing the intensivity of lighting when the player is close (depends from players progress) 
 }

@@ -5,7 +5,7 @@ using TMPro;
 
 public class TooltipController : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI text_TMP;
+    [SerializeField] private TextMeshProUGUI text_Tmp;
 
     private static TooltipController instance;
     private RectTransform rectTransform;
@@ -35,9 +35,9 @@ public class TooltipController : MonoBehaviour
         {
             return;
         }
-        text_TMP.text = tooltipText;
-        Vector2 size = new Vector2(Mathf.Clamp(text_TMP.preferredWidth, 10, maxtWidth) + 2 * textOffset, 
-            text_TMP.preferredHeight + 2 * textOffset);
+        text_Tmp.text = tooltipText;
+        Vector2 size = new Vector2(Mathf.Clamp(text_Tmp.preferredWidth, 10, maxtWidth) + 2 * textOffset, 
+            text_Tmp.preferredHeight + 2 * textOffset);
         rectTransform.sizeDelta = size;
         rectTransform.position = position;
         gameObject.SetActive(true);

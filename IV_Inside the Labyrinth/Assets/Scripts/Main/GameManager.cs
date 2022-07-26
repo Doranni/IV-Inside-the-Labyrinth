@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     private InputManager inputManager;
     private GameStatus gameStatus;
     
-    public static string playerTag = "Player", trapTag = "Trap";
+    public static string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", torchTag = "Torch", sanityLight = "Sanity Light";
 
     private static GameManager instance;
     private static int lastId = 0;
@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
         exitScreen.SetActive(false);
         healthAndSanityPanel.SetActive(true);
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Menu_performed(InputAction.CallbackContext obj)

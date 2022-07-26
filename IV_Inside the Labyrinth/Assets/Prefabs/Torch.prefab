@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7690259573985303593}
   - component: {fileID: 8188049667679962396}
   - component: {fileID: 4979529945181340932}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Fire
-  m_TagString: Untagged
+  m_TagString: Sanity Light
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,6 +29,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 3, y: 0.6, z: 3}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4444970723813559174}
   m_Father: {fileID: 5373500572707415644}
@@ -53,6 +54,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -91,7 +93,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3578449746439014889}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
@@ -106,9 +108,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4444970723813559174}
   - component: {fileID: 4705035993838046697}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point Light
-  m_TagString: Untagged
+  m_TagString: Torch
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123,6 +125,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 130922270766974102}
   m_RootOrder: 0
@@ -201,11 +204,11 @@ GameObject:
   - component: {fileID: 3648090260067504247}
   - component: {fileID: 377371823940341969}
   - component: {fileID: 2077379689931366231}
-  - component: {fileID: 75141596}
   - component: {fileID: 4533525274227566293}
-  m_Layer: 0
+  - component: {fileID: 154688974760370787}
+  m_Layer: 7
   m_Name: Torch
-  m_TagString: Untagged
+  m_TagString: Torch
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -220,6 +223,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 4.5}
   m_LocalScale: {x: 0.1, y: 0.5, z: 0.1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 130922270766974102}
   m_Father: {fileID: 0}
@@ -244,6 +248,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -288,18 +293,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &75141596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8131472836812565267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ac17881f38524a6db1ecca25837a7a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!208 &4533525274227566293
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -316,3 +309,17 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &154688974760370787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8131472836812565267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ac17881f38524a6db1ecca25837a7a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  torchLight: {fileID: 4705035993838046697}
+  torchEffectRange: {fileID: 4979529945181340932}

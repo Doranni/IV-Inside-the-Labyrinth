@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     private InputManager inputManager;
 
     [SerializeField] private CinemachineFreeLook firstViewCamera, thirdViewCamera;
-    public CinemachineVirtualCamera mapViewCamera;
+    [SerializeField] private CinemachineVirtualCamera mapViewCamera;
 
     [SerializeField] private float thirdViewZoomingSpeed;
     [SerializeField] private float thirdViewHeightMin, thirdViewHeightMax,
