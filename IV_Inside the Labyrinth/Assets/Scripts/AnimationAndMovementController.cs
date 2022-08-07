@@ -21,8 +21,9 @@ public class AnimationAndMovementController : MonoBehaviour
     private Vector3 moveDirectionGlobal, moveDirectionLocal;
     [SerializeField] private float moveGravity;
 
-    private float acceleration = 1f;
-    private float maxAcceleration = 2f;
+    [SerializeField] private float maxAcceleration = 2f,
+        maxAccelerationTime = 1f;
+    private float acceleration = 1f, accelerationStep;
     private float currentRotationSpeed;
 
     private bool isMovementLocked = false;
@@ -34,9 +35,14 @@ public class AnimationAndMovementController : MonoBehaviour
     private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
     private float speedEffectMultiplier = 1;
 
-    private int animHashVecticalVelocity, animHashHorizontalVelocity,
+    private int animHashVecticalVelocity, animHashHorizontalVelocity, animHashAcceleration,
         animHashFallingVelocity, animHashAngle,
         animHashJump, animHashFalling, animHashLanding;
+
+    [SerializeField] private AudioClip runningAudioClip;
+    private AudioSource audioSource;
+    [SerializeField] private float audioPitchMax = 1f, audioPitchMin = 0.55f;
+    private float audioPitchStep;
 
     // For debug
     public bool isGrounded;
@@ -45,41 +51,15 @@ public class AnimationAndMovementController : MonoBehaviour
     {
         inputManager = InputManager.instance;
 
-        inputManager.OnMoveForward_started += context =>
-        {
-            movementForwardInput = context.ReadValue<float>();
-        };
         inputManager.OnMoveForward_performed += context =>
         {
             movementForwardInput = context.ReadValue<float>();
-        };
-        inputManager.OnMoveForward_canceled += context =>
-        {
-            movementForwardInput = context.ReadValue<float>();
-        };
-
-        inputManager.OnRotateMouse_started += context =>
-        {
-            rotationMouseInput = context.ReadValue<float>();
         };
         inputManager.OnRotateMouse_performed += context =>
         {
             rotationMouseInput = context.ReadValue<float>();
         };
-        inputManager.OnRotateMouse_canceled += context =>
-        {
-            rotationMouseInput = context.ReadValue<float>();
-        };
-
-        inputManager.OnRotateKeyboard_started += context =>
-        {
-            rotationKeyboardInput = context.ReadValue<float>();
-        };
         inputManager.OnRotateKeyboard_performed += context =>
-        {
-            rotationKeyboardInput = context.ReadValue<float>();
-        };
-        inputManager.OnRotateKeyboard_canceled += context =>
         {
             rotationKeyboardInput = context.ReadValue<float>();
         };
@@ -103,6 +83,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
         animHashVecticalVelocity = Animator.StringToHash("Vertical Velocity");
         animHashHorizontalVelocity = Animator.StringToHash("Horizontal Velocity");
+        animHashAcceleration = Animator.StringToHash("Acceleration");
         animHashFallingVelocity = Animator.StringToHash("Falling Velocity");
         animHashAngle = Animator.StringToHash("Angle");
         animHashJump = Animator.StringToHash("Jump");
@@ -138,13 +119,19 @@ public class AnimationAndMovementController : MonoBehaviour
                 // Jumping Forward
                 if (moveDirectionLocal.z >= 0)
                 {
-                    rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
+                    if (Preferences.plRotStyle == Preferences.PlayerRotationStyle.withMouse)
+                    {
+                        rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
+                    }
                     animator.SetFloat(animHashFallingVelocity, 1);
                 }
                 // Jumping Backward
                 else
                 {
-                    rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
+                    if (Preferences.plRotStyle == Preferences.PlayerRotationStyle.withMouse)
+                    {
+                        rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
+                    }
                     animator.SetFloat(animHashFallingVelocity, -1);
                 }
             }
@@ -156,17 +143,25 @@ public class AnimationAndMovementController : MonoBehaviour
             }
             animator.SetFloat(animHashAngle, rotAngle);
             animator.SetTrigger(animHashJump);
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
         }
     }
 
     void Start()
     {
         effectsListController = GetComponent<EffectsListController>();
+        audioSource = GetComponent<AudioSource>();
         UpdatePlayerRotation();
         if (moveGravity >= 0)
         {
             moveGravity = Physics.gravity.y;
         }
+        accelerationStep = (maxAcceleration - 1) / maxAccelerationTime;
+        audioPitchStep = (audioPitchMax - audioPitchMin) / maxAccelerationTime;
+        audioSource.pitch = audioPitchMin;
     }
 
     void Update()
@@ -178,6 +173,7 @@ public class AnimationAndMovementController : MonoBehaviour
             {
                 isFalling = false;
                 animator.SetTrigger(animHashLanding);
+                Debug.Log("Player: Landing");
             }
             else
             {
@@ -186,7 +182,7 @@ public class AnimationAndMovementController : MonoBehaviour
         }
         else if (isJumpingUp)
         {
-            HandleJumping();
+            HandleJumpingUp();
         }
         else if (!isMovementLocked)
         {
@@ -196,13 +192,17 @@ public class AnimationAndMovementController : MonoBehaviour
 
                 // Falling with animation (from high distance)
                 if (!Physics.CapsuleCast(capsulePoints.p1, capsulePoints.p2, characterController.radius,
-                    Vector3.down, 2f, floorLM))
+                    Vector3.down, 1.5f, floorLM))
                 {
                     StartFalling();
                 }
                 else
                 {
                     HandleFalling();
+                }
+                if (audioSource.isPlaying)
+                {
+                    audioSource.Stop();
                 }
             }
             else
@@ -215,7 +215,7 @@ public class AnimationAndMovementController : MonoBehaviour
         }
     }
 
-    public (Vector3 point1, Vector3 point2) GetColliderPoints()
+    private (Vector3 point1, Vector3 point2) GetColliderPoints()
     {
         Vector3 p1 = transform.position + characterController.center
                     - new Vector3(0, characterController.height * 0.5f - 0.5f, 0);
@@ -223,7 +223,7 @@ public class AnimationAndMovementController : MonoBehaviour
         return (p1, p2);
     }
 
-    private void HandleJumping()
+    private void HandleJumpingUp()
     {
         characterController.Move(moveDirectionGlobal * speedEffectMultiplier * Time.deltaTime);
         moveDirectionGlobal.y += moveGravity * Time.deltaTime;
@@ -243,18 +243,22 @@ public class AnimationAndMovementController : MonoBehaviour
         float rotAngle = 0;
         if (moveDirectionLocal.magnitude > 0)
         {
-            moveDirectionLocal = new Vector3(rotationKeyboardInput, 0, movementForwardInput);
-
             // Falling Forward
             if (moveDirectionLocal.z >= 0)
             {
-                rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
+                if (Preferences.plRotStyle == Preferences.PlayerRotationStyle.withMouse)
+                {
+                    rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
+                }
                 animator.SetFloat(animHashFallingVelocity, 1);
             }
             // Falling Backward
             else
             {
-                rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
+                if (Preferences.plRotStyle == Preferences.PlayerRotationStyle.withMouse)
+                {
+                    rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
+                }
                 animator.SetFloat(animHashFallingVelocity, -1);
             }
         }
@@ -293,11 +297,23 @@ public class AnimationAndMovementController : MonoBehaviour
     private void HandleMovement()
     {
         moveDirectionGlobal.y = moveGravity;
-        moveDirectionGlobal *= movementSpeed * speedEffectMultiplier * Time.deltaTime;
+        moveDirectionGlobal *= movementSpeed * acceleration * speedEffectMultiplier * Time.deltaTime;
         characterController.Move(moveDirectionGlobal);
 
         animator.SetFloat(animHashVecticalVelocity, moveDirectionLocal.z);
         animator.SetFloat(animHashHorizontalVelocity, moveDirectionLocal.x);
+
+        if (moveDirectionLocal.magnitude > 0)
+        {
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+        }
+        else if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
     }
 
     private void SetMoveDirection()
@@ -306,12 +322,12 @@ public class AnimationAndMovementController : MonoBehaviour
         {
             case Preferences.PlayerRotationStyle.withMouse:
                 {
-                    moveDirectionLocal = new Vector3(rotationKeyboardInput, 0, movementForwardInput) * acceleration;
+                    moveDirectionLocal = new Vector3(rotationKeyboardInput, 0, movementForwardInput).normalized;
                     break;
                 }
             case Preferences.PlayerRotationStyle.withKeyboard:
                 {
-                    moveDirectionLocal = new Vector3(0, 0, movementForwardInput) * acceleration;
+                    moveDirectionLocal = new Vector3(0, 0, movementForwardInput);
                     break;
                 }
         }
@@ -323,20 +339,25 @@ public class AnimationAndMovementController : MonoBehaviour
         // Dashing
         if (accelerationInput && characterController.isGrounded && acceleration < maxAcceleration)
         {
-            acceleration += Time.deltaTime;
+            acceleration += accelerationStep * Time.deltaTime;
+            audioSource.pitch += audioPitchStep * Time.deltaTime;
         }
         else if (!accelerationInput && characterController.isGrounded && acceleration > 1f)
         {
-            acceleration -= Time.deltaTime;
+            acceleration -= accelerationStep * Time.deltaTime;
+            audioSource.pitch -= audioPitchStep * Time.deltaTime;
         }
         else if (accelerationInput && acceleration > maxAcceleration)
         {
             acceleration = maxAcceleration;
+            audioSource.pitch = audioPitchMax;
         }
         else if (!accelerationInput && acceleration < 1f)
         {
             acceleration = 1f;
+            audioSource.pitch = audioPitchMin;
         }
+        animator.SetFloat(animHashAcceleration, (acceleration - 1) / (maxAcceleration - 1));
     }
 
     public void JumpUpStart()
@@ -348,6 +369,24 @@ public class AnimationAndMovementController : MonoBehaviour
     {
         isJumpingUp = false;
         StartFalling();
+    }
+
+    public void RunningAudioStart()
+    {
+        if (!audioSource.isPlaying)
+        {
+            audioSource.time = 0.198f;
+            audioSource.Play();
+        }
+    }
+
+    public void RunningAudioFinish()
+    {
+        audioSource.time = 0f;
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
     }
 
     private void UpdateSpeedEffectMultiplier()
