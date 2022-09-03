@@ -16,6 +16,7 @@ public class Settings : MonoBehaviour
         camFollowDamping_ZSlider, camFollowDamping_YawSlider;
     [SerializeField] private TMP_InputField camRotDamping_HorizontalInputField, camRotDamping_VerticalInputField;
     [SerializeField] private Slider camRotDamping_HorizontalSlider, camRotDamping_VerticalSlider;
+    [SerializeField] private Button resetButton;
 
     private AnimationAndMovementController movementController;
     private CameraController cameraController;
@@ -76,6 +77,20 @@ public class Settings : MonoBehaviour
             Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camRotDamping_Vertical);
         camRotDamping_VerticalSlider.onValueChanged.AddListener(ChangeCamRotDamping_Vertical_Float);
         camRotDamping_VerticalInputField.onValueChanged.AddListener(ChangeCamRotDamping_Vertical_String);
+
+        resetButton.onClick.AddListener(ResetPrefs);
+    }
+
+    private void ResetPrefs()
+    {
+        ChangePlayerRotSpeed_Float(Preferences.plRotSpeed_def);
+        ChangeCamRotSpeed_Float(Preferences.camRotSpeed_def);
+        ChangeCamFollowDamping_X_Float(Preferences.camFollowDamping_X_def);
+        ChangeCamFollowDamping_Y_Float(Preferences.camFollowDamping_Y_def);
+        ChangeCamFollowDamping_Z_Float(Preferences.camFollowDamping_Z_def);
+        ChangeCamFollowDamping_Yaw_Float(Preferences.camFollowDamping_Yaw_def);
+        ChangeCamRotDamping_Horizontal_Float(Preferences.camRotDamping_Horizontal_def);
+        ChangeCamRotDamping_Vertical_Float(Preferences.camRotDamping_Vertical_def);
     }
 
     private void SetValue(TMP_InputField inputField, Slider slider, float minValue, float maxValue, float value)

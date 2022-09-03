@@ -52,6 +52,10 @@ public class Preferences
         camRotDamping_HorizontalKey = "camera_rot_damping_horizontal", camRotDamping_VerticalKey = "camera_rot_damping_vertical",
         isPausedWhileInMenuKey = "is_paused_in_menu";
 
+    public static readonly float plRotSpeed_def = 200, camRotSpeed_def = 130,
+        camFollowDamping_X_def = 3, camFollowDamping_Y_def = 0, camFollowDamping_Z_def = 0,
+        camFollowDamping_Yaw_def = 3, camRotDamping_Horizontal_def = 0.5f, camRotDamping_Vertical_def = 0.5f;
+
     static Preferences()
     {
         plRotStyles = new Dictionary<PlayerRotationStyle, string>();
@@ -65,14 +69,14 @@ public class Preferences
 
         _isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
         SetPlayerRotationStyle(PlayerPrefs.GetInt(plRotStyleKey, 0));
-        SetPlayerRotationSpeed(PlayerPrefs.GetFloat(plRotSpeedKey, plRotSpeedMin));
-        SetCameraRotationSpeed(PlayerPrefs.GetFloat(camRotSpeedKey, camRotSpeedMin));
-        SetCameraFollowingDamping_X(PlayerPrefs.GetFloat(camFollowDamping_XKey, 0.5f));
-        SetCameraFollowingDamping_Y(PlayerPrefs.GetFloat(camFollowDamping_YKey, 0.5f));
-        SetCameraFollowingDamping_Z(PlayerPrefs.GetFloat(camFollowDamping_ZKey, 0.5f));
-        SetCameraFollowingDamping_Yaw(PlayerPrefs.GetFloat(camFollowDamping_YawKey, 0.5f));
-        SetCameraRotatingDamping_Horizontal(PlayerPrefs.GetFloat(camRotDamping_HorizontalKey, 0.5f));
-        SetCameraRotatingDamping_Vertical(PlayerPrefs.GetFloat(camRotDamping_VerticalKey, 0.5f));
+        SetPlayerRotationSpeed(PlayerPrefs.GetFloat(plRotSpeedKey, plRotSpeed_def));
+        SetCameraRotationSpeed(PlayerPrefs.GetFloat(camRotSpeedKey, camRotSpeed_def));
+        SetCameraFollowingDamping_X(PlayerPrefs.GetFloat(camFollowDamping_XKey, camFollowDamping_X_def));
+        SetCameraFollowingDamping_Y(PlayerPrefs.GetFloat(camFollowDamping_YKey, camFollowDamping_Y_def));
+        SetCameraFollowingDamping_Z(PlayerPrefs.GetFloat(camFollowDamping_ZKey, camFollowDamping_Z_def));
+        SetCameraFollowingDamping_Yaw(PlayerPrefs.GetFloat(camFollowDamping_YawKey, camFollowDamping_Yaw_def));
+        SetCameraRotatingDamping_Horizontal(PlayerPrefs.GetFloat(camRotDamping_HorizontalKey, camRotDamping_Horizontal_def));
+        SetCameraRotatingDamping_Vertical(PlayerPrefs.GetFloat(camRotDamping_VerticalKey, camRotDamping_Vertical_def));
     }
 
     public static string GetPlayerRotationStyleName()
