@@ -11,7 +11,7 @@ public class InputManager : MonoBehaviour
 
     public delegate void InputFunction(InputAction.CallbackContext obj);
     public event InputFunction OnMenu_performed,
-        OnMoveForward_started, OnMoveForward_performed, OnMoveForward_canceled,
+        OnMoveForward_performed, OnMoveForward_started, OnMoveForward_canceled,
         OnRotateMouse_started, OnRotateMouse_performed, OnRotateMouse_canceled,
         OnRotateKeyboard_started, OnRotateKeyboard_performed, OnRotateKeyboard_canceled,
         OnAcceleration_started, OnAcceleration_canceled,
@@ -29,9 +29,9 @@ public class InputManager : MonoBehaviour
 
         gameInput.Game.Menu.performed += Menu_performed;
 
-        gameInput.Movement.MoveForward.started += MoveForward_started;
         gameInput.Movement.MoveForward.performed += MoveForward_performed;
-        gameInput.Movement.MoveForward.canceled += MoveForward_canceled;
+        gameInput.Movement.MoveForwardButton.started += MoveForward_started;
+        gameInput.Movement.MoveForwardButton.canceled += MoveForward_canceled;
 
         gameInput.Movement.RotateMouse.started += RotateMouse_started;
         gameInput.Movement.RotateMouse.performed += RotateMouse_performed;

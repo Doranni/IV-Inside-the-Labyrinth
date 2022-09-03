@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour
     }
 
     private InputManager inputManager;
+    [SerializeField] private AnimationAndMovementController plMovement;
 
     [SerializeField] private CinemachineFreeLook firstViewCamera, thirdViewCamera;
     [SerializeField] private CinemachineVirtualCamera mapViewCamera;
@@ -49,7 +50,8 @@ public class CameraController : MonoBehaviour
         inputManager.OnZoom_performed += HandleScrollWheelInput;
         inputManager.OnZoom_canceled += HandleScrollWheelInput;
 
-        inputManager.OnFirstViewToggle_performed += FirstViewToggle_performed;
+        // TODO: to fix first view camera
+        //inputManager.OnFirstViewToggle_performed += FirstViewToggle_performed;
         inputManager.OnMapViewToggle_performed += MapViewToggle_performed;
 
         inputManager.OnStartRotation_started += StartRotation_started;
@@ -229,8 +231,16 @@ public class CameraController : MonoBehaviour
         {
             case Preferences.CameraRotationStyle.followPlayer:
                 {
-                    thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.LockToTargetWithWorldUp;
-                    thirdViewCamera.m_XAxis.m_MaxSpeed = 0;
+                    if (plMovement.IsMoving)
+                    {
+                        thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.LockToTargetWithWorldUp;
+                        thirdViewCamera.m_XAxis.m_MaxSpeed = 0;
+                    }
+                    else
+                    {
+                        thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+                        thirdViewCamera.m_XAxis.m_MaxSpeed = Preferences.camRotSpeed;
+                    }
                     break;
                 }
             case Preferences.CameraRotationStyle.withMouse:

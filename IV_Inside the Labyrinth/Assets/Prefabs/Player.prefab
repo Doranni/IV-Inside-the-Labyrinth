@@ -82,7 +82,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 0.96, z: 0}
 --- !u!136 &2981570472755220226
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -96,7 +96,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 1.8
   m_Direction: 1
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 0.96, z: 0}
 --- !u!114 &543450653563009077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bloodSplatterEffect_Image: {fileID: 0}
-  darkeningEffect_Image: {fileID: 0}
+  damageAnimator: {fileID: 0}
   sanityLightEffect: {fileID: 0}
   sanityLightMask:
     serializedVersion: 2
@@ -133,9 +133,11 @@ MonoBehaviour:
   floorLM:
     serializedVersion: 2
     m_Bits: 9
+  cameraController: {fileID: 0}
   moveGravity: -5
-  maxAcceleration: 3.5
+  maxAcceleration: 2.5
   maxAccelerationTime: 1
+  maxRotationAcceleration: 1
   runningAudioClip: {fileID: 8300000, guid: 0c3e509fc6203e84292dc6cb44b1f7cd, type: 3}
   audioPitchMax: 0.75
   audioPitchMin: 0.5
@@ -399,10 +401,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6745855170381176098, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 82d85d0a1dde2c946a93d3394122c9ef, type: 2}
+    - target: {fileID: -589753342025012081, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3800db3670fa70642b2094aafda5c31b, type: 2}
     - target: {fileID: 919132149155446097, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}
       propertyPath: m_Name
       value: Ch42_nonPBR
       objectReference: {fileID: 0}
+    - target: {fileID: 3209018298546935164, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 51b55ba4a7a5a6748a9cc485fad1e7eb, type: 2}
+    - target: {fileID: 3904762593643589564, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9a315e987be8b5542a7981a433eea8ae, type: 2}
     m_RemovedComponents:
     - {fileID: 5866666021909216657, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ccf2f1f7316d31d45aa97c3c441b0fb6, type: 3}

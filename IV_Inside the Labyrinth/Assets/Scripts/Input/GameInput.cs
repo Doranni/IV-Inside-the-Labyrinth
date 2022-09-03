@@ -65,6 +65,15 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Move Forward Button"",
+                    ""type"": ""Button"",
+                    ""id"": ""0afec78b-433f-4e28-a48e-878390acb974"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Rotate Mouse"",
                     ""type"": ""PassThrough"",
                     ""id"": ""27776bb5-3b47-43f7-a7e6-20fae5bedae8"",
@@ -264,6 +273,94 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                     ""action"": ""Mouse RightClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f423e58-98e9-4808-89fb-0d8db5060c93"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dd94d1b4-2e28-4117-99d4-5a0404f0e18d"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""85b8b35a-3c61-48ac-86bd-c1ecd9250f1f"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""49d0d919-dc18-43a5-8f03-2e5a1c470676"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4b6cf3d0-c9f9-4363-a14c-ed21695fe6fc"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b96e756-d0b2-4c45-9df7-c244fad9e656"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""28dae2e7-87ef-4482-b861-2ebaeed46b13"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9805ae2f-e146-4b4f-b48b-29a9ade9a65c"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Forward Button"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -343,7 +440,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""9072cd21-e4a1-41f6-a4ad-06cb3f0c9477"",
-                    ""path"": ""<Keyboard>/#(V)"",
+                    ""path"": ""<Keyboard>/v"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -354,7 +451,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""ba53724c-207d-45e1-a067-21f66335c44c"",
-                    ""path"": ""<Keyboard>/#(M)"",
+                    ""path"": ""<Keyboard>/m"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -900,6 +997,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         // Movement
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
         m_Movement_MoveForward = m_Movement.FindAction("Move Forward", throwIfNotFound: true);
+        m_Movement_MoveForwardButton = m_Movement.FindAction("Move Forward Button", throwIfNotFound: true);
         m_Movement_RotateMouse = m_Movement.FindAction("Rotate Mouse", throwIfNotFound: true);
         m_Movement_RotateKeyboard = m_Movement.FindAction("Rotate Keyboard", throwIfNotFound: true);
         m_Movement_Acceleration = m_Movement.FindAction("Acceleration", throwIfNotFound: true);
@@ -1017,6 +1115,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Movement;
     private IMovementActions m_MovementActionsCallbackInterface;
     private readonly InputAction m_Movement_MoveForward;
+    private readonly InputAction m_Movement_MoveForwardButton;
     private readonly InputAction m_Movement_RotateMouse;
     private readonly InputAction m_Movement_RotateKeyboard;
     private readonly InputAction m_Movement_Acceleration;
@@ -1027,6 +1126,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         private @GameInput m_Wrapper;
         public MovementActions(@GameInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @MoveForward => m_Wrapper.m_Movement_MoveForward;
+        public InputAction @MoveForwardButton => m_Wrapper.m_Movement_MoveForwardButton;
         public InputAction @RotateMouse => m_Wrapper.m_Movement_RotateMouse;
         public InputAction @RotateKeyboard => m_Wrapper.m_Movement_RotateKeyboard;
         public InputAction @Acceleration => m_Wrapper.m_Movement_Acceleration;
@@ -1044,6 +1144,9 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                 @MoveForward.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnMoveForward;
                 @MoveForward.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnMoveForward;
                 @MoveForward.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnMoveForward;
+                @MoveForwardButton.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnMoveForwardButton;
+                @MoveForwardButton.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnMoveForwardButton;
+                @MoveForwardButton.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnMoveForwardButton;
                 @RotateMouse.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnRotateMouse;
                 @RotateMouse.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnRotateMouse;
                 @RotateMouse.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnRotateMouse;
@@ -1066,6 +1169,9 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                 @MoveForward.started += instance.OnMoveForward;
                 @MoveForward.performed += instance.OnMoveForward;
                 @MoveForward.canceled += instance.OnMoveForward;
+                @MoveForwardButton.started += instance.OnMoveForwardButton;
+                @MoveForwardButton.performed += instance.OnMoveForwardButton;
+                @MoveForwardButton.canceled += instance.OnMoveForwardButton;
                 @RotateMouse.started += instance.OnRotateMouse;
                 @RotateMouse.performed += instance.OnRotateMouse;
                 @RotateMouse.canceled += instance.OnRotateMouse;
@@ -1262,6 +1368,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
     public interface IMovementActions
     {
         void OnMoveForward(InputAction.CallbackContext context);
+        void OnMoveForwardButton(InputAction.CallbackContext context);
         void OnRotateMouse(InputAction.CallbackContext context);
         void OnRotateKeyboard(InputAction.CallbackContext context);
         void OnAcceleration(InputAction.CallbackContext context);
