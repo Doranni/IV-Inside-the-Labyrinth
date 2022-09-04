@@ -9,15 +9,7 @@ public class AnimationAndMovementController : MonoBehaviour
     [SerializeField] private float jumpUpForce, jumpForwardForce;
     [SerializeField] private LayerMask floorLM;
     [SerializeField] private CameraController cameraController;
-
     private CharacterController characterController;
-    private Animator animator;
-    private InputManager inputManager;
-    public float playerRadius => characterController.radius;
-
-    private float movementForwardInput;
-    private float rotationMouseInput, rotationKeyboardInput;
-    private bool accelerationInput;
 
     private Vector3 moveDirectionGlobal, moveDirectionLocal;
     [SerializeField] private float moveGravity;
@@ -28,6 +20,15 @@ public class AnimationAndMovementController : MonoBehaviour
     [SerializeField] private float maxRotationAcceleration = 1f;
     private float rotationAcceleration = 1f, rotationAccelerationStep;
     private float currentRotationSpeed;
+    // Min agle between player's forward and camera's forward to start player's rotation 
+    // for PlayerRotationStyle - withMouse and CameraRotationStyle - followPlayer
+    // (actuallt it's player follows camera)
+    [SerializeField] private float plCamMinAngleForRotation = 25;
+    private Transform mainCamera;
+    // For debug
+    [SerializeField] private Vector3 camerasForward, playersForward;
+    [SerializeField] private float angle;
+    [SerializeField] private bool isGrounded;
 
     private bool isMoving = false;
     public bool IsMoving => isMoving;
@@ -35,22 +36,30 @@ public class AnimationAndMovementController : MonoBehaviour
     private bool isFalling = false;
     private bool isJumpingUp = false;
 
+    // Input
+    private InputManager inputManager;
+    private float movementForwardInput;
+    private float rotationMouseInput, rotationKeyboardInput;
+    private bool accelerationInput;
+
+    // Movement effects
     private EffectsListController effectsListController;
     Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
     private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
     private float speedEffectMultiplier = 1;
 
-    private int animHashVecticalVelocity, animHashHorizontalVelocity, animHashAcceleration,
-        animHashFallingVelocity, animHashAngle,
-        animHashJump, animHashFalling, animHashLanding;
+    // Animation
+    private Animator animator;
+    private int animHash_VecticalVelocity_Float, animHash_HorizontalVelocity_Float, 
+        animHash_Acceleration_Float,
+        animHash_FallingVelocity_Float, animHash_Angle_Float,
+        animHash_Jump_Trigger, animHash_Falling_Trigger, animHash_Landing_Trigger;
 
+    // Audio
     [SerializeField] private AudioClip runningAudioClip;
     private AudioSource audioSource;
     [SerializeField] private float audioPitchMax = 1f, audioPitchMin = 0.55f;
     private float audioPitchStep;
-
-    // For debug
-    public bool isGrounded;
 
     private void Awake()
     {
@@ -97,14 +106,14 @@ public class AnimationAndMovementController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
-        animHashVecticalVelocity = Animator.StringToHash("Vertical Velocity");
-        animHashHorizontalVelocity = Animator.StringToHash("Horizontal Velocity");
-        animHashAcceleration = Animator.StringToHash("Acceleration");
-        animHashFallingVelocity = Animator.StringToHash("Falling Velocity");
-        animHashAngle = Animator.StringToHash("Angle");
-        animHashJump = Animator.StringToHash("Jump");
-        animHashFalling = Animator.StringToHash("Falling");
-        animHashLanding = Animator.StringToHash("Landing");
+        animHash_VecticalVelocity_Float = Animator.StringToHash("Vertical Velocity");
+        animHash_HorizontalVelocity_Float = Animator.StringToHash("Horizontal Velocity");
+        animHash_Acceleration_Float = Animator.StringToHash("Acceleration");
+        animHash_FallingVelocity_Float = Animator.StringToHash("Falling Velocity");
+        animHash_Angle_Float = Animator.StringToHash("Angle");
+        animHash_Jump_Trigger = Animator.StringToHash("Jump");
+        animHash_Falling_Trigger = Animator.StringToHash("Falling");
+        animHash_Landing_Trigger = Animator.StringToHash("Landing");
     }
 
     private void MouseRightClick_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
@@ -139,7 +148,7 @@ public class AnimationAndMovementController : MonoBehaviour
                     {
                         rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
                     }
-                    animator.SetFloat(animHashFallingVelocity, 1);
+                    animator.SetFloat(animHash_FallingVelocity_Float, 1);
                 }
                 // Jumping Backward
                 else
@@ -148,17 +157,17 @@ public class AnimationAndMovementController : MonoBehaviour
                     {
                         rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
                     }
-                    animator.SetFloat(animHashFallingVelocity, -1);
+                    animator.SetFloat(animHash_FallingVelocity_Float, -1);
                 }
             }
             // Jumping Up
             else
             {
                 moveDirectionGlobal = Vector3.up * jumpUpForce;
-                animator.SetFloat(animHashFallingVelocity, 0);
+                animator.SetFloat(animHash_FallingVelocity_Float, 0);
             }
-            animator.SetFloat(animHashAngle, rotAngle);
-            animator.SetTrigger(animHashJump);
+            animator.SetFloat(animHash_Angle_Float, rotAngle);
+            animator.SetTrigger(animHash_Jump_Trigger);
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
@@ -168,6 +177,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     void Start()
     {
+        mainCamera = Camera.main.transform;
         effectsListController = GetComponent<EffectsListController>();
         audioSource = GetComponent<AudioSource>();
         UpdatePlayerRotation();
@@ -183,13 +193,18 @@ public class AnimationAndMovementController : MonoBehaviour
 
     void Update()
     {
+        // For debug
         isGrounded = characterController.isGrounded;
+        camerasForward = mainCamera.forward;
+        playersForward = transform.forward;
+        angle = Vector3.SignedAngle(playersForward, camerasForward, Vector3.up);
+
         if (isFalling)
         {
             if (characterController.isGrounded)
             {
                 isFalling = false;
-                animator.SetTrigger(animHashLanding);
+                animator.SetTrigger(animHash_Landing_Trigger);
                 Debug.Log("Player: Landing");
             }
             else
@@ -267,7 +282,7 @@ public class AnimationAndMovementController : MonoBehaviour
                 {
                     rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
                 }
-                animator.SetFloat(animHashFallingVelocity, 1);
+                animator.SetFloat(animHash_FallingVelocity_Float, 1);
             }
             // Falling Backward
             else
@@ -276,16 +291,16 @@ public class AnimationAndMovementController : MonoBehaviour
                 {
                     rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
                 }
-                animator.SetFloat(animHashFallingVelocity, -1);
+                animator.SetFloat(animHash_FallingVelocity_Float, -1);
             }
         }
         // Falling Up
         else
         {
-            animator.SetFloat(animHashFallingVelocity, 0);
+            animator.SetFloat(animHash_FallingVelocity_Float, 0);
         }
-        animator.SetFloat(animHashAngle, rotAngle);
-        animator.SetTrigger(animHashFalling);
+        animator.SetFloat(animHash_Angle_Float, rotAngle);
+        animator.SetTrigger(animHash_Falling_Trigger);
     }
 
     private void HandleRotation()
@@ -298,9 +313,22 @@ public class AnimationAndMovementController : MonoBehaviour
                 {
                     case Preferences.PlayerRotationStyle.withMouse:
                         {
-                            transform.Rotate(Vector3.up, Mathf.Lerp(0,
-                                rotationMouseInput * currentRotationSpeed * rotationAcceleration,
-                                Time.deltaTime), Space.Self);
+                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer)
+                            {
+                                float angle1 = Mathf.Clamp(angle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
+                                if (angle1 == -plCamMinAngleForRotation || angle1 == plCamMinAngleForRotation)
+                                {
+                                    transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                                    angle1 / plCamMinAngleForRotation * currentRotationSpeed * rotationAcceleration,
+                                    Time.deltaTime), Space.Self);
+                                }
+                            }
+                            else
+                            {
+                                transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                                    rotationMouseInput * currentRotationSpeed * rotationAcceleration,
+                                    Time.deltaTime), Space.Self);
+                            }
                             break;
                         }
                     case Preferences.PlayerRotationStyle.withKeyboard:
@@ -322,8 +350,8 @@ public class AnimationAndMovementController : MonoBehaviour
         moveDirectionGlobal *= movementSpeed * acceleration * speedEffectMultiplier * Time.deltaTime;
         characterController.Move(moveDirectionGlobal);
 
-        animator.SetFloat(animHashVecticalVelocity, moveDirectionLocal.z);
-        animator.SetFloat(animHashHorizontalVelocity, moveDirectionLocal.x);
+        animator.SetFloat(animHash_VecticalVelocity_Float, moveDirectionLocal.z);
+        animator.SetFloat(animHash_HorizontalVelocity_Float, moveDirectionLocal.x);
 
         if (moveDirectionLocal.magnitude > 0)
         {
@@ -383,7 +411,7 @@ public class AnimationAndMovementController : MonoBehaviour
             rotationAcceleration = 1f;
             audioSource.pitch = audioPitchMin;
         }
-        animator.SetFloat(animHashAcceleration, (acceleration - 1) / (maxAcceleration - 1));
+        animator.SetFloat(animHash_Acceleration_Float, (acceleration - 1) / (maxAcceleration - 1));
     }
 
     public void JumpUpStart()
