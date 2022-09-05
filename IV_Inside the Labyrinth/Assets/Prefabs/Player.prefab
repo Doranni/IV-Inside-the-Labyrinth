@@ -138,10 +138,15 @@ MonoBehaviour:
   maxAcceleration: 2.5
   maxAccelerationTime: 1
   maxRotationAcceleration: 1
+  plCamMinAngleForRotation: 20
+  camerasForward: {x: 0, y: 0, z: 0}
+  playersForward: {x: 0, y: 0, z: 0}
+  plCamAngle: 0
+  isGrounded: 0
+  moveState: 0
   runningAudioClip: {fileID: 8300000, guid: 0c3e509fc6203e84292dc6cb44b1f7cd, type: 3}
   audioPitchMax: 0.75
   audioPitchMin: 0.5
-  isGrounded: 0
 --- !u!114 &543450653563009076
 MonoBehaviour:
   m_ObjectHideFlags: 0

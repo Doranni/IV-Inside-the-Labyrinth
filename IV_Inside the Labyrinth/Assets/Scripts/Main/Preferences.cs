@@ -52,7 +52,7 @@ public class Preferences
         camRotDamping_HorizontalKey = "camera_rot_damping_horizontal", camRotDamping_VerticalKey = "camera_rot_damping_vertical",
         isPausedWhileInMenuKey = "is_paused_in_menu";
 
-    public static readonly float plRotSpeed_def = 200, camRotSpeed_def = 130,
+    public static readonly float plRotSpeed_def = 150, camRotSpeed_def = 130,
         camFollowDamping_X_def = 3, camFollowDamping_Y_def = 0, camFollowDamping_Z_def = 0,
         camFollowDamping_Yaw_def = 3, camRotDamping_Horizontal_def = 0.5f, camRotDamping_Vertical_def = 0.5f;
 

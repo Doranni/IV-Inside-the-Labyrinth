@@ -9,15 +9,7 @@ public class AnimationAndMovementController : MonoBehaviour
     [SerializeField] private float jumpUpForce, jumpForwardForce;
     [SerializeField] private LayerMask floorLM;
     [SerializeField] private CameraController cameraController;
-
     private CharacterController characterController;
-    private Animator animator;
-    private InputManager inputManager;
-    public float playerRadius => characterController.radius;
-
-    private float movementForwardInput;
-    private float rotationMouseInput, rotationKeyboardInput;
-    private bool accelerationInput;
 
     private Vector3 moveDirectionGlobal, moveDirectionLocal;
     [SerializeField] private float moveGravity;
@@ -28,29 +20,52 @@ public class AnimationAndMovementController : MonoBehaviour
     [SerializeField] private float maxRotationAcceleration = 1f;
     private float rotationAcceleration = 1f, rotationAccelerationStep;
     private float currentRotationSpeed;
+    // Min agle between player's forward and camera's forward to start player's rotation 
+    // for PlayerRotationStyle - withMouse and CameraRotationStyle - followPlayer
+    // (actuallt it's player follows camera)
+    [SerializeField] private float plCamMinAngleForRotation = 25;
+    private Transform mainCamera;
+    // For debug
+    [SerializeField] private Vector3 camerasForward, playersForward;
+    [SerializeField] private float plCamAngle;
+    [SerializeField] private bool isGrounded;
 
-    private bool isMoving = false;
-    public bool IsMoving => isMoving;
-    private bool isMovementLocked = false;
-    private bool isFalling = false;
-    private bool isJumpingUp = false;
+    public enum MovementState
+    {
+        still,
+        moving,
+        falling,
+        jumpingUp,
+        underAnimation
+    }
 
+    [SerializeField] private MovementState moveState = MovementState.still;
+    public MovementState MoveState => moveState;
+
+    // Input
+    private InputManager inputManager;
+    private float movementForwardInput;
+    private float rotationMouseInput, rotationKeyboardInput;
+    private bool accelerationInput;
+
+    // Movement effects
     private EffectsListController effectsListController;
     Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
     private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
     private float speedEffectMultiplier = 1;
 
-    private int animHashVecticalVelocity, animHashHorizontalVelocity, animHashAcceleration,
-        animHashFallingVelocity, animHashAngle,
-        animHashJump, animHashFalling, animHashLanding;
+    // Animation
+    private Animator animator;
+    private int animHash_VecticalVelocity_Float, animHash_HorizontalVelocity_Float, 
+        animHash_Acceleration_Float,
+        animHash_FallingVelocity_Float, animHash_Angle_Float,
+        animHash_Jump_Trigger, animHash_Falling_Trigger, animHash_Landing_Trigger;
 
+    // Audio
     [SerializeField] private AudioClip runningAudioClip;
     private AudioSource audioSource;
     [SerializeField] private float audioPitchMax = 1f, audioPitchMin = 0.55f;
     private float audioPitchStep;
-
-    // For debug
-    public bool isGrounded;
 
     private void Awake()
     {
@@ -62,13 +77,19 @@ public class AnimationAndMovementController : MonoBehaviour
         };
         inputManager.OnMoveForward_started += context =>
         {
-            isMoving = true;
-            cameraController.UpdateRotation();
+            if (moveState == MovementState.still)
+            {
+                moveState = MovementState.moving;
+                cameraController.UpdateRotation();
+            }
         };
         inputManager.OnMoveForward_canceled += context =>
         {
-            isMoving = false;
-            cameraController.UpdateRotation();
+            if (moveState == MovementState.moving)
+            {
+                moveState = MovementState.still;
+                cameraController.UpdateRotation();
+            }
         };
 
         inputManager.OnRotateMouse_performed += context =>
@@ -97,14 +118,14 @@ public class AnimationAndMovementController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
-        animHashVecticalVelocity = Animator.StringToHash("Vertical Velocity");
-        animHashHorizontalVelocity = Animator.StringToHash("Horizontal Velocity");
-        animHashAcceleration = Animator.StringToHash("Acceleration");
-        animHashFallingVelocity = Animator.StringToHash("Falling Velocity");
-        animHashAngle = Animator.StringToHash("Angle");
-        animHashJump = Animator.StringToHash("Jump");
-        animHashFalling = Animator.StringToHash("Falling");
-        animHashLanding = Animator.StringToHash("Landing");
+        animHash_VecticalVelocity_Float = Animator.StringToHash("Vertical Velocity");
+        animHash_HorizontalVelocity_Float = Animator.StringToHash("Horizontal Velocity");
+        animHash_Acceleration_Float = Animator.StringToHash("Acceleration");
+        animHash_FallingVelocity_Float = Animator.StringToHash("Falling Velocity");
+        animHash_Angle_Float = Animator.StringToHash("Angle");
+        animHash_Jump_Trigger = Animator.StringToHash("Jump");
+        animHash_Falling_Trigger = Animator.StringToHash("Falling");
+        animHash_Landing_Trigger = Animator.StringToHash("Landing");
     }
 
     private void MouseRightClick_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
@@ -123,10 +144,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void JumpUp_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        if (!isMovementLocked && characterController.isGrounded)
+        if ((moveState == MovementState.still || moveState == MovementState.moving)
+            && characterController.isGrounded)
         {
             SetMoveDirection();
-            isMovementLocked = true;
+            moveState = MovementState.underAnimation;
             float rotAngle = 0;
             if (moveDirectionLocal.magnitude > 0)
             {
@@ -139,7 +161,7 @@ public class AnimationAndMovementController : MonoBehaviour
                     {
                         rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
                     }
-                    animator.SetFloat(animHashFallingVelocity, 1);
+                    animator.SetFloat(animHash_FallingVelocity_Float, 1);
                 }
                 // Jumping Backward
                 else
@@ -148,17 +170,17 @@ public class AnimationAndMovementController : MonoBehaviour
                     {
                         rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
                     }
-                    animator.SetFloat(animHashFallingVelocity, -1);
+                    animator.SetFloat(animHash_FallingVelocity_Float, -1);
                 }
             }
             // Jumping Up
             else
             {
                 moveDirectionGlobal = Vector3.up * jumpUpForce;
-                animator.SetFloat(animHashFallingVelocity, 0);
+                animator.SetFloat(animHash_FallingVelocity_Float, 0);
             }
-            animator.SetFloat(animHashAngle, rotAngle);
-            animator.SetTrigger(animHashJump);
+            animator.SetFloat(animHash_Angle_Float, rotAngle);
+            animator.SetTrigger(animHash_Jump_Trigger);
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
@@ -168,6 +190,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     void Start()
     {
+        mainCamera = Camera.main.transform;
         effectsListController = GetComponent<EffectsListController>();
         audioSource = GetComponent<AudioSource>();
         UpdatePlayerRotation();
@@ -183,25 +206,29 @@ public class AnimationAndMovementController : MonoBehaviour
 
     void Update()
     {
+        // For debug
         isGrounded = characterController.isGrounded;
-        if (isFalling)
-        {
+        camerasForward = mainCamera.forward;
+        playersForward = transform.forward;
+        plCamAngle = Vector3.SignedAngle(playersForward, camerasForward, Vector3.up);
+
+        if (moveState == MovementState.falling)
+            {
             if (characterController.isGrounded)
             {
-                isFalling = false;
-                animator.SetTrigger(animHashLanding);
-                Debug.Log("Player: Landing");
+                moveState = MovementState.underAnimation;
+                animator.SetTrigger(animHash_Landing_Trigger);
             }
             else
             {
                 HandleFalling();
             }
         }
-        else if (isJumpingUp)
+        else if (moveState == MovementState.jumpingUp)
         {
             HandleJumpingUp();
         }
-        else if (!isMovementLocked)
+        else if (moveState != MovementState.underAnimation)
         {
             if (!characterController.isGrounded)
             {
@@ -255,8 +282,7 @@ public class AnimationAndMovementController : MonoBehaviour
     private void StartFalling()
     {
         moveDirectionGlobal.y = moveGravity;
-        isFalling = true;
-        isMovementLocked = true;
+        moveState = MovementState.falling;
         float rotAngle = 0;
         if (moveDirectionLocal.magnitude > 0)
         {
@@ -267,7 +293,7 @@ public class AnimationAndMovementController : MonoBehaviour
                 {
                     rotAngle = Vector3.SignedAngle(Vector3.forward, moveDirectionLocal, Vector3.up);
                 }
-                animator.SetFloat(animHashFallingVelocity, 1);
+                animator.SetFloat(animHash_FallingVelocity_Float, 1);
             }
             // Falling Backward
             else
@@ -276,43 +302,52 @@ public class AnimationAndMovementController : MonoBehaviour
                 {
                     rotAngle = Vector3.SignedAngle(Vector3.back, moveDirectionLocal, Vector3.up);
                 }
-                animator.SetFloat(animHashFallingVelocity, -1);
+                animator.SetFloat(animHash_FallingVelocity_Float, -1);
             }
         }
         // Falling Up
         else
         {
-            animator.SetFloat(animHashFallingVelocity, 0);
+            animator.SetFloat(animHash_FallingVelocity_Float, 0);
         }
-        animator.SetFloat(animHashAngle, rotAngle);
-        animator.SetTrigger(animHashFalling);
+        animator.SetFloat(animHash_Angle_Float, rotAngle);
+        animator.SetTrigger(animHash_Falling_Trigger);
     }
 
     private void HandleRotation()
     {
-        if (characterController.isGrounded)
+        if (characterController.isGrounded && moveState == MovementState.moving)
         {
-            if (isMoving)
+            switch (Preferences.plRotStyle)
             {
-                switch (Preferences.plRotStyle)
-                {
-                    case Preferences.PlayerRotationStyle.withMouse:
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer)
+                        {
+                            float angleClamped = Mathf.Clamp(plCamAngle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
+                            if (angleClamped == -plCamMinAngleForRotation || angleClamped == plCamMinAngleForRotation)
+                            {
+                                transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                                angleClamped / plCamMinAngleForRotation * currentRotationSpeed * rotationAcceleration,
+                                Time.deltaTime), Space.Self);
+                            }
+                        }
+                        else
                         {
                             transform.Rotate(Vector3.up, Mathf.Lerp(0,
                                 rotationMouseInput * currentRotationSpeed * rotationAcceleration,
                                 Time.deltaTime), Space.Self);
-                            break;
                         }
-                    case Preferences.PlayerRotationStyle.withKeyboard:
-                        {
-                            transform.Rotate(Vector3.up, Mathf.Lerp(0, 
-                                rotationKeyboardInput * currentRotationSpeed * rotationAcceleration,
-                                Time.deltaTime), Space.Self);
-                            break;
-                        }
-                }
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                            rotationKeyboardInput * currentRotationSpeed * rotationAcceleration,
+                            Time.deltaTime), Space.Self);
+                        break;
+                    }
             }
-            
         }
     }
 
@@ -322,8 +357,8 @@ public class AnimationAndMovementController : MonoBehaviour
         moveDirectionGlobal *= movementSpeed * acceleration * speedEffectMultiplier * Time.deltaTime;
         characterController.Move(moveDirectionGlobal);
 
-        animator.SetFloat(animHashVecticalVelocity, moveDirectionLocal.z);
-        animator.SetFloat(animHashHorizontalVelocity, moveDirectionLocal.x);
+        animator.SetFloat(animHash_VecticalVelocity_Float, moveDirectionLocal.z);
+        animator.SetFloat(animHash_HorizontalVelocity_Float, moveDirectionLocal.x);
 
         if (moveDirectionLocal.magnitude > 0)
         {
@@ -359,13 +394,13 @@ public class AnimationAndMovementController : MonoBehaviour
     private void SetAcceleration()
     {
         // Dashing
-        if (accelerationInput && characterController.isGrounded && acceleration < maxAcceleration)
+        if (accelerationInput && moveState == MovementState.moving && acceleration < maxAcceleration)
         {
             acceleration += accelerationStep * Time.deltaTime;
             rotationAcceleration += rotationAccelerationStep * Time.deltaTime;
             audioSource.pitch += audioPitchStep * Time.deltaTime;
         }
-        else if (!accelerationInput && characterController.isGrounded && acceleration > 1f)
+        else if ((!accelerationInput || moveState != MovementState.moving) && acceleration > 1f)
         {
             acceleration -= accelerationStep * Time.deltaTime;
             rotationAcceleration -= rotationAccelerationStep * Time.deltaTime;
@@ -383,17 +418,16 @@ public class AnimationAndMovementController : MonoBehaviour
             rotationAcceleration = 1f;
             audioSource.pitch = audioPitchMin;
         }
-        animator.SetFloat(animHashAcceleration, (acceleration - 1) / (maxAcceleration - 1));
+        animator.SetFloat(animHash_Acceleration_Float, (acceleration - 1) / (maxAcceleration - 1));
     }
 
     public void JumpUpStart()
     {
-        isJumpingUp = true;
+        moveState = MovementState.jumpingUp;
     }
 
     public void JumpUpFinish()
     {
-        isJumpingUp = false;
         StartFalling();
     }
 
@@ -432,7 +466,14 @@ public class AnimationAndMovementController : MonoBehaviour
 
     public void UnlockMovement()
     {
-        isMovementLocked = false;
+        if (movementForwardInput == 0 && rotationKeyboardInput == 0)
+        {
+            moveState = MovementState.still;
+        }
+        else
+        {
+            moveState = MovementState.moving;
+        }
     }
 
     public bool AddEffect(Effect effect)
