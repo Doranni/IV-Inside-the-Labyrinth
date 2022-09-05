@@ -27,14 +27,20 @@ public class AnimationAndMovementController : MonoBehaviour
     private Transform mainCamera;
     // For debug
     [SerializeField] private Vector3 camerasForward, playersForward;
-    [SerializeField] private float angle;
+    [SerializeField] private float plCamAngle;
     [SerializeField] private bool isGrounded;
 
-    private bool isMoving = false;
-    public bool IsMoving => isMoving;
-    private bool isMovementLocked = false;
-    private bool isFalling = false;
-    private bool isJumpingUp = false;
+    public enum MovementState
+    {
+        still,
+        moving,
+        falling,
+        jumpingUp,
+        underAnimation
+    }
+
+    [SerializeField] private MovementState moveState = MovementState.still;
+    public MovementState MoveState => moveState;
 
     // Input
     private InputManager inputManager;
@@ -71,13 +77,19 @@ public class AnimationAndMovementController : MonoBehaviour
         };
         inputManager.OnMoveForward_started += context =>
         {
-            isMoving = true;
-            cameraController.UpdateRotation();
+            if (moveState == MovementState.still)
+            {
+                moveState = MovementState.moving;
+                cameraController.UpdateRotation();
+            }
         };
         inputManager.OnMoveForward_canceled += context =>
         {
-            isMoving = false;
-            cameraController.UpdateRotation();
+            if (moveState == MovementState.moving)
+            {
+                moveState = MovementState.still;
+                cameraController.UpdateRotation();
+            }
         };
 
         inputManager.OnRotateMouse_performed += context =>
@@ -132,10 +144,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void JumpUp_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        if (!isMovementLocked && characterController.isGrounded)
+        if ((moveState == MovementState.still || moveState == MovementState.moving)
+            && characterController.isGrounded)
         {
             SetMoveDirection();
-            isMovementLocked = true;
+            moveState = MovementState.underAnimation;
             float rotAngle = 0;
             if (moveDirectionLocal.magnitude > 0)
             {
@@ -197,26 +210,25 @@ public class AnimationAndMovementController : MonoBehaviour
         isGrounded = characterController.isGrounded;
         camerasForward = mainCamera.forward;
         playersForward = transform.forward;
-        angle = Vector3.SignedAngle(playersForward, camerasForward, Vector3.up);
+        plCamAngle = Vector3.SignedAngle(playersForward, camerasForward, Vector3.up);
 
-        if (isFalling)
-        {
+        if (moveState == MovementState.falling)
+            {
             if (characterController.isGrounded)
             {
-                isFalling = false;
+                moveState = MovementState.underAnimation;
                 animator.SetTrigger(animHash_Landing_Trigger);
-                Debug.Log("Player: Landing");
             }
             else
             {
                 HandleFalling();
             }
         }
-        else if (isJumpingUp)
+        else if (moveState == MovementState.jumpingUp)
         {
             HandleJumpingUp();
         }
-        else if (!isMovementLocked)
+        else if (moveState != MovementState.underAnimation)
         {
             if (!characterController.isGrounded)
             {
@@ -270,8 +282,7 @@ public class AnimationAndMovementController : MonoBehaviour
     private void StartFalling()
     {
         moveDirectionGlobal.y = moveGravity;
-        isFalling = true;
-        isMovementLocked = true;
+        moveState = MovementState.falling;
         float rotAngle = 0;
         if (moveDirectionLocal.magnitude > 0)
         {
@@ -305,42 +316,38 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (characterController.isGrounded)
+        if (characterController.isGrounded && moveState == MovementState.moving)
         {
-            if (isMoving)
+            switch (Preferences.plRotStyle)
             {
-                switch (Preferences.plRotStyle)
-                {
-                    case Preferences.PlayerRotationStyle.withMouse:
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer)
                         {
-                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer)
-                            {
-                                float angle1 = Mathf.Clamp(angle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
-                                if (angle1 == -plCamMinAngleForRotation || angle1 == plCamMinAngleForRotation)
-                                {
-                                    transform.Rotate(Vector3.up, Mathf.Lerp(0,
-                                    angle1 / plCamMinAngleForRotation * currentRotationSpeed * rotationAcceleration,
-                                    Time.deltaTime), Space.Self);
-                                }
-                            }
-                            else
+                            float angleClamped = Mathf.Clamp(plCamAngle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
+                            if (angleClamped == -plCamMinAngleForRotation || angleClamped == plCamMinAngleForRotation)
                             {
                                 transform.Rotate(Vector3.up, Mathf.Lerp(0,
-                                    rotationMouseInput * currentRotationSpeed * rotationAcceleration,
-                                    Time.deltaTime), Space.Self);
-                            }
-                            break;
-                        }
-                    case Preferences.PlayerRotationStyle.withKeyboard:
-                        {
-                            transform.Rotate(Vector3.up, Mathf.Lerp(0, 
-                                rotationKeyboardInput * currentRotationSpeed * rotationAcceleration,
+                                angleClamped / plCamMinAngleForRotation * currentRotationSpeed * rotationAcceleration,
                                 Time.deltaTime), Space.Self);
-                            break;
+                            }
                         }
-                }
+                        else
+                        {
+                            transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                                rotationMouseInput * currentRotationSpeed * rotationAcceleration,
+                                Time.deltaTime), Space.Self);
+                        }
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                            rotationKeyboardInput * currentRotationSpeed * rotationAcceleration,
+                            Time.deltaTime), Space.Self);
+                        break;
+                    }
             }
-            
         }
     }
 
@@ -387,13 +394,13 @@ public class AnimationAndMovementController : MonoBehaviour
     private void SetAcceleration()
     {
         // Dashing
-        if (accelerationInput && characterController.isGrounded && acceleration < maxAcceleration)
+        if (accelerationInput && moveState == MovementState.moving && acceleration < maxAcceleration)
         {
             acceleration += accelerationStep * Time.deltaTime;
             rotationAcceleration += rotationAccelerationStep * Time.deltaTime;
             audioSource.pitch += audioPitchStep * Time.deltaTime;
         }
-        else if (!accelerationInput && characterController.isGrounded && acceleration > 1f)
+        else if ((!accelerationInput || moveState != MovementState.moving) && acceleration > 1f)
         {
             acceleration -= accelerationStep * Time.deltaTime;
             rotationAcceleration -= rotationAccelerationStep * Time.deltaTime;
@@ -416,12 +423,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     public void JumpUpStart()
     {
-        isJumpingUp = true;
+        moveState = MovementState.jumpingUp;
     }
 
     public void JumpUpFinish()
     {
-        isJumpingUp = false;
         StartFalling();
     }
 
@@ -460,7 +466,14 @@ public class AnimationAndMovementController : MonoBehaviour
 
     public void UnlockMovement()
     {
-        isMovementLocked = false;
+        if (movementForwardInput == 0 && rotationKeyboardInput == 0)
+        {
+            moveState = MovementState.still;
+        }
+        else
+        {
+            moveState = MovementState.moving;
+        }
     }
 
     public bool AddEffect(Effect effect)

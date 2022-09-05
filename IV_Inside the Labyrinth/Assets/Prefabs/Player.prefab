@@ -141,8 +141,9 @@ MonoBehaviour:
   plCamMinAngleForRotation: 20
   camerasForward: {x: 0, y: 0, z: 0}
   playersForward: {x: 0, y: 0, z: 0}
-  angle: 0
+  plCamAngle: 0
   isGrounded: 0
+  moveState: 0
   runningAudioClip: {fileID: 8300000, guid: 0c3e509fc6203e84292dc6cb44b1f7cd, type: 3}
   audioPitchMax: 0.75
   audioPitchMin: 0.5

@@ -231,7 +231,8 @@ public class CameraController : MonoBehaviour
         {
             case Preferences.CameraRotationStyle.followPlayer:
                 {
-                    if (Preferences.plRotStyle == Preferences.PlayerRotationStyle.withKeyboard && plMovement.IsMoving)
+                    if (Preferences.plRotStyle == Preferences.PlayerRotationStyle.withKeyboard 
+                        && plMovement.MoveState == AnimationAndMovementController.MovementState.moving)
                     {
                         thirdViewCamera.m_BindingMode = CinemachineTransposer.BindingMode.LockToTargetWithWorldUp;
                         thirdViewCamera.m_XAxis.m_MaxSpeed = 0;
