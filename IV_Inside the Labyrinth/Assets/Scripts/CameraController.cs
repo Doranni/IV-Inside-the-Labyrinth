@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    enum ViewMode
+    public enum ViewMode
     {
         firstViewMode,
         thirdViewMode,
@@ -39,7 +39,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float scrollWheelMin, scrollWheelMax;
     private bool needToZoomCamera = false;
 
-    ViewMode viewMode = ViewMode.thirdViewMode;
+    private ViewMode vMode = ViewMode.thirdViewMode;
+    public ViewMode VMode => vMode;
 
     private void Awake()
 
@@ -93,54 +94,54 @@ public class CameraController : MonoBehaviour
 
     private void MapViewToggle_performed(InputAction.CallbackContext obj)
     {
-        if (viewMode == ViewMode.mapViewMode)
+        if (vMode == ViewMode.mapViewMode)
         {
             thirdViewCamera.enabled = true;
             mapViewCamera.enabled = false;
-            viewMode = ViewMode.thirdViewMode;
+            vMode = ViewMode.thirdViewMode;
         }
         else
         {
-            if (viewMode == ViewMode.thirdViewMode)
+            if (vMode == ViewMode.thirdViewMode)
             {
                 thirdViewCamera.enabled = false;
             }
-            else if (viewMode == ViewMode.firstViewMode)
+            else if (vMode == ViewMode.firstViewMode)
             {
                 firstViewCamera.enabled = false;
             }
 
             mapViewCamera.enabled = true;
-            viewMode = ViewMode.mapViewMode;
+            vMode = ViewMode.mapViewMode;
         }
     }
 
     private void FirstViewToggle_performed(InputAction.CallbackContext obj)
     {
-        if (viewMode == ViewMode.firstViewMode)
+        if (vMode == ViewMode.firstViewMode)
         {
             thirdViewCamera.enabled = true;
             firstViewCamera.enabled = false;
-            viewMode = ViewMode.thirdViewMode;
+            vMode = ViewMode.thirdViewMode;
         }
         else
         {
-            if (viewMode == ViewMode.thirdViewMode)
+            if (vMode == ViewMode.thirdViewMode)
             {
                 thirdViewCamera.enabled = false;
             }
-            else if (viewMode == ViewMode.mapViewMode)
+            else if (vMode == ViewMode.mapViewMode)
             {
                 mapViewCamera.enabled = false;
             }
             firstViewCamera.enabled = true;
-            viewMode = ViewMode.firstViewMode;
+            vMode = ViewMode.firstViewMode;
         }
     }
 
     private void HandleScrollWheelInput(InputAction.CallbackContext context)
     {
-        if (viewMode == ViewMode.firstViewMode)
+        if (vMode == ViewMode.firstViewMode)
         {
             return;
         }
@@ -157,12 +158,12 @@ public class CameraController : MonoBehaviour
         {
             scrollWheelInput = input;
         }
-        if (viewMode == ViewMode.thirdViewMode)
+        if (vMode == ViewMode.thirdViewMode)
         {
             neededThirdViewHeight = thirdViewHeightMid + thirdViewHeightStep * scrollWheelInput;
             neededThirdViewRadius = thirdViewRadiusMid + thirdViewRadiusStep * scrollWheelInput; 
         }
-        else if (viewMode == ViewMode.mapViewMode)
+        else if (vMode == ViewMode.mapViewMode)
         {
             neededmapViewOffset = mapViewOffsetMid + mapViewOffsetStep * scrollWheelInput;
         }
@@ -173,7 +174,7 @@ public class CameraController : MonoBehaviour
     {
         UpdateRotation();
         UpdateDamping();
-        viewMode = ViewMode.thirdViewMode;
+        vMode = ViewMode.thirdViewMode;
         thirdViewCamera.enabled = true;
         firstViewCamera.enabled = false;
         mapViewCamera.enabled = false;
@@ -184,7 +185,7 @@ public class CameraController : MonoBehaviour
         // Camera zoom due to ScrollWheel input
         if (needToZoomCamera)
         {
-            if (viewMode == ViewMode.thirdViewMode)
+            if (vMode == ViewMode.thirdViewMode)
             {
                 for (int i = 0; i < thirdViewCamera.m_Orbits.Length; i++)
                 {
@@ -197,7 +198,7 @@ public class CameraController : MonoBehaviour
                 }
                 needToZoomCamera = CheckThirdViewCameraNeedToZoom();
             }
-            else if (viewMode == ViewMode.mapViewMode)
+            else if (vMode == ViewMode.mapViewMode)
             {
                 mapViewTranspoder.m_TrackedObjectOffset.y =
                     Mathf.MoveTowards(mapViewTranspoder.m_TrackedObjectOffset.y,

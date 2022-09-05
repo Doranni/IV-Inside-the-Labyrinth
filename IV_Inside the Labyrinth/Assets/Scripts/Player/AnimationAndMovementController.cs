@@ -322,7 +322,8 @@ public class AnimationAndMovementController : MonoBehaviour
             {
                 case Preferences.PlayerRotationStyle.withMouse:
                     {
-                        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer)
+                        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer
+                            && cameraController.VMode == CameraController.ViewMode.thirdViewMode)
                         {
                             float angleClamped = Mathf.Clamp(plCamAngle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
                             if (angleClamped == -plCamMinAngleForRotation || angleClamped == plCamMinAngleForRotation)
