@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Preferences
 {
+    // Movement and Camera
     public enum PlayerRotationStyle
     {
         withMouse,
@@ -47,17 +48,27 @@ public class Preferences
 
     private static string plRotStyleKey = "player_rot_style", camRotStyleKey = "camera_rot_style",
         plRotSpeedKey = "player_rot_speed", camRotSpeedKey = "camera_rot_speed",
-        camFollowDamping_XKey = "camera_follow_damping_x", camFollowDamping_YKey = "camera_follow_damping_y", 
+        camFollowDamping_XKey = "camera_follow_damping_x", camFollowDamping_YKey = "camera_follow_damping_y",
         camFollowDamping_ZKey = "camera_follow_damping_z", camFollowDamping_YawKey = "camera_follow_damping_yaw",
         camRotDamping_HorizontalKey = "camera_rot_damping_horizontal", camRotDamping_VerticalKey = "camera_rot_damping_vertical",
         isPausedWhileInMenuKey = "is_paused_in_menu";
+       
 
     public static readonly float plRotSpeed_def = 150, camRotSpeed_def = 130,
         camFollowDamping_X_def = 3, camFollowDamping_Y_def = 0, camFollowDamping_Z_def = 0,
         camFollowDamping_Yaw_def = 3, camRotDamping_Horizontal_def = 0.5f, camRotDamping_Vertical_def = 0.5f;
 
+    // Sounds
+    private static string backMusicVolumeKey = "background_music_volume", stepsVolumeKey = "steps_volume",
+        damageEffectVolumeKey = "damage_effect_volume";
+
+    public static float backMusicVolume, stepsVolume, damageEffectVolume;
+
+    public static readonly float backMusicVolume_def = 30, stepsVolume_def = 100, damageEffectVolume_def = 100;
+
     static Preferences()
     {
+        // Movement and Camera
         plRotStyles = new Dictionary<PlayerRotationStyle, string>();
         plRotStyles.Add(PlayerRotationStyle.withMouse, "Mouse");
         plRotStyles.Add(PlayerRotationStyle.withKeyboard, "AD keys or arrow keys");
@@ -65,7 +76,7 @@ public class Preferences
         camRotStyles = new Dictionary<CameraRotationStyle, (string, bool, bool)>();
         camRotStyles.Add(CameraRotationStyle.followPlayer, ("Follow player", true, true));
         camRotStyles.Add(CameraRotationStyle.withMouse, ("Mouse", false, true));
-        camRotStyles.Add(CameraRotationStyle.withRightClickMouse, ("Right click mouses", true, true));
+        camRotStyles.Add(CameraRotationStyle.withRightClickMouse, ("Right click mouse", true, true));
 
         _isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
         SetPlayerRotationStyle(PlayerPrefs.GetInt(plRotStyleKey, 0));
@@ -77,6 +88,11 @@ public class Preferences
         SetCameraFollowingDamping_Yaw(PlayerPrefs.GetFloat(camFollowDamping_YawKey, camFollowDamping_Yaw_def));
         SetCameraRotatingDamping_Horizontal(PlayerPrefs.GetFloat(camRotDamping_HorizontalKey, camRotDamping_Horizontal_def));
         SetCameraRotatingDamping_Vertical(PlayerPrefs.GetFloat(camRotDamping_VerticalKey, camRotDamping_Vertical_def));
+
+        // Sounds
+        SetBackgroundMusicVolume(PlayerPrefs.GetFloat(backMusicVolumeKey, backMusicVolume_def));
+        SetStepsVolume(PlayerPrefs.GetFloat(stepsVolumeKey, stepsVolume_def));
+        SetDamageEffectVolume(PlayerPrefs.GetFloat(damageEffectVolumeKey, damageEffectVolume_def));
     }
 
     public static string GetPlayerRotationStyleName()
@@ -179,5 +195,23 @@ public class Preferences
     {
         camRotDamping_Vertical = Mathf.Clamp(damping, camDampingMin, camDampingMax);
         PlayerPrefs.SetFloat(camRotDamping_VerticalKey, camRotDamping_Vertical);
+    }
+
+    public static void SetBackgroundMusicVolume(float volume)
+    {
+        backMusicVolume = Mathf.Clamp(volume, 0, 100);
+        PlayerPrefs.SetFloat(backMusicVolumeKey, backMusicVolume);
+    }
+
+    public static void SetStepsVolume(float volume)
+    {
+        stepsVolume = Mathf.Clamp(volume, 0, 100);
+        PlayerPrefs.SetFloat(stepsVolumeKey, stepsVolume);
+    }
+
+    public static void SetDamageEffectVolume(float volume)
+    {
+        damageEffectVolume = Mathf.Clamp(volume, 0, 100);
+        PlayerPrefs.SetFloat(damageEffectVolumeKey, damageEffectVolume);
     }
 }
