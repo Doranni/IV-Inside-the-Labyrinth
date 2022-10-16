@@ -130,14 +130,14 @@ public class GameManager : MonoBehaviour
         healthValueTmp.text = Mathf.Round(value) + "/" + maxValue;
     }
 
-    public static void UpdateSanity(float value, float maxValue)
+    public static void UpdateSanity(float currentSanity, float maxSanity)
     {
-        instance.UpdateSanity_private(value, maxValue);
+        instance.UpdateSanity_private(currentSanity, maxSanity);
     }
 
-    private void UpdateSanity_private(float value, float maxValue)
+    private void UpdateSanity_private(float currentSanity, float maxSanity)
     {
-        sanityValueTmp.text = Mathf.Round(value) + "/" + maxValue;
+        sanityValueTmp.text = Mathf.Round(currentSanity) + "/" + maxSanity;
     }
 
     public static void UpdateEffects(Dictionary<int, Effect> effects)

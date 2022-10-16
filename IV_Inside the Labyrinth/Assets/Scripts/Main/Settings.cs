@@ -6,18 +6,26 @@ using TMPro;
 
 public class Settings : MonoBehaviour
 {
-    // Movement and Camera
-    [Header("Movement and Camera")]
     [SerializeField] private Toggle pauseToggle;
-    [SerializeField] private TMP_Dropdown plRotStyleDropdown, camRotStyleDropdown;
-    [SerializeField] private TMP_InputField plRotSpeedInputField, camRotSpeedInputField;
-    [SerializeField] private Slider plRotSpeedSlider, camRotSpeedSlider;
+
+    // Movement and Camera
+    [Header("Player's Movement")]
+    [SerializeField] private TMP_Dropdown plRotStyleDropdown;
+    [SerializeField] private TMP_InputField plRotSpeedInputField;
+    [SerializeField] private Slider plRotSpeedSlider;
+    [Header("Camera's Rotation")]
+    [SerializeField] private TMP_Dropdown camRotStyleDropdown;
+    [SerializeField] private TMP_InputField camRotSpeed_HorizontalInputField, camRotSpeed_VerticalInputField;
+    [SerializeField] private Slider camRotSpeed_HorizontalSlider, camRotSpeed_VerticalSlider;
+    [Header("Camera's Follow damping")]
     [SerializeField] private TMP_InputField camFollowDamping_XInputField, camFollowDamping_YInputField, 
         camFollowDamping_ZInputField, camFollowDamping_YawInputField;
     [SerializeField] private Slider camFollowDamping_XSlider, camFollowDamping_YSlider, 
         camFollowDamping_ZSlider, camFollowDamping_YawSlider;
+    [Header("Camera's Rotation damping")]
     [SerializeField] private TMP_InputField camRotDamping_HorizontalInputField, camRotDamping_VerticalInputField;
     [SerializeField] private Slider camRotDamping_HorizontalSlider, camRotDamping_VerticalSlider;
+    [Header("Reset")]
     [SerializeField] private Button resetButton_MovementAndCamera;
 
     private AnimationAndMovementController movementController;
@@ -30,6 +38,7 @@ public class Settings : MonoBehaviour
     [SerializeField] private TMP_InputField backgroundMusicInputField;
     [SerializeField] private TMP_InputField stepsInputField, damageEffectInputField;
     [SerializeField] private Slider backgroundMusicSlider, stepsSlider, damageEffectSlider;
+    [Header("Reset")]
     [SerializeField] private Button resetButton_Sounds;
 
     private void Start()
@@ -53,10 +62,15 @@ public class Settings : MonoBehaviour
         plRotSpeedSlider.onValueChanged.AddListener(ChangePlayerRotSpeed_Float);
         plRotSpeedInputField.onValueChanged.AddListener(ChangePlayerRotSpeed_String);
 
-        SetSliderAndInputFieldValue(camRotSpeedInputField, camRotSpeedSlider,
-            Preferences.camRotSpeedMin, Preferences.camRotSpeedMax, Preferences.camRotSpeed);
-        camRotSpeedSlider.onValueChanged.AddListener(ChangeCamRotSpeed_Float);
-        camRotSpeedInputField.onValueChanged.AddListener(ChangeCamRotSpeed_String);
+        SetSliderAndInputFieldValue(camRotSpeed_HorizontalInputField, camRotSpeed_HorizontalSlider,
+            Preferences.camRotHorizontal_SpeedMin, Preferences.camRot_HorizontalSpeedMax, Preferences.camRot_HorizontalSpeed);
+        camRotSpeed_HorizontalSlider.onValueChanged.AddListener(ChangeCamRotSpeed_Horizontal_Float);
+        camRotSpeed_HorizontalInputField.onValueChanged.AddListener(ChangeCamRotSpeed_Horizontal_String);
+
+        SetSliderAndInputFieldValue(camRotSpeed_VerticalInputField, camRotSpeed_VerticalSlider,
+            Preferences.camRotVertical_SpeedMin, Preferences.camRot_VerticalSpeedMax, Preferences.camRot_VerticalSpeed);
+        camRotSpeed_VerticalSlider.onValueChanged.AddListener(ChangeCamRotSpeed_Vertical_Float);
+        camRotSpeed_VerticalInputField.onValueChanged.AddListener(ChangeCamRotSpeed_Vertical_String);
 
         SetSliderAndInputFieldValue(camFollowDamping_XInputField, camFollowDamping_XSlider, 
             Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camFollowDamping_X);
@@ -120,7 +134,8 @@ public class Settings : MonoBehaviour
     private void ResetPrefs_MovementAndCamera()
     {
         ChangePlayerRotSpeed_Float(Preferences.plRotSpeed_def);
-        ChangeCamRotSpeed_Float(Preferences.camRotSpeed_def);
+        ChangeCamRotSpeed_Horizontal_Float(Preferences.camRotSpeed_Horizontal_def);
+        ChangeCamRotSpeed_Vertical_Float(Preferences.camRotSpeed_Vertical_def);
         ChangeCamFollowDamping_X_Float(Preferences.camFollowDamping_X_def);
         ChangeCamFollowDamping_Y_Float(Preferences.camFollowDamping_Y_def);
         ChangeCamFollowDamping_Z_Float(Preferences.camFollowDamping_Z_def);
@@ -213,7 +228,7 @@ public class Settings : MonoBehaviour
             }
         }
         movementController.UpdatePlayerRotation();
-        cameraController.UpdateRotation();
+        cameraController.UpdateViewMode();
         PopulateCameraRotationDropdown();
     }
 
@@ -229,7 +244,7 @@ public class Settings : MonoBehaviour
             }
         }
         movementController.UpdatePlayerRotation();
-        cameraController.UpdateRotation();
+        cameraController.UpdateViewMode();
     }
 
     private void ChangePlayerRotSpeed_Float(float value)
@@ -245,17 +260,30 @@ public class Settings : MonoBehaviour
         ChangePlayerRotSpeed_Float(float.Parse(value));
     }
 
-    private void ChangeCamRotSpeed_Float(float value)
+    private void ChangeCamRotSpeed_Horizontal_Float(float value)
     {
-        Preferences.SetCameraRotationSpeed(value);
-        camRotSpeedInputField.text = Preferences.camRotSpeed.ToString();
-        camRotSpeedSlider.value = Preferences.camRotSpeed;
+        Preferences.SetCameraRotationSpeed_Horizontal(value);
+        camRotSpeed_HorizontalInputField.text = Preferences.camRot_HorizontalSpeed.ToString();
+        camRotSpeed_HorizontalSlider.value = Preferences.camRot_HorizontalSpeed;
         cameraController.UpdateRotation();
     }
 
-    private void ChangeCamRotSpeed_String(string value)
+    private void ChangeCamRotSpeed_Horizontal_String(string value)
     {
-        ChangeCamRotSpeed_Float(float.Parse(value));
+        ChangeCamRotSpeed_Horizontal_Float(float.Parse(value));
+    }
+
+    private void ChangeCamRotSpeed_Vertical_Float(float value)
+    {
+        Preferences.SetCameraRotationSpeed_Vertical(value);
+        camRotSpeed_VerticalInputField.text = Preferences.camRot_VerticalSpeed.ToString();
+        camRotSpeed_VerticalSlider.value = Preferences.camRot_VerticalSpeed;
+        cameraController.UpdateRotation();
+    }
+
+    private void ChangeCamRotSpeed_Vertical_String(string value)
+    {
+        ChangeCamRotSpeed_Vertical_Float(float.Parse(value));
     }
 
     private void ChangeCamFollowDamping_X_Float(float value)

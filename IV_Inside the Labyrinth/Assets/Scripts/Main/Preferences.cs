@@ -24,14 +24,16 @@ public class Preferences
     public static Dictionary<CameraRotationStyle, (string name, bool isAvailableWithPlRot_Mouse, bool isAvailableWithPlRot_Keyboard)>
         camRotStyles { get; private set; }
 
-    public static float plRotSpeed, plRotSpeedMin = 100, plRotSpeedMax = 300,
-        camRotSpeed, camRotSpeedMin = 100, camRotSpeedMax = 300;
-
-    private static bool _isPausedWhileInMenu;
+    public static float plRotSpeed, camRot_HorizontalSpeed, camRot_VerticalSpeed;
+    public static readonly float plRotSpeedMin = 100, plRotSpeedMax = 300,
+        camRotHorizontal_SpeedMin = 100, camRot_HorizontalSpeedMax = 300,
+        camRotVertical_SpeedMin = 10, camRot_VerticalSpeedMax = 100;
 
     public static float camFollowDamping_X, camFollowDamping_Y, camFollowDamping_Z, camFollowDamping_Yaw,
-        camRotDamping_Horizontal, camRotDamping_Vertical, 
-        camDampingMin = 0, camDampingMax = 20;
+        camRotDamping_Horizontal, camRotDamping_Vertical;
+    public static readonly float camDampingMin = 0, camDampingMax = 20;
+
+    private static bool _isPausedWhileInMenu;
 
     public static bool isPausedWhileInMenu
     {
@@ -46,15 +48,17 @@ public class Preferences
         }
     }
 
-    private static string plRotStyleKey = "player_rot_style", camRotStyleKey = "camera_rot_style",
-        plRotSpeedKey = "player_rot_speed", camRotSpeedKey = "camera_rot_speed",
+    private static string plRotStyleKey = "player_rot_style", plRotSpeedKey = "player_rot_speed",
+        camRotStyleKey = "camera_rot_style", 
+        camRotSpeed_HorizontalKey = "camera_rot_speed_horizontal", camRotSpeed_VerticalKey = "camera_rot_speed_vertical",
         camFollowDamping_XKey = "camera_follow_damping_x", camFollowDamping_YKey = "camera_follow_damping_y",
         camFollowDamping_ZKey = "camera_follow_damping_z", camFollowDamping_YawKey = "camera_follow_damping_yaw",
         camRotDamping_HorizontalKey = "camera_rot_damping_horizontal", camRotDamping_VerticalKey = "camera_rot_damping_vertical",
         isPausedWhileInMenuKey = "is_paused_in_menu";
        
 
-    public static readonly float plRotSpeed_def = 150, camRotSpeed_def = 130,
+    public static readonly float plRotSpeed_def = 150, 
+        camRotSpeed_Horizontal_def = 150, camRotSpeed_Vertical_def = 70,
         camFollowDamping_X_def = 3, camFollowDamping_Y_def = 0, camFollowDamping_Z_def = 0,
         camFollowDamping_Yaw_def = 3, camRotDamping_Horizontal_def = 0.5f, camRotDamping_Vertical_def = 0.5f;
 
@@ -81,7 +85,8 @@ public class Preferences
         _isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
         SetPlayerRotationStyle(PlayerPrefs.GetInt(plRotStyleKey, 0));
         SetPlayerRotationSpeed(PlayerPrefs.GetFloat(plRotSpeedKey, plRotSpeed_def));
-        SetCameraRotationSpeed(PlayerPrefs.GetFloat(camRotSpeedKey, camRotSpeed_def));
+        SetCameraRotationSpeed_Horizontal(PlayerPrefs.GetFloat(camRotSpeed_HorizontalKey, camRotSpeed_Horizontal_def));
+        SetCameraRotationSpeed_Vertical(PlayerPrefs.GetFloat(camRotSpeed_VerticalKey, camRotSpeed_Vertical_def));
         SetCameraFollowingDamping_X(PlayerPrefs.GetFloat(camFollowDamping_XKey, camFollowDamping_X_def));
         SetCameraFollowingDamping_Y(PlayerPrefs.GetFloat(camFollowDamping_YKey, camFollowDamping_Y_def));
         SetCameraFollowingDamping_Z(PlayerPrefs.GetFloat(camFollowDamping_ZKey, camFollowDamping_Z_def));
@@ -155,10 +160,16 @@ public class Preferences
         PlayerPrefs.SetFloat(plRotSpeedKey, plRotSpeed);
     }
 
-    public static void SetCameraRotationSpeed(float speed)
+    public static void SetCameraRotationSpeed_Horizontal(float speed)
     {
-        camRotSpeed = Mathf.Clamp(speed, camRotSpeedMin, camRotSpeedMax);
-        PlayerPrefs.SetFloat(camRotSpeedKey, camRotSpeed);
+        camRot_HorizontalSpeed = Mathf.Clamp(speed, camRotHorizontal_SpeedMin, camRot_HorizontalSpeedMax);
+        PlayerPrefs.SetFloat(camRotSpeed_HorizontalKey, camRot_HorizontalSpeed);
+    }
+
+    public static void SetCameraRotationSpeed_Vertical(float speed)
+    {
+        camRot_VerticalSpeed = Mathf.Clamp(speed, camRotVertical_SpeedMin, camRot_VerticalSpeedMax);
+        PlayerPrefs.SetFloat(camRotSpeed_VerticalKey, camRot_VerticalSpeed);
     }
 
     public static void SetCameraFollowingDamping_X(float damping)

@@ -56,7 +56,7 @@ public class AnimationAndMovementController : MonoBehaviour
 
     // Animation
     private Animator animator;
-    private int animHash_VecticalVelocity_Float, animHash_HorizontalVelocity_Float, 
+    private int animHash_VecticalVelocity_Float, animHash_HorizontalVelocity_Float,
         animHash_Acceleration_Float,
         animHash_FallingVelocity_Float, animHash_Angle_Float,
         animHash_Jump_Trigger, animHash_Falling_Trigger, animHash_Landing_Trigger;
@@ -77,18 +77,100 @@ public class AnimationAndMovementController : MonoBehaviour
         };
         inputManager.OnMoveForward_started += context =>
         {
-            if (moveState == MovementState.still)
+            switch (Preferences.plRotStyle)
             {
-                moveState = MovementState.moving;
-                cameraController.UpdateRotation();
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        if (moveState == MovementState.still)
+                        {
+                            moveState = MovementState.moving;
+                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse)
+                            {
+                                cameraController.UpdateViewMode();
+                            }
+                        }
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        if (moveState == MovementState.still)
+                        {
+                            moveState = MovementState.moving;
+                        }
+                        cameraController.UpdateViewMode();
+                        break;
+                    }
             }
         };
         inputManager.OnMoveForward_canceled += context =>
         {
-            if (moveState == MovementState.moving)
+            switch (Preferences.plRotStyle)
             {
-                moveState = MovementState.still;
-                cameraController.UpdateRotation();
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        if (moveState == MovementState.moving && rotationKeyboardInput == 0)
+                        {
+                            moveState = MovementState.still;
+                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse)
+                            {
+                                cameraController.UpdateViewMode();
+                            }
+                        }
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        if (moveState == MovementState.moving)
+                        {
+                            moveState = MovementState.still;
+                        }
+                        cameraController.UpdateViewMode();
+                        break;
+                    }
+            }
+        };
+        inputManager.OnMoveAside_started += context =>
+        {
+            switch (Preferences.plRotStyle)
+            {
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        if (moveState == MovementState.still)
+                        {
+                            moveState = MovementState.moving;
+                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse)
+                            {
+                                cameraController.UpdateViewMode();
+                            }
+                        }
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        break;
+                    }
+            }
+        };
+        inputManager.OnMoveAside_canceled += context =>
+        {
+            switch (Preferences.plRotStyle)
+            {
+                case Preferences.PlayerRotationStyle.withMouse:
+                    {
+                        if (moveState == MovementState.moving && movementForwardInput == 0)
+                        {
+                            moveState = MovementState.still;
+                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse)
+                            {
+                                cameraController.UpdateViewMode();
+                            }
+                        }
+                        break;
+                    }
+                case Preferences.PlayerRotationStyle.withKeyboard:
+                    {
+                        break;
+                    }
             }
         };
 
@@ -135,11 +217,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void MouseRightClick_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse 
+        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.withRightClickMouse
             && Preferences.plRotStyle == Preferences.PlayerRotationStyle.withMouse)
         {
             currentRotationSpeed = 0;
-        } 
+        }
     }
 
     private void JumpUp_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
@@ -213,7 +295,7 @@ public class AnimationAndMovementController : MonoBehaviour
         plCamAngle = Vector3.SignedAngle(playersForward, camerasForward, Vector3.up);
 
         if (moveState == MovementState.falling)
-            {
+        {
             if (characterController.isGrounded)
             {
                 moveState = MovementState.underAnimation;
@@ -316,28 +398,32 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (characterController.isGrounded && moveState == MovementState.moving)
+        if (characterController.isGrounded && 
+            (moveState == MovementState.moving || moveState == MovementState.still))
         {
             switch (Preferences.plRotStyle)
             {
                 case Preferences.PlayerRotationStyle.withMouse:
                     {
-                        if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer
-                            && cameraController.VMode == CameraController.ViewMode.thirdViewMode)
+                        if (moveState == MovementState.moving)
                         {
-                            float angleClamped = Mathf.Clamp(plCamAngle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
-                            if (angleClamped == -plCamMinAngleForRotation || angleClamped == plCamMinAngleForRotation)
+                            if (Preferences.camRotStyle == Preferences.CameraRotationStyle.followPlayer
+                                && cameraController.VMode == CameraController.ViewMode.thirdViewMode)
+                            {
+                                float angleClamped = Mathf.Clamp(plCamAngle, -plCamMinAngleForRotation, plCamMinAngleForRotation);
+                                if (angleClamped == -plCamMinAngleForRotation || angleClamped == plCamMinAngleForRotation)
+                                {
+                                    transform.Rotate(Vector3.up, Mathf.Lerp(0,
+                                    angleClamped / plCamMinAngleForRotation * currentRotationSpeed * rotationAcceleration,
+                                    Time.deltaTime), Space.Self);
+                                }
+                            }
+                            else
                             {
                                 transform.Rotate(Vector3.up, Mathf.Lerp(0,
-                                angleClamped / plCamMinAngleForRotation * currentRotationSpeed * rotationAcceleration,
-                                Time.deltaTime), Space.Self);
+                                    rotationMouseInput * currentRotationSpeed * rotationAcceleration,
+                                    Time.deltaTime), Space.Self);
                             }
-                        }
-                        else
-                        {
-                            transform.Rotate(Vector3.up, Mathf.Lerp(0,
-                                rotationMouseInput * currentRotationSpeed * rotationAcceleration,
-                                Time.deltaTime), Space.Self);
                         }
                         break;
                     }

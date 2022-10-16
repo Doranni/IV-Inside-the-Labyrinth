@@ -42,6 +42,7 @@ Transform:
   m_Children:
   - {fileID: 6574607938295585666}
   - {fileID: 8304178314532307912}
+  - {fileID: 2923527980525700213}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -109,7 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ffa4408331f2d429cc7e9d6f08a3ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bloodSplatterEffect_Image: {fileID: 0}
+  damageEffect_Image: {fileID: 0}
+  damageEffectImage_maxOpacity: 0.8
   damageAnimator: {fileID: 0}
   sanityLightEffect: {fileID: 0}
   sanityLightMask:
@@ -240,7 +242,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 0c3e509fc6203e84292dc6cb44b1f7cd, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -324,6 +326,37 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &5941153062901946658
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2923527980525700213}
+  m_Layer: 0
+  m_Name: ThirdView point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2923527980525700213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5941153062901946658}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.9, z: -0.225}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4442390122925675943}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8223389772404264510
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,7 +381,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8223389772404264510}
   m_LocalRotation: {x: 4.2351647e-22, y: -0, z: -1.9173727e-23, w: 1}
-  m_LocalPosition: {x: 0, y: 1.7, z: 0.55}
+  m_LocalPosition: {x: 0, y: 1.9, z: 0.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
