@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Image bloodSplatterEffect_Image;
+    [SerializeField] private Image damageEffect_Image;
+    [SerializeField] private float damageEffectImage_maxOpacity;
     [SerializeField] private Animator damageAnimator;
     [SerializeField] private GameObject sanityLightEffect;
     [SerializeField] private LayerMask sanityLightMask;
@@ -93,19 +94,19 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private void PlSanity_OnChangeSanity(float value, float maxValue)
+    private void PlSanity_OnChangeSanity(float currentSanity, float maxSanity)
     {
-        GameManager.UpdateSanity(value, maxValue);
-        LightManager.UpdateBrightness(value / maxValue);
+        GameManager.UpdateSanity(currentSanity, maxSanity);
+        LightManager.UpdateLight(currentSanity / maxSanity);
     }
 
     private void PlHealth_OnChangeHealth(float currentHealth, float maxHealth)
     {
         GameManager.UpdateHealth(currentHealth, maxHealth);
-        float damageTaken = 1 - (currentHealth / maxHealth);
-        Color bloodColor = bloodSplatterEffect_Image.color;
-        bloodColor.a = damageTaken;
-        bloodSplatterEffect_Image.color = bloodColor;
+        float damageColor_A = Mathf.Lerp(damageEffectImage_maxOpacity, 0, currentHealth / maxHealth);
+        Color bloodColor = damageEffect_Image.color;
+        bloodColor.a = damageColor_A;
+        damageEffect_Image.color = bloodColor;
     }
 
     private void OnTriggerEnter(Collider other)

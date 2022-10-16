@@ -12,6 +12,7 @@ public class InputManager : MonoBehaviour
     public delegate void InputFunction(InputAction.CallbackContext obj);
     public event InputFunction OnMenu_performed,
         OnMoveForward_performed, OnMoveForward_started, OnMoveForward_canceled,
+        OnMoveAside_started, OnMoveAside_canceled,
         OnRotateMouse_started, OnRotateMouse_performed, OnRotateMouse_canceled,
         OnRotateKeyboard_started, OnRotateKeyboard_performed, OnRotateKeyboard_canceled,
         OnAcceleration_started, OnAcceleration_canceled,
@@ -32,6 +33,8 @@ public class InputManager : MonoBehaviour
         gameInput.Movement.MoveForward.performed += MoveForward_performed;
         gameInput.Movement.MoveForwardButton.started += MoveForward_started;
         gameInput.Movement.MoveForwardButton.canceled += MoveForward_canceled;
+        gameInput.Movement.MoveAsideButton.started += MoveAside_started;
+        gameInput.Movement.MoveAsideButton.canceled += MoveAside_canceled;
 
         gameInput.Movement.RotateMouse.started += RotateMouse_started;
         gameInput.Movement.RotateMouse.performed += RotateMouse_performed;
@@ -226,6 +229,22 @@ public class InputManager : MonoBehaviour
         if (OnMoveForward_started != null)
         {
             OnMoveForward_started(obj);
+        }
+    }
+
+    private void MoveAside_started(InputAction.CallbackContext obj)
+    {
+        if (OnMoveAside_started != null)
+        {
+            OnMoveAside_started(obj);
+        }
+    }
+
+    private void MoveAside_canceled(InputAction.CallbackContext obj)
+    {
+        if (OnMoveAside_canceled != null)
+        {
+            OnMoveAside_canceled(obj);
         }
     }
 
