@@ -21,7 +21,6 @@ public class CameraController : MonoBehaviour
 
     private bool rightClickInput;
 
-    private InputManager inputManager;
     [SerializeField] private AnimationAndMovementController plMovement;
     private CinemachineBrain cinemachineBrain;
 
@@ -57,23 +56,23 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private ThirdVCameraMode thirdVCamMode;
 
-    private Coroutine switchToPOV;
-
     private void Awake()
 
     {
-        inputManager = InputManager.instance;
-
-        inputManager.OnZoom_started += HandleScrollWheelInput;
-        inputManager.OnZoom_performed += HandleScrollWheelInput;
-        inputManager.OnZoom_canceled += HandleScrollWheelInput;
+        InputManager.instance.OnZoom_started += HandleScrollWheelInput;
+        InputManager.instance.OnZoom_performed += HandleScrollWheelInput;
+        InputManager.instance.OnZoom_canceled += HandleScrollWheelInput;
 
         // TODO: to fix first view camera
         //inputManager.OnFirstViewToggle_performed += FirstViewToggle_performed;
-        inputManager.OnMapViewToggle_performed += MapViewToggle_performed;
+        InputManager.instance.OnMapViewToggle_performed += MapViewToggle_performed;
 
-        inputManager.OnStartRotation_started += StartRotation_started;
-        inputManager.OnStartRotation_canceled += StartRotation_canceled;
+        InputManager.instance.OnStartRotation_started += StartRotation_started;
+        InputManager.instance.OnStartRotation_canceled += StartRotation_canceled;
+
+        Preferences.OnCamRotStyleChanged += UpdateViewMode;
+        Preferences.OnCamRotSpeed_HorizontalChanged += UpdateHorizontalRotation;
+        Preferences.OnCamRotSpeed_VerticalChanged += UpdateVerticalRotation;
 
         float scrollStep = scrollWheelMax - scrollWheelMin;
         thirdViewDistanceRange = (thirdViewDistanceMax - thirdViewDistanceMin);
@@ -158,7 +157,8 @@ public class CameraController : MonoBehaviour
     {
         ResetDistance();
         UpdateViewMode();
-        UpdateRotation();
+        UpdateHorizontalRotation();
+        UpdateVerticalRotation();
         UpdateDamping();
     }
 
@@ -398,9 +398,13 @@ public class CameraController : MonoBehaviour
         return mapViewTransposer.m_CameraDistance != neededMapViewDistance;
     }
 
-    public void UpdateRotation()
+    public void UpdateHorizontalRotation()
     {
         thirdViewPOV.m_HorizontalAxis.m_MaxSpeed = Preferences.camRot_HorizontalSpeed;
+    }
+
+    public void UpdateVerticalRotation()
+    {
         thirdViewPOV.m_VerticalAxis.m_MaxSpeed = Preferences.camRot_VerticalSpeed;
     }
 
@@ -418,5 +422,19 @@ public class CameraController : MonoBehaviour
         //    composer.m_HorizontalDamping = Preferences.camRotDamping_Horizontal;
         //    composer.m_VerticalDamping = Preferences.camRotDamping_Vertical;
         //}
+    }
+
+    private void OnDestroy()
+    {
+        InputManager.instance.OnZoom_started -= HandleScrollWheelInput;
+        InputManager.instance.OnZoom_performed -= HandleScrollWheelInput;
+        InputManager.instance.OnZoom_canceled -= HandleScrollWheelInput;
+        InputManager.instance.OnMapViewToggle_performed -= MapViewToggle_performed;
+        InputManager.instance.OnStartRotation_started -= StartRotation_started;
+        InputManager.instance.OnStartRotation_canceled -= StartRotation_canceled;
+
+        Preferences.OnCamRotStyleChanged -= UpdateViewMode;
+        Preferences.OnCamRotSpeed_HorizontalChanged -= UpdateHorizontalRotation;
+        Preferences.OnCamRotSpeed_VerticalChanged -= UpdateVerticalRotation;
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundsManager : MonoBehaviour
@@ -7,50 +5,38 @@ public class SoundsManager : MonoBehaviour
     [SerializeField] private AudioSource playerSteps, damageEffect;
     private AudioSource backGroundMusic;
 
-    private static SoundsManager instance;
-
-    private void Awake()
-    {
-        instance = this;
-    }
-
     private void Start()
     {
         backGroundMusic = GetComponent<AudioSource>();
 
-        UpdateBackgroundMusicVolume_Private(Preferences.backMusicVolume);
-        UpdateStepsVolume_Private(Preferences.stepsVolume);
-        UpdateDamageEffectVolume_Private(Preferences.damageEffectVolume);
+        Preferences.OnBackgroundMusicVolumeChanged += Preferences_OnBackgroundMusicVolumeChanged;
+        Preferences.OnStepsVolumeChanged += Preferences_OnStepsVolumeChanged;
+        Preferences.OnDamageEffectVolumeChanged += Preferences_OnDamageEffectVolumeChanged;
+
+        Preferences_OnBackgroundMusicVolumeChanged();
+        Preferences_OnStepsVolumeChanged();
+        Preferences_OnDamageEffectVolumeChanged();
     }
 
-    private void UpdateBackgroundMusicVolume_Private(float volume)
+    private void Preferences_OnBackgroundMusicVolumeChanged()
     {
-        backGroundMusic.volume = volume / 100;
+        backGroundMusic.volume = Preferences.backMusicVolume / 100;
     }
 
-    public static void UpdateBackgroundMusicVolume(float volume)
+    private void Preferences_OnStepsVolumeChanged()
     {
-        instance.UpdateBackgroundMusicVolume_Private(volume);
+        playerSteps.volume = Preferences.stepsVolume / 100;
     }
 
-    private void UpdateStepsVolume_Private(float volume)
+    private void Preferences_OnDamageEffectVolumeChanged()
     {
-        playerSteps.volume = volume / 100;
+        damageEffect.volume = Preferences.damageEffectVolume / 100;
     }
 
-    public static void UpdateStepsVolume(float volume)
+    private void OnDestroy()
     {
-        instance.UpdateStepsVolume_Private(volume);
+        Preferences.OnBackgroundMusicVolumeChanged -= Preferences_OnBackgroundMusicVolumeChanged;
+        Preferences.OnStepsVolumeChanged -= Preferences_OnStepsVolumeChanged;
+        Preferences.OnDamageEffectVolumeChanged -= Preferences_OnDamageEffectVolumeChanged;
     }
-
-    private void UpdateDamageEffectVolume_Private(float volume)
-    {
-        damageEffect.volume = volume / 100;
-    }
-
-    public static void UpdateDamageEffectVolume(float volume)
-    {
-        instance.UpdateDamageEffectVolume_Private(volume);
-    }
-
 }

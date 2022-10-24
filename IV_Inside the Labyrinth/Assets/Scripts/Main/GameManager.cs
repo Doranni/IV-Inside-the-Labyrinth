@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
     enum GameStatus
     {
@@ -15,24 +15,21 @@ public class GameManager : MonoBehaviour
         onExit
     }
 
-    [SerializeField]
-    private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
+    [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
     [SerializeField] private Button settingsButton, exitButton, quitButton, stayButton;
     [SerializeField] private TextMeshProUGUI healthValueTmp, sanityValueTmp, effectsTmp;
 
-    private InputManager inputManager;
     private GameStatus gameStatus;
     
-    public static string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", torchTag = "Torch", sanityLight = "Sanity Light";
+    public static string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", 
+        torchTag = "Torch", sanityLight = "Sanity Light";
 
-    private static GameManager instance;
     private static int lastId = 0;
 
-    private void Awake()
+    public override void Awake()
     {
-        instance = this;
-        inputManager = InputManager.instance;
-        inputManager.OnMenu_performed += Menu_performed;
+        base.Awake();
+        InputManager.instance.OnMenu_performed += Menu_performed;
         settingsButton.onClick.AddListener(OpenSettingsScreen);
         exitButton.onClick.AddListener(OpenExitScreen);
         quitButton.onClick.AddListener(QuitGame);
@@ -159,5 +156,10 @@ public class GameManager : MonoBehaviour
     public static int NewId()
     {
         return lastId++;
+    }
+
+    private void OnDestroy()
+    {
+        InputManager.instance.OnMenu_performed -= Menu_performed;
     }
 }

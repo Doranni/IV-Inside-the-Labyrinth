@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,10 +28,7 @@ public class Settings : MonoBehaviour
     [Header("Reset")]
     [SerializeField] private Button resetButton_MovementAndCamera;
 
-    private AnimationAndMovementController movementController;
-    private CameraController cameraController;
-
-    List<TMP_Dropdown.OptionData> playerRotList, cameraRotList;
+    private List<TMP_Dropdown.OptionData> playerRotList, cameraRotList;
 
     // Sounds
     [Header("Sounds")]
@@ -43,92 +40,106 @@ public class Settings : MonoBehaviour
 
     private void Start()
     {
-        // Movement and Camera
-        movementController = GameObject.FindGameObjectWithTag(GameManager.playerTag).GetComponent<AnimationAndMovementController>();
-        cameraController = GameObject.Find("MainCamera").GetComponent<CameraController>();
-
-        pauseToggle.isOn = Preferences.isPausedWhileInMenu;
         pauseToggle.onValueChanged.AddListener(SetPauseBehavior);
+        Preferences.OnPauseBehaviorChanged += UpdatePauseUI;
+        UpdatePauseUI();
 
+        // Movement and Camera
         playerRotList = new List<TMP_Dropdown.OptionData>();
         cameraRotList = new List<TMP_Dropdown.OptionData>();
-        PopulatePlayerRotationDropdown();
-        PopulateCameraRotationDropdown();
         plRotStyleDropdown.onValueChanged.AddListener(ChangePlayerRotationStyle);
         camRotStyleDropdown.onValueChanged.AddListener(ChangeCameraRotationStyle);
+        Preferences.OnPlRotStyleChanged += UpdatePlayerRotationStyle;
+        Preferences.OnCamRotStyleChanged += UpdateCameraRotationStyle;
+        UpdatePlayerRotationStyle();
 
-        SetSliderAndInputFieldValue(plRotSpeedInputField, plRotSpeedSlider,
-            Preferences.plRotSpeedMin, Preferences.plRotSpeedMax, Preferences.plRotSpeed);
+        SetSliderRange(plRotSpeedSlider, Preferences.plRotSpeedMin, Preferences.plRotSpeedMax);
         plRotSpeedSlider.onValueChanged.AddListener(ChangePlayerRotSpeed_Float);
         plRotSpeedInputField.onValueChanged.AddListener(ChangePlayerRotSpeed_String);
+        Preferences.OnPlRotSpeedChanged += UpdatePlayerRotSpeed;
+        UpdatePlayerRotSpeed();
 
-        SetSliderAndInputFieldValue(camRotSpeed_HorizontalInputField, camRotSpeed_HorizontalSlider,
-            Preferences.camRotHorizontal_SpeedMin, Preferences.camRot_HorizontalSpeedMax, Preferences.camRot_HorizontalSpeed);
+        SetSliderRange(camRotSpeed_HorizontalSlider, Preferences.camRotHorizontal_SpeedMin, Preferences.camRot_HorizontalSpeedMax);
         camRotSpeed_HorizontalSlider.onValueChanged.AddListener(ChangeCamRotSpeed_Horizontal_Float);
         camRotSpeed_HorizontalInputField.onValueChanged.AddListener(ChangeCamRotSpeed_Horizontal_String);
+        Preferences.OnCamRotSpeed_HorizontalChanged += UpdateCamRotSpeed_Horizontal;
+        UpdateCamRotSpeed_Horizontal();
 
-        SetSliderAndInputFieldValue(camRotSpeed_VerticalInputField, camRotSpeed_VerticalSlider,
-            Preferences.camRotVertical_SpeedMin, Preferences.camRot_VerticalSpeedMax, Preferences.camRot_VerticalSpeed);
+        SetSliderRange(camRotSpeed_VerticalSlider, Preferences.camRotVertical_SpeedMin, Preferences.camRot_VerticalSpeedMax);
         camRotSpeed_VerticalSlider.onValueChanged.AddListener(ChangeCamRotSpeed_Vertical_Float);
         camRotSpeed_VerticalInputField.onValueChanged.AddListener(ChangeCamRotSpeed_Vertical_String);
+        Preferences.OnCamRotSpeed_VerticalChanged += UpdateCamRotSpeed_Vertical;
+        UpdateCamRotSpeed_Vertical();
 
-        SetSliderAndInputFieldValue(camFollowDamping_XInputField, camFollowDamping_XSlider, 
-            Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camFollowDamping_X);
+        SetSliderRange(camFollowDamping_XSlider, Preferences.camDampingMin, Preferences.camDampingMax);
         camFollowDamping_XSlider.onValueChanged.AddListener(ChangeCamFollowDamping_X_Float);
         camFollowDamping_XInputField.onValueChanged.AddListener(ChangeCamFollowDamping_X_String);
+        Preferences.OnCamFollowDamping_XChanged += UpdateCamFollowDamping_X;
+        UpdateCamFollowDamping_X();
 
-        SetSliderAndInputFieldValue(camFollowDamping_YInputField, camFollowDamping_YSlider,
-            Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camFollowDamping_Y);
+        SetSliderRange(camFollowDamping_YSlider, Preferences.camDampingMin, Preferences.camDampingMax);
         camFollowDamping_YSlider.onValueChanged.AddListener(ChangeCamFollowDamping_Y_Float);
         camFollowDamping_YInputField.onValueChanged.AddListener(ChangeCamFollowDamping_Y_String);
+        Preferences.OnCamFollowDamping_YChanged += UpdateCamFollowDamping_Y;
+        UpdateCamFollowDamping_Y();
 
-        SetSliderAndInputFieldValue(camFollowDamping_ZInputField, camFollowDamping_ZSlider,
-            Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camFollowDamping_Z);
+        SetSliderRange(camFollowDamping_ZSlider, Preferences.camDampingMin, Preferences.camDampingMax);
         camFollowDamping_ZSlider.onValueChanged.AddListener(ChangeCamFollowDamping_Z_Float);
         camFollowDamping_ZInputField.onValueChanged.AddListener(ChangeCamFollowDamping_Z_String);
+        Preferences.OnCamFollowDamping_ZChanged += UpdateCamFollowDamping_Z;
+        UpdateCamFollowDamping_Z();
 
-        SetSliderAndInputFieldValue(camFollowDamping_YawInputField, camFollowDamping_YawSlider,
-            Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camFollowDamping_Yaw);
+        SetSliderRange(camFollowDamping_YawSlider, Preferences.camDampingMin, Preferences.camDampingMax);
         camFollowDamping_YawSlider.onValueChanged.AddListener(ChangeCamFollowDamping_Yaw_Float);
         camFollowDamping_YawInputField.onValueChanged.AddListener(ChangeCamFollowDamping_Yaw_String);
+        Preferences.OnCamFollowDamping_YawChanged += UpdateCamFollowDamping_Yaw;
+        UpdateCamFollowDamping_Yaw();
 
-        SetSliderAndInputFieldValue(camRotDamping_HorizontalInputField, camRotDamping_HorizontalSlider,
-            Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camRotDamping_Horizontal);
+        SetSliderRange(camRotDamping_HorizontalSlider, Preferences.camDampingMin, Preferences.camDampingMax);
         camRotDamping_HorizontalSlider.onValueChanged.AddListener(ChangeCamRotDamping_Horizontal_Float);
         camRotDamping_HorizontalInputField.onValueChanged.AddListener(ChangeCamRotDamping_Horizontal_String);
+        Preferences.OnCamRotDamping_HorizontalChanged += UpdateCamRotDamping_Horizontal;
+        UpdateCamRotDamping_Horizontal();
 
-        SetSliderAndInputFieldValue(camRotDamping_VerticalInputField, camRotDamping_VerticalSlider,
-            Preferences.camDampingMin, Preferences.camDampingMax, Preferences.camRotDamping_Vertical);
+        SetSliderRange(camRotDamping_VerticalSlider, Preferences.camDampingMin, Preferences.camDampingMax);
         camRotDamping_VerticalSlider.onValueChanged.AddListener(ChangeCamRotDamping_Vertical_Float);
         camRotDamping_VerticalInputField.onValueChanged.AddListener(ChangeCamRotDamping_Vertical_String);
+        Preferences.OnCamRotDamping_VerticalChanged += UpdateCamRotDamping_Vertical;
+        UpdateCamRotDamping_Vertical();
 
         resetButton_MovementAndCamera.onClick.AddListener(ResetPrefs_MovementAndCamera);
 
         // Sounds
-        SetSliderAndInputFieldValue(backgroundMusicInputField, backgroundMusicSlider, 
-            0, 100, Preferences.backMusicVolume);
+        SetSliderRange(backgroundMusicSlider, 0, 100);
         backgroundMusicSlider.onValueChanged.AddListener(ChangeBackgroundMusicVolume_Float);
         backgroundMusicInputField.onValueChanged.AddListener(ChangeBackgroundMusicVolume_String);
+        Preferences.OnBackgroundMusicVolumeChanged += UpdateBackgroundMusicVolume;
+        UpdateBackgroundMusicVolume();
 
-        SetSliderAndInputFieldValue(stepsInputField, stepsSlider, 
-            0, 100, Preferences.stepsVolume);
+        SetSliderRange(stepsSlider, 0, 100);
         stepsSlider.onValueChanged.AddListener(ChangeStepsVolume_Float);
         stepsInputField.onValueChanged.AddListener(ChangeStepsVolume_String);
+        Preferences.OnStepsVolumeChanged += UpdateStepsVolume;
+        UpdateStepsVolume();
 
-        SetSliderAndInputFieldValue(damageEffectInputField, damageEffectSlider, 
-            0, 100, Preferences.damageEffectVolume);
+        SetSliderRange(damageEffectSlider, 0, 100);
         damageEffectSlider.onValueChanged.AddListener(ChangeDamageEffectVolume_Float);
         damageEffectInputField.onValueChanged.AddListener(ChangeDamageEffectVolume_String);
+        Preferences.OnDamageEffectVolumeChanged += UpdateDamageEffectVolume;
+        UpdateDamageEffectVolume();
 
         resetButton_Sounds.onClick.AddListener(ResetPrefs_Sounds);
     }
 
-    private void SetSliderAndInputFieldValue(TMP_InputField inputField, Slider slider, float minValue, float maxValue, float value)
+    private void UpdatePauseUI()
+    {
+        pauseToggle.isOn = Preferences.isPausedWhileInMenu;
+    }
+
+    private void SetSliderRange(Slider slider, float minValue, float maxValue)
     {
         slider.maxValue = maxValue;
         slider.minValue = minValue;
-        slider.value = value;
-        inputField.text = value.ToString();
     }
 
     private void ResetPrefs_MovementAndCamera()
@@ -167,7 +178,7 @@ public class Settings : MonoBehaviour
     private void PopulatePlayerRotationDropdown()
     {
         playerRotList.Clear();
-        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles)
+        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles_info)
         {
             playerRotList.Add(new TMP_Dropdown.OptionData(style.Value));
         }
@@ -180,7 +191,6 @@ public class Settings : MonoBehaviour
             }
         }
     }
-
     private void PopulateCameraRotationDropdown()
     {
         cameraRotList.Clear();
@@ -189,7 +199,7 @@ public class Settings : MonoBehaviour
             case Preferences.PlayerRotationStyle.withMouse:
                 {
                     foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool isAvailableWithPlRot_Mouse, bool)> 
-                        style in Preferences.camRotStyles)
+                        style in Preferences.camRotStyles_info)
                     {
                         if (style.Value.isAvailableWithPlRot_Mouse)
                             cameraRotList.Add(new TMP_Dropdown.OptionData(style.Value.name));
@@ -199,7 +209,7 @@ public class Settings : MonoBehaviour
             case Preferences.PlayerRotationStyle.withKeyboard:
                 {
                     foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool, bool isAvailableWithPlRot_Keyboard)> 
-                        style in Preferences.camRotStyles)
+                        style in Preferences.camRotStyles_info)
                     {
                         if (style.Value.isAvailableWithPlRot_Keyboard)
                             cameraRotList.Add(new TMP_Dropdown.OptionData(style.Value.name));
@@ -219,7 +229,7 @@ public class Settings : MonoBehaviour
 
     private void ChangePlayerRotationStyle(int dropdownValue)
     {
-        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles)
+        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles_info)
         {
             if (plRotStyleDropdown.options[dropdownValue].text.Equals(style.Value))
             {
@@ -227,15 +237,17 @@ public class Settings : MonoBehaviour
                 break;
             }
         }
-        movementController.UpdatePlayerRotation();
-        cameraController.UpdateViewMode();
+    }
+    private void UpdatePlayerRotationStyle()
+    {
+        PopulatePlayerRotationDropdown();
         PopulateCameraRotationDropdown();
     }
 
     private void ChangeCameraRotationStyle(int dropdownValue)
     {
         foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool, bool)> 
-            style in Preferences.camRotStyles)
+            style in Preferences.camRotStyles_info)
         {
             if (camRotStyleDropdown.options[dropdownValue].text.Equals(style.Value.name))
             {
@@ -243,163 +255,203 @@ public class Settings : MonoBehaviour
                 break;
             }
         }
-        movementController.UpdatePlayerRotation();
-        cameraController.UpdateViewMode();
+    }
+    private void UpdateCameraRotationStyle()
+    {
+        PopulateCameraRotationDropdown();
     }
 
     private void ChangePlayerRotSpeed_Float(float value)
     {
         Preferences.SetPlayerRotationSpeed(value);
-        plRotSpeedInputField.text = Preferences.plRotSpeed.ToString();
-        plRotSpeedSlider.value = Preferences.plRotSpeed;
-        movementController.UpdatePlayerRotation();
     }
-
     private void ChangePlayerRotSpeed_String(string value)
     {
         ChangePlayerRotSpeed_Float(float.Parse(value));
+    }
+    private void UpdatePlayerRotSpeed()
+    {
+        plRotSpeedInputField.text = Mathf.Round(Preferences.plRotSpeed).ToString();
+        plRotSpeedSlider.value = Preferences.plRotSpeed;
     }
 
     private void ChangeCamRotSpeed_Horizontal_Float(float value)
     {
         Preferences.SetCameraRotationSpeed_Horizontal(value);
-        camRotSpeed_HorizontalInputField.text = Preferences.camRot_HorizontalSpeed.ToString();
-        camRotSpeed_HorizontalSlider.value = Preferences.camRot_HorizontalSpeed;
-        cameraController.UpdateRotation();
     }
-
     private void ChangeCamRotSpeed_Horizontal_String(string value)
     {
         ChangeCamRotSpeed_Horizontal_Float(float.Parse(value));
+    }
+    private void UpdateCamRotSpeed_Horizontal()
+    {
+        camRotSpeed_HorizontalInputField.text = Mathf.Round(Preferences.camRot_HorizontalSpeed).ToString();
+        camRotSpeed_HorizontalSlider.value = Preferences.camRot_HorizontalSpeed;
     }
 
     private void ChangeCamRotSpeed_Vertical_Float(float value)
     {
         Preferences.SetCameraRotationSpeed_Vertical(value);
-        camRotSpeed_VerticalInputField.text = Preferences.camRot_VerticalSpeed.ToString();
-        camRotSpeed_VerticalSlider.value = Preferences.camRot_VerticalSpeed;
-        cameraController.UpdateRotation();
     }
-
     private void ChangeCamRotSpeed_Vertical_String(string value)
     {
         ChangeCamRotSpeed_Vertical_Float(float.Parse(value));
+    }
+    private void UpdateCamRotSpeed_Vertical()
+    {
+        camRotSpeed_VerticalInputField.text = Mathf.Round(Preferences.camRot_VerticalSpeed).ToString();
+        camRotSpeed_VerticalSlider.value = Preferences.camRot_VerticalSpeed;
     }
 
     private void ChangeCamFollowDamping_X_Float(float value)
     {
         Preferences.SetCameraFollowingDamping_X(value);
-        camFollowDamping_XInputField.text = Preferences.camFollowDamping_X.ToString();
-        camFollowDamping_XSlider.value = Preferences.camFollowDamping_X;
-        cameraController.UpdateDamping();
     }
-
     private void ChangeCamFollowDamping_X_String(string value)
     {
         ChangeCamFollowDamping_X_Float(float.Parse(value));
     }
+    private void UpdateCamFollowDamping_X()
+    {
+        camFollowDamping_XInputField.text = Mathf.Round(Preferences.camFollowDamping_X).ToString();
+        camFollowDamping_XSlider.value = Preferences.camFollowDamping_X;
+    }
 
     private void ChangeCamFollowDamping_Y_Float(float value)
     {
-        Preferences.SetCameraFollowingDamping_Y(value);
-        camFollowDamping_YInputField.text = Preferences.camFollowDamping_Y.ToString();
-        camFollowDamping_YSlider.value = Preferences.camFollowDamping_Y;
-        cameraController.UpdateDamping();
+        Preferences.SetCameraFollowingDamping_Y(value); 
     }
-
     private void ChangeCamFollowDamping_Y_String(string value)
     {
         ChangeCamFollowDamping_Y_Float(float.Parse(value));
+    }
+    private void UpdateCamFollowDamping_Y()
+    {
+        camFollowDamping_YInputField.text = Mathf.Round(Preferences.camFollowDamping_Y).ToString();
+        camFollowDamping_YSlider.value = Preferences.camFollowDamping_Y;
     }
 
     private void ChangeCamFollowDamping_Z_Float(float value)
     {
         Preferences.SetCameraFollowingDamping_Z(value);
-        camFollowDamping_ZInputField.text = Preferences.camFollowDamping_Z.ToString();
-        camFollowDamping_ZSlider.value = Preferences.camFollowDamping_Z;
-        cameraController.UpdateDamping();
     }
-
     private void ChangeCamFollowDamping_Z_String(string value)
     {
         ChangeCamFollowDamping_Z_Float(float.Parse(value));
+    }
+    private void UpdateCamFollowDamping_Z()
+    {
+        camFollowDamping_ZInputField.text = Mathf.Round(Preferences.camFollowDamping_Z).ToString();
+        camFollowDamping_ZSlider.value = Preferences.camFollowDamping_Z;
     }
 
     private void ChangeCamFollowDamping_Yaw_Float(float value)
     {
         Preferences.SetCameraFollowingDamping_Yaw(value);
-        camFollowDamping_YawInputField.text = Preferences.camFollowDamping_Yaw.ToString();
-        camFollowDamping_YawSlider.value = Preferences.camFollowDamping_Yaw;
-        cameraController.UpdateDamping();
     }
-
     private void ChangeCamFollowDamping_Yaw_String(string value)
     {
         ChangeCamFollowDamping_Yaw_Float(float.Parse(value));
+    }
+    private void UpdateCamFollowDamping_Yaw()
+    {
+        camFollowDamping_YawInputField.text = Mathf.Round(Preferences.camFollowDamping_Yaw).ToString();
+        camFollowDamping_YawSlider.value = Preferences.camFollowDamping_Yaw;
     }
 
     private void ChangeCamRotDamping_Horizontal_Float(float value)
     {
         Preferences.SetCameraRotatingDamping_Horizontal(value);
-        camRotDamping_HorizontalInputField.text = Preferences.camRotDamping_Horizontal.ToString();
-        camRotDamping_HorizontalSlider.value = Preferences.camRotDamping_Horizontal;
-        cameraController.UpdateDamping();
     }
-
     private void ChangeCamRotDamping_Horizontal_String(string value)
     {
         ChangeCamRotDamping_Horizontal_Float(float.Parse(value));
+    }
+    private void UpdateCamRotDamping_Horizontal()
+    {
+        camRotDamping_HorizontalInputField.text = Mathf.Round(Preferences.camRotDamping_Horizontal).ToString();
+        camRotDamping_HorizontalSlider.value = Preferences.camRotDamping_Horizontal;
     }
 
     private void ChangeCamRotDamping_Vertical_Float(float value)
     {
         Preferences.SetCameraRotatingDamping_Vertical(value);
-        camRotDamping_VerticalInputField.text = Preferences.camRotDamping_Vertical.ToString();
-        camRotDamping_VerticalSlider.value = Preferences.camRotDamping_Vertical;
-        cameraController.UpdateDamping();
     }
-
     private void ChangeCamRotDamping_Vertical_String(string value)
     {
         ChangeCamRotDamping_Vertical_Float(float.Parse(value));
+    }
+    private void UpdateCamRotDamping_Vertical()
+    {
+        camRotDamping_VerticalInputField.text = Mathf.Round(Preferences.camRotDamping_Vertical).ToString();
+        camRotDamping_VerticalSlider.value = Preferences.camRotDamping_Vertical;
     }
 
     private void ChangeBackgroundMusicVolume_Float(float value)
     {
         Preferences.SetBackgroundMusicVolume(value);
-        backgroundMusicInputField.text = Preferences.backMusicVolume.ToString();
-        backgroundMusicSlider.value = Preferences.backMusicVolume;
-        SoundsManager.UpdateBackgroundMusicVolume(value);
     }
-
     private void ChangeBackgroundMusicVolume_String(string value)
     {
         ChangeBackgroundMusicVolume_Float(float.Parse(value));
+    }
+    private void UpdateBackgroundMusicVolume()
+    {
+        backgroundMusicInputField.text = Mathf.Round(Preferences.backMusicVolume).ToString();
+        backgroundMusicSlider.value = Preferences.backMusicVolume;
     }
 
     private void ChangeStepsVolume_Float(float value)
     {
         Preferences.SetStepsVolume(value);
-        stepsInputField.text = Preferences.stepsVolume.ToString();
-        stepsSlider.value = Preferences.stepsVolume;
-        SoundsManager.UpdateStepsVolume(value);
     }
-
     private void ChangeStepsVolume_String(string value)
     {
         ChangeStepsVolume_Float(float.Parse(value));
+    }
+    private void UpdateStepsVolume()
+    {
+        stepsInputField.text = Mathf.Round(Preferences.stepsVolume).ToString();
+        stepsSlider.value = Preferences.stepsVolume;
     }
 
     private void ChangeDamageEffectVolume_Float(float value)
     {
         Preferences.SetDamageEffectVolume(value);
-        damageEffectInputField.text = Preferences.damageEffectVolume.ToString();
-        damageEffectSlider.value = Preferences.damageEffectVolume;
-        SoundsManager.UpdateDamageEffectVolume(value);
     }
-
     private void ChangeDamageEffectVolume_String(string value)
     {
         ChangeDamageEffectVolume_Float(float.Parse(value));
+    }
+    private void UpdateDamageEffectVolume()
+    {
+        damageEffectInputField.text = Mathf.Round(Preferences.damageEffectVolume).ToString();
+        damageEffectSlider.value = Preferences.damageEffectVolume;
+    }
+
+    private void OnDestroy()
+    {
+        Preferences.OnPauseBehaviorChanged -= UpdatePauseUI;
+
+        //Movement and Camera
+        Preferences.OnPlRotStyleChanged -= UpdatePlayerRotationStyle;
+        Preferences.OnCamRotStyleChanged -= UpdateCameraRotationStyle;
+
+        Preferences.OnPlRotSpeedChanged -= UpdatePlayerRotSpeed;
+        Preferences.OnCamRotSpeed_HorizontalChanged -= UpdateCamRotSpeed_Horizontal;
+        Preferences.OnCamRotSpeed_VerticalChanged -= UpdateCamRotSpeed_Vertical;
+
+        Preferences.OnCamFollowDamping_XChanged -= UpdateCamFollowDamping_X;
+        Preferences.OnCamFollowDamping_YChanged -= UpdateCamFollowDamping_Y;
+        Preferences.OnCamFollowDamping_ZChanged -= UpdateCamFollowDamping_Z;
+        Preferences.OnCamFollowDamping_YawChanged -= UpdateCamFollowDamping_Yaw;
+
+        Preferences.OnCamRotDamping_HorizontalChanged -= UpdateCamRotDamping_Horizontal;
+        Preferences.OnCamRotDamping_VerticalChanged -= UpdateCamRotDamping_Vertical;
+
+        //Sounds
+        Preferences.OnBackgroundMusicVolumeChanged -= UpdateBackgroundMusicVolume;
+        Preferences.OnStepsVolumeChanged -= UpdateStepsVolume;
+        Preferences.OnDamageEffectVolumeChanged -= UpdateDamageEffectVolume;
     }
 }

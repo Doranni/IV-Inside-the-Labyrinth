@@ -43,7 +43,6 @@ public class AnimationAndMovementController : MonoBehaviour
     public MovementState MoveState => moveState;
 
     // Input
-    private InputManager inputManager;
     private float movementForwardInput;
     private float rotationMouseInput, rotationKeyboardInput;
     private bool accelerationInput;
@@ -69,13 +68,11 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private void Awake()
     {
-        inputManager = InputManager.instance;
-
-        inputManager.OnMoveForward_performed += context =>
+        InputManager.instance.OnMoveForward_performed += context =>
         {
             movementForwardInput = context.ReadValue<float>();
         };
-        inputManager.OnMoveForward_started += context =>
+        InputManager.instance.OnMoveForward_started += context =>
         {
             switch (Preferences.plRotStyle)
             {
@@ -102,7 +99,7 @@ public class AnimationAndMovementController : MonoBehaviour
                     }
             }
         };
-        inputManager.OnMoveForward_canceled += context =>
+        InputManager.instance.OnMoveForward_canceled += context =>
         {
             switch (Preferences.plRotStyle)
             {
@@ -129,7 +126,7 @@ public class AnimationAndMovementController : MonoBehaviour
                     }
             }
         };
-        inputManager.OnMoveAside_started += context =>
+        InputManager.instance.OnMoveAside_started += context =>
         {
             switch (Preferences.plRotStyle)
             {
@@ -151,7 +148,7 @@ public class AnimationAndMovementController : MonoBehaviour
                     }
             }
         };
-        inputManager.OnMoveAside_canceled += context =>
+        InputManager.instance.OnMoveAside_canceled += context =>
         {
             switch (Preferences.plRotStyle)
             {
@@ -174,28 +171,33 @@ public class AnimationAndMovementController : MonoBehaviour
             }
         };
 
-        inputManager.OnRotateMouse_performed += context =>
+        InputManager.instance.OnRotateMouse_performed += context =>
         {
             rotationMouseInput = context.ReadValue<float>();
         };
-        inputManager.OnRotateKeyboard_performed += context =>
+        InputManager.instance.OnRotateKeyboard_performed += context =>
         {
             rotationKeyboardInput = context.ReadValue<float>();
         };
 
-        inputManager.OnAcceleration_started += context =>
+        InputManager.instance.OnAcceleration_started += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
-        inputManager.OnAcceleration_canceled += context =>
+        InputManager.instance.OnAcceleration_canceled += context =>
         {
             accelerationInput = context.ReadValueAsButton();
         };
 
-        inputManager.OnMouseRightClick_started += MouseRightClick_started;
-        inputManager.OnMouseRightClick_canceled += MouseRightClick_canceled;
+        InputManager.instance.OnMouseRightClick_started += MouseRightClick_started;
+        InputManager.instance.OnMouseRightClick_canceled += MouseRightClick_canceled;
 
-        inputManager.OnJumpUp_performed += JumpUp_performed;
+        InputManager.instance.OnJumpUp_performed += JumpUp_performed;
+
+        // TODO: to check to i need it
+        Preferences.OnPlRotStyleChanged += UpdatePlayerRotation;
+        Preferences.OnCamRotStyleChanged += UpdatePlayerRotation;
+        Preferences.OnPlRotSpeedChanged += UpdatePlayerRotation;
 
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
@@ -592,5 +594,12 @@ public class AnimationAndMovementController : MonoBehaviour
         UpdateSpeedEffectMultiplier();
         StopCoroutine(effectCoroutines[id]);
         effectCoroutines.Remove(id);
+    }
+
+    private void OnDestroy()
+    {
+        Preferences.OnPlRotStyleChanged -= UpdatePlayerRotation;
+        Preferences.OnPlRotSpeedChanged -= UpdatePlayerRotation;
+        Preferences.OnCamRotStyleChanged -= UpdatePlayerRotation;
     }
 }
