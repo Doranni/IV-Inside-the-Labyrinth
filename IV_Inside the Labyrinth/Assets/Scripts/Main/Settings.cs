@@ -165,14 +165,6 @@ public class Settings : MonoBehaviour
     private void SetPauseBehavior(bool value)
     {
         Preferences.isPausedWhileInMenu = value;
-        if (value)
-        {
-            Time.timeScale = 0;
-        }
-        else
-        {
-            Time.timeScale = 1;
-        }
     }
 
     private void PopulatePlayerRotationDropdown()

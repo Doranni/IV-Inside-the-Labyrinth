@@ -1,16 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class MenuState : IState
+public class MenuState : IGameState
 {
-    [SerializeField]
-    private GameObject menuScreen;
-    [SerializeField] 
-    private Button settingsButton, exitButton;
+    private readonly GameObject menuScreen;
+
+    public MenuState(GameObject menuScreen)
+    {
+        this.menuScreen = menuScreen;
+    }
 
     public void Enter()
+    {
+        UpdatePause();
+        menuScreen.SetActive(true);
+        Cursor.visible = true;
+    }
+
+    public void MenuPerformed()
+    {
+        GameManager.instance.gameStateMachine.TransitionTo(GameManager.instance.gameStateMachine.activeState);
+    }
+
+    public void UpdatePause()
     {
         if (Preferences.isPausedWhileInMenu)
         {
@@ -20,5 +31,10 @@ public class MenuState : IState
         {
             Time.timeScale = 1;
         }
+    }
+
+    public void Exit()
+    {
+        menuScreen.SetActive(false);
     }
 }

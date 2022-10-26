@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,19 +6,13 @@ using TMPro;
 
 public class GameManager : Singleton<GameManager>
 {
-    enum GameStatus
-    {
-        active,
-        onMenu,
-        onSettings,
-        onExit
-    }
+    private GameStateMachine _gameStateMachine;
+    public GameStateMachine gameStateMachine => _gameStateMachine;
 
     [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
     [SerializeField] private Button settingsButton, exitButton, quitButton, stayButton;
     [SerializeField] private TextMeshProUGUI healthValueTmp, sanityValueTmp, effectsTmp;
 
-    private GameStatus gameStatus;
     
     public static string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", 
         torchTag = "Torch", sanityLight = "Sanity Light";
@@ -29,7 +22,9 @@ public class GameManager : Singleton<GameManager>
     public override void Awake()
     {
         base.Awake();
+        _gameStateMachine = new GameStateMachine(healthAndSanityPanel, menuScreen, settingsScreen, exitScreen);
         InputManager.instance.OnMenu_performed += Menu_performed;
+        Preferences.OnPauseBehaviorChanged += UpdatePause;
         settingsButton.onClick.AddListener(OpenSettingsScreen);
         exitButton.onClick.AddListener(OpenExitScreen);
         quitButton.onClick.AddListener(QuitGame);
@@ -38,71 +33,28 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        GameObject player = GameObject.FindGameObjectWithTag(playerTag);
-        gameStatus = GameStatus.active;
-        menuScreen.SetActive(false);
-        settingsScreen.SetActive(false);
-        exitScreen.SetActive(false);
-        healthAndSanityPanel.SetActive(true);
-        Cursor.visible = false;
+        _gameStateMachine.Initialize(_gameStateMachine.activeState);
         Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Menu_performed(InputAction.CallbackContext obj)
     {
-        switch (gameStatus)
-        {
-            case GameStatus.active:
-                {
-                    if (Preferences.isPausedWhileInMenu)
-                    {
-                        Time.timeScale = 0;
-                    }
-                    menuScreen.SetActive(true);
-                    healthAndSanityPanel.SetActive(false);
-                    gameStatus = GameStatus.onMenu;
-                    Cursor.visible = true;
-                    break;
-                }
-            case GameStatus.onMenu:
-                {
-                    menuScreen.SetActive(false);
-                    healthAndSanityPanel.SetActive(true);
-                    gameStatus = GameStatus.active;
-                    Cursor.visible = false;
-                    Time.timeScale = 1;
-                    break;
-                }
-            case GameStatus.onSettings:
-                {
-                    menuScreen.SetActive(true);
-                    settingsScreen.SetActive(false);
-                    gameStatus = GameStatus.onMenu;
-                    TooltipController.HideTooltip();
-                    break;
-                }
-            case GameStatus.onExit:
-                {
-                    menuScreen.SetActive(true);
-                    exitScreen.SetActive(false);
-                    gameStatus = GameStatus.onMenu;
-                    break;
-                }
-        }
+        _gameStateMachine.MenuPerformed();
+    }
+
+    public void UpdatePause()
+    {
+        _gameStateMachine.UpdatePause();
     }
 
     private void OpenSettingsScreen()
     {
-        menuScreen.SetActive(false);
-        settingsScreen.SetActive(true);
-        gameStatus = GameStatus.onSettings;
+        _gameStateMachine.TransitionTo(_gameStateMachine.settingsState);
     }
 
     private void OpenExitScreen()
     {
-        menuScreen.SetActive(false);
-        exitScreen.SetActive(true);
-        gameStatus = GameStatus.onExit;
+        _gameStateMachine.TransitionTo(_gameStateMachine.exitState);
     }
 
     private void QuitGame()
@@ -112,9 +64,7 @@ public class GameManager : Singleton<GameManager>
 
     private void StayInGame()
     {
-        menuScreen.SetActive(true);
-        exitScreen.SetActive(false);
-        gameStatus = GameStatus.onMenu;
+        _gameStateMachine.TransitionTo(_gameStateMachine.menuState);
     }
 
     public static void UpdateHealth(float value, float maxValue)
@@ -161,5 +111,6 @@ public class GameManager : Singleton<GameManager>
     private void OnDestroy()
     {
         InputManager.instance.OnMenu_performed -= Menu_performed;
+        Preferences.OnPauseBehaviorChanged -= UpdatePause;
     }
 }
