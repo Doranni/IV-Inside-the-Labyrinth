@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ExitState : IGameState
+public class GameExitState : IGameState
 {
     private readonly GameObject exitScreen;
 
-    public ExitState(GameObject exitScreen)
+    public GameExitState(GameObject exitScreen)
     {
         this.exitScreen = exitScreen;
     }
@@ -18,12 +18,12 @@ public class ExitState : IGameState
 
     public void MenuPerformed()
     {
-        GameManager.instance.gameStateMachine.TransitionTo(GameManager.instance.gameStateMachine.menuState);
+        GameManager.instance.StateMachine.TransitionTo(GameManager.instance.StateMachine.menuState);
     }
 
     public void UpdatePause()
     {
-        if (Preferences.isPausedWhileInMenu)
+        if (Preferences.IsPausedWhileInMenu)
         {
             Time.timeScale = 0;
         }

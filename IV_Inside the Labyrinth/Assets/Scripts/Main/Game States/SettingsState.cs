@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class SettingsState : IGameState
+public class GameSettingsState : IGameState
 {
     private readonly GameObject settingsScreen;
 
-    public SettingsState(GameObject settingsScreen)
+    public GameSettingsState(GameObject settingsScreen)
     {
         this.settingsScreen = settingsScreen;
     }
@@ -18,12 +18,12 @@ public class SettingsState : IGameState
 
     public void MenuPerformed()
     {
-        GameManager.instance.gameStateMachine.TransitionTo(GameManager.instance.gameStateMachine.menuState);
+        GameManager.instance.StateMachine.TransitionTo(GameManager.instance.StateMachine.menuState);
     }
 
     public void UpdatePause()
     {
-        if (Preferences.isPausedWhileInMenu)
+        if (Preferences.IsPausedWhileInMenu)
         {
             Time.timeScale = 0;
         }

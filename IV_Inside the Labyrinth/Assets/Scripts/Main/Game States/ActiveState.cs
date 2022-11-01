@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ActiveState : IGameState
+public class GameActiveState : IGameState
 {
     private readonly GameObject healthAndSanityPanel;
 
-    public ActiveState(GameObject healthAndSanityPanel)
+    public GameActiveState(GameObject healthAndSanityPanel)
     {
         this.healthAndSanityPanel = healthAndSanityPanel;
     }
@@ -18,7 +18,7 @@ public class ActiveState : IGameState
 
     public void MenuPerformed()
     {
-        GameManager.instance.gameStateMachine.TransitionTo(GameManager.instance.gameStateMachine.menuState);
+        GameManager.instance.StateMachine.TransitionTo(GameManager.instance.StateMachine.menuState);
     }
 
     public void UpdatePause()

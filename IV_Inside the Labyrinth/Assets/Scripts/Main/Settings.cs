@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,14 +16,12 @@ public class Settings : MonoBehaviour
     [SerializeField] private TMP_Dropdown camRotStyleDropdown;
     [SerializeField] private TMP_InputField camRotSpeed_HorizontalInputField, camRotSpeed_VerticalInputField;
     [SerializeField] private Slider camRotSpeed_HorizontalSlider, camRotSpeed_VerticalSlider;
-    [Header("Camera's Follow damping")]
-    [SerializeField] private TMP_InputField camFollowDamping_XInputField, camFollowDamping_YInputField, 
-        camFollowDamping_ZInputField, camFollowDamping_YawInputField;
-    [SerializeField] private Slider camFollowDamping_XSlider, camFollowDamping_YSlider, 
-        camFollowDamping_ZSlider, camFollowDamping_YawSlider;
-    [Header("Camera's Rotation damping")]
-    [SerializeField] private TMP_InputField camRotDamping_HorizontalInputField, camRotDamping_VerticalInputField;
-    [SerializeField] private Slider camRotDamping_HorizontalSlider, camRotDamping_VerticalSlider;
+    [Header("Camera's Damping")]
+    [SerializeField] private TMP_InputField camDamping_BodyXInputField;
+    [SerializeField] private TMP_InputField camDamping_BodyYInputField, 
+        camDamping_BodyZInputField, camDamping_AimInputField;
+    [SerializeField] private Slider camDamping_BodyXSlider, camDamping_BodyYSlider, 
+        camDamping_BodyZSlider, camDamping_AimSlider;
     [Header("Reset")]
     [SerializeField] private Button resetButton_MovementAndCamera;
 
@@ -71,41 +68,29 @@ public class Settings : MonoBehaviour
         Preferences.OnCamRotSpeed_VerticalChanged += UpdateCamRotSpeed_Vertical;
         UpdateCamRotSpeed_Vertical();
 
-        SetSliderRange(camFollowDamping_XSlider, Preferences.camDampingMin, Preferences.camDampingMax);
-        camFollowDamping_XSlider.onValueChanged.AddListener(ChangeCamFollowDamping_X_Float);
-        camFollowDamping_XInputField.onValueChanged.AddListener(ChangeCamFollowDamping_X_String);
-        Preferences.OnCamFollowDamping_XChanged += UpdateCamFollowDamping_X;
-        UpdateCamFollowDamping_X();
+        SetSliderRange(camDamping_BodyXSlider, Preferences.camDampingMin, Preferences.camDampingMax);
+        camDamping_BodyXSlider.onValueChanged.AddListener(ChangeCamDamping_BodyX_Float);
+        camDamping_BodyXInputField.onValueChanged.AddListener(ChangeCamDamping_BodyX_String);
+        Preferences.OnCamDamping_BodyXChanged += UpdateCamDamping_BodyX;
+        UpdateCamDamping_BodyX();
 
-        SetSliderRange(camFollowDamping_YSlider, Preferences.camDampingMin, Preferences.camDampingMax);
-        camFollowDamping_YSlider.onValueChanged.AddListener(ChangeCamFollowDamping_Y_Float);
-        camFollowDamping_YInputField.onValueChanged.AddListener(ChangeCamFollowDamping_Y_String);
-        Preferences.OnCamFollowDamping_YChanged += UpdateCamFollowDamping_Y;
-        UpdateCamFollowDamping_Y();
+        SetSliderRange(camDamping_BodyYSlider, Preferences.camDampingMin, Preferences.camDampingMax);
+        camDamping_BodyYSlider.onValueChanged.AddListener(ChangeCamDamping_BodyY_Float);
+        camDamping_BodyYInputField.onValueChanged.AddListener(ChangeCamDamping_BodyY_String);
+        Preferences.OnCamDamping_BodyYChanged += UpdateCamDamping_BodyY;
+        UpdateCamDamping_BodyY();
 
-        SetSliderRange(camFollowDamping_ZSlider, Preferences.camDampingMin, Preferences.camDampingMax);
-        camFollowDamping_ZSlider.onValueChanged.AddListener(ChangeCamFollowDamping_Z_Float);
-        camFollowDamping_ZInputField.onValueChanged.AddListener(ChangeCamFollowDamping_Z_String);
-        Preferences.OnCamFollowDamping_ZChanged += UpdateCamFollowDamping_Z;
-        UpdateCamFollowDamping_Z();
+        SetSliderRange(camDamping_BodyZSlider, Preferences.camDampingMin, Preferences.camDampingMax);
+        camDamping_BodyZSlider.onValueChanged.AddListener(ChangeCamDamping_BodyZ_Float);
+        camDamping_BodyZInputField.onValueChanged.AddListener(ChangeCamDamping_BodyZ_String);
+        Preferences.OnCamDamping_BodyZChanged += UpdateCamDamping_BodyZ;
+        UpdateCamDamping_BodyZ();
 
-        SetSliderRange(camFollowDamping_YawSlider, Preferences.camDampingMin, Preferences.camDampingMax);
-        camFollowDamping_YawSlider.onValueChanged.AddListener(ChangeCamFollowDamping_Yaw_Float);
-        camFollowDamping_YawInputField.onValueChanged.AddListener(ChangeCamFollowDamping_Yaw_String);
-        Preferences.OnCamFollowDamping_YawChanged += UpdateCamFollowDamping_Yaw;
-        UpdateCamFollowDamping_Yaw();
-
-        SetSliderRange(camRotDamping_HorizontalSlider, Preferences.camDampingMin, Preferences.camDampingMax);
-        camRotDamping_HorizontalSlider.onValueChanged.AddListener(ChangeCamRotDamping_Horizontal_Float);
-        camRotDamping_HorizontalInputField.onValueChanged.AddListener(ChangeCamRotDamping_Horizontal_String);
-        Preferences.OnCamRotDamping_HorizontalChanged += UpdateCamRotDamping_Horizontal;
-        UpdateCamRotDamping_Horizontal();
-
-        SetSliderRange(camRotDamping_VerticalSlider, Preferences.camDampingMin, Preferences.camDampingMax);
-        camRotDamping_VerticalSlider.onValueChanged.AddListener(ChangeCamRotDamping_Vertical_Float);
-        camRotDamping_VerticalInputField.onValueChanged.AddListener(ChangeCamRotDamping_Vertical_String);
-        Preferences.OnCamRotDamping_VerticalChanged += UpdateCamRotDamping_Vertical;
-        UpdateCamRotDamping_Vertical();
+        SetSliderRange(camDamping_AimSlider, Preferences.camDampingMin, Preferences.camDampingMax);
+        camDamping_AimSlider.onValueChanged.AddListener(ChangeCamDamping_Aim_Float);
+        camDamping_AimInputField.onValueChanged.AddListener(ChangeCamDamping_Aim_String);
+        Preferences.OnCamDamping_AimChanged += UpdateCamDamping_Aim;
+        UpdateCamDamping_Aim();
 
         resetButton_MovementAndCamera.onClick.AddListener(ResetPrefs_MovementAndCamera);
 
@@ -133,7 +118,7 @@ public class Settings : MonoBehaviour
 
     private void UpdatePauseUI()
     {
-        pauseToggle.isOn = Preferences.isPausedWhileInMenu;
+        pauseToggle.isOn = Preferences.IsPausedWhileInMenu;
     }
 
     private void SetSliderRange(Slider slider, float minValue, float maxValue)
@@ -147,12 +132,10 @@ public class Settings : MonoBehaviour
         ChangePlayerRotSpeed_Float(Preferences.plRotSpeed_def);
         ChangeCamRotSpeed_Horizontal_Float(Preferences.camRotSpeed_Horizontal_def);
         ChangeCamRotSpeed_Vertical_Float(Preferences.camRotSpeed_Vertical_def);
-        ChangeCamFollowDamping_X_Float(Preferences.camFollowDamping_X_def);
-        ChangeCamFollowDamping_Y_Float(Preferences.camFollowDamping_Y_def);
-        ChangeCamFollowDamping_Z_Float(Preferences.camFollowDamping_Z_def);
-        ChangeCamFollowDamping_Yaw_Float(Preferences.camFollowDamping_Yaw_def);
-        ChangeCamRotDamping_Horizontal_Float(Preferences.camRotDamping_Horizontal_def);
-        ChangeCamRotDamping_Vertical_Float(Preferences.camRotDamping_Vertical_def);
+        ChangeCamDamping_BodyX_Float(Preferences.camDamping_BodyX_def);
+        ChangeCamDamping_BodyY_Float(Preferences.camDamping_BodyY_def);
+        ChangeCamDamping_BodyZ_Float(Preferences.camDamping_BodyZ_def);
+        ChangeCamDamping_Aim_Float(Preferences.camDamping_Aim_def);
     }
 
     private void ResetPrefs_Sounds()
@@ -164,13 +147,13 @@ public class Settings : MonoBehaviour
 
     private void SetPauseBehavior(bool value)
     {
-        Preferences.isPausedWhileInMenu = value;
+        Preferences.IsPausedWhileInMenu = value;
     }
 
     private void PopulatePlayerRotationDropdown()
     {
         playerRotList.Clear();
-        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles_info)
+        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.PlRotStyles_info)
         {
             playerRotList.Add(new TMP_Dropdown.OptionData(style.Value));
         }
@@ -186,12 +169,12 @@ public class Settings : MonoBehaviour
     private void PopulateCameraRotationDropdown()
     {
         cameraRotList.Clear();
-        switch (Preferences.plRotStyle)
+        switch (Preferences.PlRotStyle)
         {
             case Preferences.PlayerRotationStyle.withMouse:
                 {
                     foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool isAvailableWithPlRot_Mouse, bool)> 
-                        style in Preferences.camRotStyles_info)
+                        style in Preferences.CamRotStyles_info)
                     {
                         if (style.Value.isAvailableWithPlRot_Mouse)
                             cameraRotList.Add(new TMP_Dropdown.OptionData(style.Value.name));
@@ -201,7 +184,7 @@ public class Settings : MonoBehaviour
             case Preferences.PlayerRotationStyle.withKeyboard:
                 {
                     foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool, bool isAvailableWithPlRot_Keyboard)> 
-                        style in Preferences.camRotStyles_info)
+                        style in Preferences.CamRotStyles_info)
                     {
                         if (style.Value.isAvailableWithPlRot_Keyboard)
                             cameraRotList.Add(new TMP_Dropdown.OptionData(style.Value.name));
@@ -221,7 +204,7 @@ public class Settings : MonoBehaviour
 
     private void ChangePlayerRotationStyle(int dropdownValue)
     {
-        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.plRotStyles_info)
+        foreach (KeyValuePair<Preferences.PlayerRotationStyle, string> style in Preferences.PlRotStyles_info)
         {
             if (plRotStyleDropdown.options[dropdownValue].text.Equals(style.Value))
             {
@@ -239,7 +222,7 @@ public class Settings : MonoBehaviour
     private void ChangeCameraRotationStyle(int dropdownValue)
     {
         foreach (KeyValuePair<Preferences.CameraRotationStyle, (string name, bool, bool)> 
-            style in Preferences.camRotStyles_info)
+            style in Preferences.CamRotStyles_info)
         {
             if (camRotStyleDropdown.options[dropdownValue].text.Equals(style.Value.name))
             {
@@ -295,88 +278,60 @@ public class Settings : MonoBehaviour
         camRotSpeed_VerticalSlider.value = Preferences.camRot_VerticalSpeed;
     }
 
-    private void ChangeCamFollowDamping_X_Float(float value)
+    private void ChangeCamDamping_BodyX_Float(float value)
     {
-        Preferences.SetCameraFollowingDamping_X(value);
+        Preferences.SetCameraDamping_BodyX(value);
     }
-    private void ChangeCamFollowDamping_X_String(string value)
+    private void ChangeCamDamping_BodyX_String(string value)
     {
-        ChangeCamFollowDamping_X_Float(float.Parse(value));
+        ChangeCamDamping_BodyX_Float(float.Parse(value));
     }
-    private void UpdateCamFollowDamping_X()
+    private void UpdateCamDamping_BodyX()
     {
-        camFollowDamping_XInputField.text = Mathf.Round(Preferences.camFollowDamping_X).ToString();
-        camFollowDamping_XSlider.value = Preferences.camFollowDamping_X;
-    }
-
-    private void ChangeCamFollowDamping_Y_Float(float value)
-    {
-        Preferences.SetCameraFollowingDamping_Y(value); 
-    }
-    private void ChangeCamFollowDamping_Y_String(string value)
-    {
-        ChangeCamFollowDamping_Y_Float(float.Parse(value));
-    }
-    private void UpdateCamFollowDamping_Y()
-    {
-        camFollowDamping_YInputField.text = Mathf.Round(Preferences.camFollowDamping_Y).ToString();
-        camFollowDamping_YSlider.value = Preferences.camFollowDamping_Y;
+        camDamping_BodyXInputField.text = Mathf.Round(Preferences.camDamping_BodyX).ToString();
+        camDamping_BodyXSlider.value = Preferences.camDamping_BodyX;
     }
 
-    private void ChangeCamFollowDamping_Z_Float(float value)
+    private void ChangeCamDamping_BodyY_Float(float value)
     {
-        Preferences.SetCameraFollowingDamping_Z(value);
+        Preferences.SetCameraDamping_BodyY(value); 
     }
-    private void ChangeCamFollowDamping_Z_String(string value)
+    private void ChangeCamDamping_BodyY_String(string value)
     {
-        ChangeCamFollowDamping_Z_Float(float.Parse(value));
+        ChangeCamDamping_BodyY_Float(float.Parse(value));
     }
-    private void UpdateCamFollowDamping_Z()
+    private void UpdateCamDamping_BodyY()
     {
-        camFollowDamping_ZInputField.text = Mathf.Round(Preferences.camFollowDamping_Z).ToString();
-        camFollowDamping_ZSlider.value = Preferences.camFollowDamping_Z;
-    }
-
-    private void ChangeCamFollowDamping_Yaw_Float(float value)
-    {
-        Preferences.SetCameraFollowingDamping_Yaw(value);
-    }
-    private void ChangeCamFollowDamping_Yaw_String(string value)
-    {
-        ChangeCamFollowDamping_Yaw_Float(float.Parse(value));
-    }
-    private void UpdateCamFollowDamping_Yaw()
-    {
-        camFollowDamping_YawInputField.text = Mathf.Round(Preferences.camFollowDamping_Yaw).ToString();
-        camFollowDamping_YawSlider.value = Preferences.camFollowDamping_Yaw;
+        camDamping_BodyYInputField.text = Mathf.Round(Preferences.camDamping_BodyY).ToString();
+        camDamping_BodyYSlider.value = Preferences.camDamping_BodyY;
     }
 
-    private void ChangeCamRotDamping_Horizontal_Float(float value)
+    private void ChangeCamDamping_BodyZ_Float(float value)
     {
-        Preferences.SetCameraRotatingDamping_Horizontal(value);
+        Preferences.SetCameraDamping_BodyZ(value);
     }
-    private void ChangeCamRotDamping_Horizontal_String(string value)
+    private void ChangeCamDamping_BodyZ_String(string value)
     {
-        ChangeCamRotDamping_Horizontal_Float(float.Parse(value));
+        ChangeCamDamping_BodyZ_Float(float.Parse(value));
     }
-    private void UpdateCamRotDamping_Horizontal()
+    private void UpdateCamDamping_BodyZ()
     {
-        camRotDamping_HorizontalInputField.text = Mathf.Round(Preferences.camRotDamping_Horizontal).ToString();
-        camRotDamping_HorizontalSlider.value = Preferences.camRotDamping_Horizontal;
+        camDamping_BodyZInputField.text = Mathf.Round(Preferences.camDamping_BodyZ).ToString();
+        camDamping_BodyZSlider.value = Preferences.camDamping_BodyZ;
     }
 
-    private void ChangeCamRotDamping_Vertical_Float(float value)
+    private void ChangeCamDamping_Aim_Float(float value)
     {
-        Preferences.SetCameraRotatingDamping_Vertical(value);
+        Preferences.SetCameraDamping_Aim(value);
     }
-    private void ChangeCamRotDamping_Vertical_String(string value)
+    private void ChangeCamDamping_Aim_String(string value)
     {
-        ChangeCamRotDamping_Vertical_Float(float.Parse(value));
+        ChangeCamDamping_Aim_Float(float.Parse(value));
     }
-    private void UpdateCamRotDamping_Vertical()
+    private void UpdateCamDamping_Aim()
     {
-        camRotDamping_VerticalInputField.text = Mathf.Round(Preferences.camRotDamping_Vertical).ToString();
-        camRotDamping_VerticalSlider.value = Preferences.camRotDamping_Vertical;
+        camDamping_AimInputField.text = Mathf.Round(Preferences.camDamping_Aim).ToString();
+        camDamping_AimSlider.value = Preferences.camDamping_Aim;
     }
 
     private void ChangeBackgroundMusicVolume_Float(float value)
@@ -433,13 +388,10 @@ public class Settings : MonoBehaviour
         Preferences.OnCamRotSpeed_HorizontalChanged -= UpdateCamRotSpeed_Horizontal;
         Preferences.OnCamRotSpeed_VerticalChanged -= UpdateCamRotSpeed_Vertical;
 
-        Preferences.OnCamFollowDamping_XChanged -= UpdateCamFollowDamping_X;
-        Preferences.OnCamFollowDamping_YChanged -= UpdateCamFollowDamping_Y;
-        Preferences.OnCamFollowDamping_ZChanged -= UpdateCamFollowDamping_Z;
-        Preferences.OnCamFollowDamping_YawChanged -= UpdateCamFollowDamping_Yaw;
-
-        Preferences.OnCamRotDamping_HorizontalChanged -= UpdateCamRotDamping_Horizontal;
-        Preferences.OnCamRotDamping_VerticalChanged -= UpdateCamRotDamping_Vertical;
+        Preferences.OnCamDamping_BodyXChanged -= UpdateCamDamping_BodyX;
+        Preferences.OnCamDamping_BodyYChanged -= UpdateCamDamping_BodyY;
+        Preferences.OnCamDamping_BodyZChanged -= UpdateCamDamping_BodyZ;
+        Preferences.OnCamDamping_AimChanged -= UpdateCamDamping_Aim;
 
         //Sounds
         Preferences.OnBackgroundMusicVolumeChanged -= UpdateBackgroundMusicVolume;

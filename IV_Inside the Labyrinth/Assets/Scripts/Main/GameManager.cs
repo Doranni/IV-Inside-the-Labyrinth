@@ -6,8 +6,7 @@ using TMPro;
 
 public class GameManager : Singleton<GameManager>
 {
-    private GameStateMachine _gameStateMachine;
-    public GameStateMachine gameStateMachine => _gameStateMachine;
+    public GameStateMachine StateMachine { get; private set; }
 
     [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
     [SerializeField] private Button settingsButton, exitButton, quitButton, stayButton;
@@ -22,7 +21,7 @@ public class GameManager : Singleton<GameManager>
     public override void Awake()
     {
         base.Awake();
-        _gameStateMachine = new GameStateMachine(healthAndSanityPanel, menuScreen, settingsScreen, exitScreen);
+        StateMachine = new GameStateMachine(healthAndSanityPanel, menuScreen, settingsScreen, exitScreen);
         InputManager.instance.OnMenu_performed += Menu_performed;
         Preferences.OnPauseBehaviorChanged += UpdatePause;
         settingsButton.onClick.AddListener(OpenSettingsScreen);
@@ -33,28 +32,28 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        _gameStateMachine.Initialize(_gameStateMachine.activeState);
+        StateMachine.Initialize(StateMachine.activeState);
         Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Menu_performed(InputAction.CallbackContext obj)
     {
-        _gameStateMachine.MenuPerformed();
+        StateMachine.MenuPerformed();
     }
 
     public void UpdatePause()
     {
-        _gameStateMachine.UpdatePause();
+        StateMachine.UpdatePause();
     }
 
     private void OpenSettingsScreen()
     {
-        _gameStateMachine.TransitionTo(_gameStateMachine.settingsState);
+        StateMachine.TransitionTo(StateMachine.settingsState);
     }
 
     private void OpenExitScreen()
     {
-        _gameStateMachine.TransitionTo(_gameStateMachine.exitState);
+        StateMachine.TransitionTo(StateMachine.exitState);
     }
 
     private void QuitGame()
@@ -64,7 +63,7 @@ public class GameManager : Singleton<GameManager>
 
     private void StayInGame()
     {
-        _gameStateMachine.TransitionTo(_gameStateMachine.menuState);
+        StateMachine.TransitionTo(StateMachine.menuState);
     }
 
     public static void UpdateHealth(float value, float maxValue)

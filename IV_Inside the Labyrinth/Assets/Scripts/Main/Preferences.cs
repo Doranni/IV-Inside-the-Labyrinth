@@ -17,61 +17,58 @@ public class Preferences : Singleton<Preferences>
         withRightClickMouse
     }
 
-    public static PlayerRotationStyle plRotStyle { get; private set; }
-    public static CameraRotationStyle camRotStyle { get; private set; }
+    public static PlayerRotationStyle PlRotStyle { get; private set; }
+    public static CameraRotationStyle CamRotStyle { get; private set; }
 
-    public static Dictionary<PlayerRotationStyle, string> plRotStyles_info { get; private set; }
+    public static Dictionary<PlayerRotationStyle, string> PlRotStyles_info { get; private set; }
     public static Dictionary<CameraRotationStyle, (string name, bool isAvailableWithPlRot_Mouse, 
         bool isAvailableWithPlRot_Keyboard)>
-        camRotStyles_info { get; private set; }
+        CamRotStyles_info { get; private set; }
 
     public static float plRotSpeed, camRot_HorizontalSpeed, camRot_VerticalSpeed;
     public static readonly float plRotSpeedMin = 100, plRotSpeedMax = 300,
         camRotHorizontal_SpeedMin = 100, camRot_HorizontalSpeedMax = 300,
         camRotVertical_SpeedMin = 10, camRot_VerticalSpeedMax = 100;
 
-    public static float camFollowDamping_X, camFollowDamping_Y, camFollowDamping_Z, camFollowDamping_Yaw,
-        camRotDamping_Horizontal, camRotDamping_Vertical;
-    public static readonly float camDampingMin = 0, camDampingMax = 20;
+    public static float camDamping_BodyX, camDamping_BodyY, camDamping_BodyZ, camDamping_Aim;
+    public static readonly float camDampingMin = 0, camDampingMax = 10;
 
-    private static bool _isPausedWhileInMenu;
+    private static bool isPausedWhileInMenu;
 
-    public static bool isPausedWhileInMenu
+    public static bool IsPausedWhileInMenu
     {
         get
         {
-            return _isPausedWhileInMenu;
+            return isPausedWhileInMenu;
         }
         set
         {
-            _isPausedWhileInMenu = value;
-            PlayerPrefs.SetString(isPausedWhileInMenuKey, _isPausedWhileInMenu.ToString());
+            isPausedWhileInMenu = value;
+            PlayerPrefs.SetString(isPausedWhileInMenuKey, isPausedWhileInMenu.ToString());
             OnPauseBehaviorChanged?.Invoke();
         }
     }
 
-    private static string plRotStyleKey = "player_rot_style", plRotSpeedKey = "player_rot_speed",
+    private static readonly string plRotStyleKey = "player_rot_style", plRotSpeedKey = "player_rot_speed",
         camRotStyleKey = "camera_rot_style", 
         camRotSpeed_HorizontalKey = "camera_rot_speed_horizontal", camRotSpeed_VerticalKey = "camera_rot_speed_vertical",
-        camFollowDamping_XKey = "camera_follow_damping_x", camFollowDamping_YKey = "camera_follow_damping_y",
-        camFollowDamping_ZKey = "camera_follow_damping_z", camFollowDamping_YawKey = "camera_follow_damping_yaw",
-        camRotDamping_HorizontalKey = "camera_rot_damping_horizontal", camRotDamping_VerticalKey = "camera_rot_damping_vertical",
+        camDamping_BodyXKey = "camera_damping_body_x", camDamping_BodyYKey = "camera_damping_body_y",
+        camDamping_BodyZKey = "camera_damping_body_z", camDamping_AimKey = "camera_damping_aim",
         isPausedWhileInMenuKey = "is_paused_in_menu";
        
 
     public static readonly float plRotSpeed_def = 150, 
         camRotSpeed_Horizontal_def = 150, camRotSpeed_Vertical_def = 70,
-        camFollowDamping_X_def = 3, camFollowDamping_Y_def = 0, camFollowDamping_Z_def = 0,
-        camFollowDamping_Yaw_def = 3, camRotDamping_Horizontal_def = 0.5f, camRotDamping_Vertical_def = 0.5f;
+        camDamping_BodyX_def = 1, camDamping_BodyY_def = 1, camDamping_BodyZ_def = 1,
+        camDamping_Aim_def = 2;
 
     public static event Action OnPauseBehaviorChanged,
         OnPlRotStyleChanged, OnCamRotStyleChanged,
         OnPlRotSpeedChanged, OnCamRotSpeed_HorizontalChanged, OnCamRotSpeed_VerticalChanged,
-        OnCamFollowDamping_XChanged, OnCamFollowDamping_YChanged, OnCamFollowDamping_ZChanged, OnCamFollowDamping_YawChanged,
-        OnCamRotDamping_HorizontalChanged, OnCamRotDamping_VerticalChanged;
+        OnCamDamping_BodyXChanged, OnCamDamping_BodyYChanged, OnCamDamping_BodyZChanged, OnCamDamping_AimChanged;
 
     // Sounds
-    private static string backMusicVolumeKey = "background_music_volume", stepsVolumeKey = "steps_volume",
+    private static readonly string backMusicVolumeKey = "background_music_volume", stepsVolumeKey = "steps_volume",
         damageEffectVolumeKey = "damage_effect_volume";
 
     public static float backMusicVolume, stepsVolume, damageEffectVolume;
@@ -89,26 +86,24 @@ public class Preferences : Singleton<Preferences>
     private static void SetPrefetences()
     {
         // Movement and Camera
-        plRotStyles_info = new Dictionary<PlayerRotationStyle, string>();
-        plRotStyles_info.Add(PlayerRotationStyle.withMouse, "Mouse");
-        plRotStyles_info.Add(PlayerRotationStyle.withKeyboard, "AD keys or arrow keys");
+        PlRotStyles_info = new Dictionary<PlayerRotationStyle, string>();
+        PlRotStyles_info.Add(PlayerRotationStyle.withMouse, "Mouse");
+        PlRotStyles_info.Add(PlayerRotationStyle.withKeyboard, "AD keys or arrow keys");
 
-        camRotStyles_info = new Dictionary<CameraRotationStyle, (string, bool, bool)>();
-        camRotStyles_info.Add(CameraRotationStyle.followPlayer, ("Follow player", true, true));
-        camRotStyles_info.Add(CameraRotationStyle.withMouse, ("Mouse", false, true));
-        camRotStyles_info.Add(CameraRotationStyle.withRightClickMouse, ("Right click mouse", true, true));
+        CamRotStyles_info = new Dictionary<CameraRotationStyle, (string, bool, bool)>();
+        CamRotStyles_info.Add(CameraRotationStyle.followPlayer, ("Follow player", true, true));
+        CamRotStyles_info.Add(CameraRotationStyle.withMouse, ("Mouse", false, true));
+        CamRotStyles_info.Add(CameraRotationStyle.withRightClickMouse, ("Right click mouse", true, true));
 
-        _isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
+        isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
         SetPlayerRotationStyle(PlayerPrefs.GetInt(plRotStyleKey, 0));
         SetPlayerRotationSpeed(PlayerPrefs.GetFloat(plRotSpeedKey, plRotSpeed_def));
         SetCameraRotationSpeed_Horizontal(PlayerPrefs.GetFloat(camRotSpeed_HorizontalKey, camRotSpeed_Horizontal_def));
         SetCameraRotationSpeed_Vertical(PlayerPrefs.GetFloat(camRotSpeed_VerticalKey, camRotSpeed_Vertical_def));
-        SetCameraFollowingDamping_X(PlayerPrefs.GetFloat(camFollowDamping_XKey, camFollowDamping_X_def));
-        SetCameraFollowingDamping_Y(PlayerPrefs.GetFloat(camFollowDamping_YKey, camFollowDamping_Y_def));
-        SetCameraFollowingDamping_Z(PlayerPrefs.GetFloat(camFollowDamping_ZKey, camFollowDamping_Z_def));
-        SetCameraFollowingDamping_Yaw(PlayerPrefs.GetFloat(camFollowDamping_YawKey, camFollowDamping_Yaw_def));
-        SetCameraRotatingDamping_Horizontal(PlayerPrefs.GetFloat(camRotDamping_HorizontalKey, camRotDamping_Horizontal_def));
-        SetCameraRotatingDamping_Vertical(PlayerPrefs.GetFloat(camRotDamping_VerticalKey, camRotDamping_Vertical_def));
+        SetCameraDamping_BodyX(PlayerPrefs.GetFloat(camDamping_BodyXKey, camDamping_BodyX_def));
+        SetCameraDamping_BodyY(PlayerPrefs.GetFloat(camDamping_BodyYKey, camDamping_BodyY_def));
+        SetCameraDamping_BodyZ(PlayerPrefs.GetFloat(camDamping_BodyZKey, camDamping_BodyZ_def));
+        SetCameraDamping_Aim(PlayerPrefs.GetFloat(camDamping_AimKey, camDamping_Aim_def));
 
         // Sounds
         SetBackgroundMusicVolume(PlayerPrefs.GetFloat(backMusicVolumeKey, backMusicVolume_def));
@@ -118,42 +113,42 @@ public class Preferences : Singleton<Preferences>
 
     public static string GetPlayerRotationStyleName()
     {
-        return plRotStyles_info[plRotStyle];
+        return PlRotStyles_info[PlRotStyle];
     }
 
     public static string GetCameraRotationStyleName()
     {
-        return camRotStyles_info[camRotStyle].name;
+        return CamRotStyles_info[CamRotStyle].name;
     }
 
     public static void SetPlayerRotationStyle(int key)
     {
-        if (!plRotStyles_info.ContainsKey((PlayerRotationStyle)key))
+        if (!PlRotStyles_info.ContainsKey((PlayerRotationStyle)key))
         {
-            plRotStyle = PlayerRotationStyle.withMouse;
+            PlRotStyle = PlayerRotationStyle.withMouse;
         }
         else
         {
-            plRotStyle = (PlayerRotationStyle)key;
+            PlRotStyle = (PlayerRotationStyle)key;
         }
-        SetCameraRotationStyle(PlayerPrefs.GetInt(camRotStyleKey, (int)camRotStyle));
-        PlayerPrefs.SetInt(plRotStyleKey, (int)plRotStyle);
+        SetCameraRotationStyle(PlayerPrefs.GetInt(camRotStyleKey, (int)CamRotStyle));
+        PlayerPrefs.SetInt(plRotStyleKey, (int)PlRotStyle);
         OnPlRotStyleChanged?.Invoke();
     }
 
     public static void SetCameraRotationStyle(int index)
     {
-        switch (plRotStyle)
+        switch (PlRotStyle)
         {
             case PlayerRotationStyle.withMouse:
                 {
                     if(index == 2)
                     {
-                        camRotStyle = CameraRotationStyle.withRightClickMouse;
+                        CamRotStyle = CameraRotationStyle.withRightClickMouse;
                     }
                     else
                     {
-                        camRotStyle = CameraRotationStyle.followPlayer;
+                        CamRotStyle = CameraRotationStyle.followPlayer;
                     }
                     break;
                 }
@@ -161,16 +156,16 @@ public class Preferences : Singleton<Preferences>
                 {
                     if (index > 2 || index < 0)
                     {
-                        camRotStyle = CameraRotationStyle.followPlayer;
+                        CamRotStyle = CameraRotationStyle.followPlayer;
                     }
                     else
                     {
-                        camRotStyle = (CameraRotationStyle)index;
+                        CamRotStyle = (CameraRotationStyle)index;
                     }
                     break;
                 }
         }
-        PlayerPrefs.SetInt(camRotStyleKey, (int)camRotStyle);
+        PlayerPrefs.SetInt(camRotStyleKey, (int)CamRotStyle);
         OnCamRotStyleChanged?.Invoke();
     }
 
@@ -195,46 +190,32 @@ public class Preferences : Singleton<Preferences>
         OnCamRotSpeed_VerticalChanged?.Invoke();
     }
 
-    public static void SetCameraFollowingDamping_X(float damping)
+    public static void SetCameraDamping_BodyX(float damping)
     {
-        camFollowDamping_X = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camFollowDamping_XKey, camFollowDamping_X);
-        OnCamFollowDamping_XChanged?.Invoke();
+        camDamping_BodyX = Mathf.Clamp(damping, camDampingMin, camDampingMax);
+        PlayerPrefs.SetFloat(camDamping_BodyXKey, camDamping_BodyX);
+        OnCamDamping_BodyXChanged?.Invoke();
     }
 
-    public static void SetCameraFollowingDamping_Y(float damping)
+    public static void SetCameraDamping_BodyY(float damping)
     {
-        camFollowDamping_Y = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camFollowDamping_YKey, camFollowDamping_Y);
-        OnCamFollowDamping_YChanged?.Invoke();
+        camDamping_BodyY = Mathf.Clamp(damping, camDampingMin, camDampingMax);
+        PlayerPrefs.SetFloat(camDamping_BodyYKey, camDamping_BodyY);
+        OnCamDamping_BodyYChanged?.Invoke();
     }
 
-    public static void SetCameraFollowingDamping_Z(float damping)
+    public static void SetCameraDamping_BodyZ(float damping)
     {
-        camFollowDamping_Z = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camFollowDamping_ZKey, camFollowDamping_Z);
-        OnCamFollowDamping_ZChanged?.Invoke();
+        camDamping_BodyZ = Mathf.Clamp(damping, camDampingMin, camDampingMax);
+        PlayerPrefs.SetFloat(camDamping_BodyZKey, camDamping_BodyZ);
+        OnCamDamping_BodyZChanged?.Invoke();
     }
 
-    public static void SetCameraFollowingDamping_Yaw(float damping)
+    public static void SetCameraDamping_Aim(float damping)
     {
-        camFollowDamping_Yaw = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camFollowDamping_YawKey, camFollowDamping_Yaw);
-        OnCamFollowDamping_YawChanged?.Invoke();
-    }
-
-    public static void SetCameraRotatingDamping_Horizontal(float damping)
-    {
-        camRotDamping_Horizontal = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camRotDamping_HorizontalKey, camRotDamping_Horizontal);
-        OnCamRotDamping_HorizontalChanged?.Invoke();
-    }
-
-    public static void SetCameraRotatingDamping_Vertical(float damping)
-    {
-        camRotDamping_Vertical = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camRotDamping_VerticalKey, camRotDamping_Vertical);
-        OnCamRotDamping_VerticalChanged?.Invoke();
+        camDamping_Aim = Mathf.Clamp(damping, camDampingMin, camDampingMax);
+        PlayerPrefs.SetFloat(camDamping_AimKey, camDamping_Aim);
+        OnCamDamping_AimChanged?.Invoke();
     }
 
     public static void SetBackgroundMusicVolume(float volume)

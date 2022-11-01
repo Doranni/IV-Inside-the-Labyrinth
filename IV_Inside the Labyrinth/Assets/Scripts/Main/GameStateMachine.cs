@@ -6,18 +6,18 @@ public class GameStateMachine
 {
     public IGameState CurrentState { get; private set; }
 
-    public ActiveState activeState;
-    public MenuState menuState;
-    public SettingsState settingsState;
-    public ExitState exitState;
+    public GameActiveState activeState;
+    public GameMenuState menuState;
+    public GameSettingsState settingsState;
+    public GameExitState exitState;
 
     public GameStateMachine(GameObject healthAndSanityPanel, GameObject menuScreen, 
         GameObject settingsScreen, GameObject exitScreen)
     {
-        activeState = new ActiveState(healthAndSanityPanel);
-        menuState = new MenuState(menuScreen);
-        settingsState = new SettingsState(settingsScreen);
-        exitState = new ExitState(exitScreen);
+        activeState = new GameActiveState(healthAndSanityPanel);
+        menuState = new GameMenuState(menuScreen);
+        settingsState = new GameSettingsState(settingsScreen);
+        exitState = new GameExitState(exitScreen);
     }
 
     public void Initialize(IGameState startingState)
