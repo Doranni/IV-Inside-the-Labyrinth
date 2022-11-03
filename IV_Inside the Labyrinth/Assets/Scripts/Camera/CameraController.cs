@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
 {
     public CameraStateMachine StateMachine { get; private set; }
 
-    [SerializeField] private AnimationAndMovementController plMovement;
+    [SerializeField] private MovementController plMovement;
 
     [SerializeField] private CinemachineVirtualCamera thirdViewCameraPOV, thirdViewCameraFollow,
         firstViewCamera, mapViewCamera;

@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private HealthController plHealth;
     private SanityController plSanity;
     private AttackController plAttack;
-    private AnimationAndMovementController plMovement;
+    private MovementController plMovement;
     private EffectsListController plEffects;
     private SanityRestoreController plSanityRestore;
 
@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
         plHealth = GetComponent<HealthController>();
         plSanity = GetComponent<SanityController>();
         plAttack = GetComponent<AttackController>();
-        plMovement = GetComponentInParent<AnimationAndMovementController>();
+        plMovement = GetComponentInParent<MovementController>();
         plEffects = GetComponent<EffectsListController>();
         plSanityRestore = GetComponent<SanityRestoreController>();
 

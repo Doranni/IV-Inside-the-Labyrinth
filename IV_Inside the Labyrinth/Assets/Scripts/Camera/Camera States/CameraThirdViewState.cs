@@ -1,5 +1,7 @@
+using System;
 using Cinemachine;
 using UnityEngine.InputSystem;
+using UnityEngine;
 
 public class CameraThirdViewState : ICameraState
 {
@@ -9,11 +11,13 @@ public class CameraThirdViewState : ICameraState
     public CameraThirdView_FollowState followState;
 
     private readonly CameraController cameraController;
-    private readonly AnimationAndMovementController player;
+    private readonly MovementController player;
 
     private bool rightClickInput;
 
-    public CameraThirdViewState(CameraController cameraController, AnimationAndMovementController player, 
+    public event Action OnStateChanged;
+
+    public CameraThirdViewState(CameraController cameraController, MovementController player, 
         CinemachineVirtualCamera thirdViewCameraPOV, CinemachineVirtualCamera thirdViewCameraFollow,
         float thirdViewFollowOffset_maxDistance, float thirdViewFollowOffset_minDistance,
         float thirdViewFollowTilt_maxDistance, float thirdViewFollowTilt_minDistance,
@@ -39,8 +43,8 @@ public class CameraThirdViewState : ICameraState
         povState.Initialize();
         followState.Initialize();
         Preferences.OnCamRotStyleChanged += SetCurrentState;
-        player.OnMoving_started += SetCurrentState;
-        player.OnMoving_canceled += SetCurrentState;
+        player.StateMachine.OnMoving_started += SetCurrentState;
+        player.StateMachine.OnMoving_canceled += SetCurrentState;
         InputManager.instance.OnStartRotation_started += StartRotation_started;
         InputManager.instance.OnStartRotation_canceled += StartRotation_canceled;
     }
@@ -76,7 +80,7 @@ public class CameraThirdViewState : ICameraState
                         case Preferences.CameraRotationStyle.withRightClickMouse:
                             {
                                 if (rightClickInput || 
-                                    player.MoveState == AnimationAndMovementController.MovementState.still)
+                                    player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
                                 {
                                     CurrentState = povState;
                                 }
@@ -100,7 +104,7 @@ public class CameraThirdViewState : ICameraState
                             }
                         case Preferences.CameraRotationStyle.followPlayer:
                             {
-                                if (player.MoveState == AnimationAndMovementController.MovementState.still)
+                                if (player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
                                 {
                                     CurrentState = povState;
                                 }
@@ -113,7 +117,7 @@ public class CameraThirdViewState : ICameraState
                         case Preferences.CameraRotationStyle.withRightClickMouse:
                             {
                                 if (rightClickInput ||
-                                    player.MoveState == AnimationAndMovementController.MovementState.still)
+                                    player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
                                 {
                                     CurrentState = povState;
                                 }
@@ -132,6 +136,7 @@ public class CameraThirdViewState : ICameraState
         {
             CurrentState.Enter();
             prevState?.Exit();
+            OnStateChanged?.Invoke();
         }
     }
 
@@ -162,11 +167,16 @@ public class CameraThirdViewState : ICameraState
         cameraController.StateMachine.TransitionTo(cameraController.StateMachine.firstViewState);
     }
 
+    public override string ToString()
+    {
+        return CurrentState.ToString();
+    }
+
     public void Destroy()
     {
         Preferences.OnCamRotStyleChanged -= SetCurrentState;
-        player.OnMoving_started -= SetCurrentState;
-        player.OnMoving_canceled -= SetCurrentState;
+        player.StateMachine.OnMoving_started -= SetCurrentState;
+        player.StateMachine.OnMoving_canceled -= SetCurrentState;
         InputManager.instance.OnStartRotation_started -= StartRotation_started;
         InputManager.instance.OnStartRotation_canceled -= StartRotation_canceled;
         povState.Destroy();

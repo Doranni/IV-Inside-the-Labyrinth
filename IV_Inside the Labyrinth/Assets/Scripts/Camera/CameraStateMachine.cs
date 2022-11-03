@@ -10,7 +10,9 @@ public class CameraStateMachine
     public CameraFirstViewState firstViewState;
     public CameraMapViewState mapViewState;
 
-    public CameraStateMachine(CameraController cameraController, AnimationAndMovementController player,
+    public event Action OnStateChanged;
+
+    public CameraStateMachine(CameraController cameraController, MovementController player,
         CinemachineVirtualCamera thirdViewCameraPOV, CinemachineVirtualCamera thirdViewCameraFollow,
         float scrollWheelRange, float thirdViewZoomingSpeed, float thirdViewDistanceMin, float thirdViewDistanceMax,
         float thirdViewFollowOffset_maxDistance, float thirdViewFollowOffset_minDistance,
@@ -42,6 +44,7 @@ public class CameraStateMachine
         mapViewState.Initialize();
         firstViewState.Initialize();
         startingState.Enter();
+        OnStateChanged?.Invoke();
     }
 
     public void TransitionTo(ICameraState nextState)
@@ -49,6 +52,7 @@ public class CameraStateMachine
         CurrentState.Exit();
         CurrentState = nextState;
         nextState.Enter();
+        OnStateChanged?.Invoke();
     }
 
     public void LateUpdate()
