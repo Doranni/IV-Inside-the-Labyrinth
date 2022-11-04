@@ -1,13 +1,13 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EffectsListController : MonoBehaviour
 {
-    public Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
+    private readonly Dictionary<int, Effect> effects = new();
+    public Dictionary<int, Effect> Effects => effects;
 
-    public delegate void ListEffectsDelegate(Dictionary<int, Effect> effects);
-    public event ListEffectsDelegate OnEffectsChanged;
+    public event Action<Dictionary<int, Effect>> OnEffectsChanged;
 
     public int Add(Effect effect, int id)
     {
@@ -24,10 +24,7 @@ public class EffectsListController : MonoBehaviour
 
     public void UpdateEffects()
     {
-        if (OnEffectsChanged != null)
-        {
-            OnEffectsChanged(effects);
-        }
+        OnEffectsChanged?.Invoke(effects);
     }
 }
 

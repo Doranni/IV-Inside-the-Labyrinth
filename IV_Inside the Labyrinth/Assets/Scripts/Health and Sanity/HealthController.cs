@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,19 +12,15 @@ public class HealthController : MonoBehaviour
     public float MaxHealth => maxHealth;
 
     private EffectsListController effectsListController;
-    Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
-    private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
+    readonly Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
+    private readonly Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
 
     private HealingController healingController;
 
-    public delegate void Delegate();
-    public delegate void ChangeHealthDelegate(float currentHealth, float maxHealth);
-    public delegate void EffectDelegate(float effectValue, float time);
-
-    public event ChangeHealthDelegate OnChangeHealth, OnGetDamage;
-    public event Delegate OnDeath;
-    public event EffectDelegate OnEffectStarted, OnEffectPerformed;
-    public event Delegate OnEffectEnded;
+    public event Action<(float currentHealth, float maxHealth)> OnChangeHealth, OnGetDamage;
+    public event Action OnDeath;
+    public event Action<(float effectValue, float timeLeft)> OnEffectStarted, OnEffectPerformed;
+    public event Action OnEffectEnded;
 
     private void Awake()
     {
@@ -43,15 +40,9 @@ public class HealthController : MonoBehaviour
             {
                 effectsListController.UpdateEffects();
             }
-            if (OnEffectPerformed != null)
-            {
-                OnEffectPerformed(effects[id].effectValue, effects[id].TimeLeft);
-            }
+            OnEffectPerformed?.Invoke((effects[id].effectValue, effects[id].TimeLeft));
         }
-        if (OnEffectEnded != null)
-        {
-            OnEffectEnded();
-        }
+        OnEffectEnded?.Invoke();
         if (effectsListController != null)
         {
             effectsListController.RemoveEffect(id);
@@ -68,10 +59,7 @@ public class HealthController : MonoBehaviour
         {
             return false;
         }
-        if (OnEffectStarted != null)
-        {
-            OnEffectStarted(newEffect.effectValue, newEffect.timeTotal);
-        }
+        OnEffectStarted?.Invoke((newEffect.effectValue, newEffect.timeTotal));
         int id = GameManager.NewId();
         if (effectsListController != null)
         {
@@ -87,19 +75,13 @@ public class HealthController : MonoBehaviour
         health = Mathf.Clamp(health + value, 0, maxHealth);
         if (value < 0)
         {
-            if (OnGetDamage != null)
-            {
-                OnGetDamage(health, maxHealth);
-            }
+            OnGetDamage?.Invoke((health, maxHealth));
             if (healingController != null)
             {
                 healingController.RegisterDamage();
             }
         }
-        if (OnChangeHealth != null)
-        {
-            OnChangeHealth(health, maxHealth);
-        }
+        OnChangeHealth?.Invoke((health, maxHealth));
         if (health == 0)
         {
             Death();
@@ -108,9 +90,6 @@ public class HealthController : MonoBehaviour
 
     public void Death()
     {
-        if (OnDeath != null)
-        {
-            OnDeath();
-        }
+        OnDeath?.Invoke();
     }
 }

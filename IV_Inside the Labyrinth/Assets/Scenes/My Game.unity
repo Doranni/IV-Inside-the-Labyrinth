@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.17055547, g: 0.16931385, b: 0.19640553, a: 1}
+  m_IndirectSpecularColor: {r: 0.16937813, g: 0.17599952, b: 0.2123979, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4298,7 +4298,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292598747
   m_fontColor: {r: 0.85882354, g: 0.85882354, b: 0.85882354, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -8779,7 +8779,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 635254543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d045651ecacf7bc46b96c78fc14b1124, type: 3}
+  m_Script: {fileID: 11500000, guid: ebfe52bd8959da6409cf646ac1569153, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   damageClip: {fileID: 8300000, guid: 7c4f5427bc5a40249852f12b0ae8b695, type: 3}
@@ -13039,6 +13039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a437c17d2fc88468c623a60a1273d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  plSanity: {fileID: 543450653563009084}
   torchMaxIntensity: 1
   torchMinIntensity: 0.5
   torchEffectMaxRange: 15
@@ -20939,9 +20940,6 @@ MonoBehaviour:
   exitButton: {fileID: 2113074423}
   quitButton: {fileID: 1891193105}
   stayButton: {fileID: 1195657497}
-  healthValueTmp: {fileID: 1237192183}
-  sanityValueTmp: {fileID: 638440871}
-  effectsTmp: {fileID: 314503758}
 --- !u!1 &1537252752
 GameObject:
   m_ObjectHideFlags: 0
@@ -28699,6 +28697,17 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 543450653563009083, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
   m_PrefabInstance: {fileID: 4191781681002442120}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &543450653563009084 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 543450653563009075, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+  m_PrefabInstance: {fileID: 4191781681002442120}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebcbbc0e2f3a0184481285afaec4c2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4191781681002442120
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28706,18 +28715,42 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 543450653563009077, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+    - target: {fileID: 543450653563009081, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+      propertyPath: sanityLightEffect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 543450653563009091, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+      propertyPath: effectsTmp
+      value: 
+      objectReference: {fileID: 314503758}
+    - target: {fileID: 543450653563009091, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
       propertyPath: damageAnimator
       value: 
       objectReference: {fileID: 635254547}
-    - target: {fileID: 543450653563009077, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+    - target: {fileID: 543450653563009091, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+      propertyPath: healthValueTmp
+      value: 
+      objectReference: {fileID: 1237192183}
+    - target: {fileID: 543450653563009091, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+      propertyPath: sanityValueTmp
+      value: 
+      objectReference: {fileID: 638440871}
+    - target: {fileID: 543450653563009091, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
       propertyPath: sanityLightEffect
       value: 
       objectReference: {fileID: 1227105214}
-    - target: {fileID: 543450653563009077, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+    - target: {fileID: 543450653563009091, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
       propertyPath: damageEffect_Image
       value: 
       objectReference: {fileID: 1309746390}
+    - target: {fileID: 566377597957084173, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+      propertyPath: timeBeforeRecovery
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 566377597957084173, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
+      propertyPath: sanityRestoringPerSecond
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3957919613764767517, guid: 6d4437dc0213e4e4a8f7cc3d564957dd, type: 3}
       propertyPath: m_Name
       value: Player

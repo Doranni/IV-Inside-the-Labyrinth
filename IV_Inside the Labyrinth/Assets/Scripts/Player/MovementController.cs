@@ -232,7 +232,7 @@ public class MovementController : MonoBehaviour
             rotationAcceleration = 1f;
             audioSource.pitch = audioPitchMin;
         }
-        animator.SetFloat(animHash_Acceleration_Float, (acceleration - 1) / (maxAcceleration - 1));
+        animator.SetFloat(AnimHash_Acceleration_Float, (acceleration - 1) / (maxAcceleration - 1));
     }
 
     public void Anim_JumpUpStart()

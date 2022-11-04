@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using TMPro;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -10,10 +8,8 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
     [SerializeField] private Button settingsButton, exitButton, quitButton, stayButton;
-    [SerializeField] private TextMeshProUGUI healthValueTmp, sanityValueTmp, effectsTmp;
 
-    
-    public static string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", 
+    public static readonly string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", 
         torchTag = "Torch", sanityLight = "Sanity Light";
 
     private static int lastId = 0;
@@ -64,42 +60,6 @@ public class GameManager : Singleton<GameManager>
     private void StayInGame()
     {
         StateMachine.TransitionTo(StateMachine.menuState);
-    }
-
-    public static void UpdateHealth(float value, float maxValue)
-    {
-        instance.UpdateHealth_private(value, maxValue);
-    }
-
-    private void UpdateHealth_private(float value, float maxValue)
-    {
-        healthValueTmp.text = Mathf.Round(value) + "/" + maxValue;
-    }
-
-    public static void UpdateSanity(float currentSanity, float maxSanity)
-    {
-        instance.UpdateSanity_private(currentSanity, maxSanity);
-    }
-
-    private void UpdateSanity_private(float currentSanity, float maxSanity)
-    {
-        sanityValueTmp.text = Mathf.Round(currentSanity) + "/" + maxSanity;
-    }
-
-    public static void UpdateEffects(Dictionary<int, Effect> effects)
-    {
-        instance.UpdateEffects_private(effects);
-    }
-    private void UpdateEffects_private(Dictionary<int, Effect> effects)
-    {
-        effectsTmp.text = string.Empty;
-        string res = string.Empty;
-        
-        foreach (KeyValuePair<int, Effect> effect in effects)
-        {
-            res += effect.Value.ToString() + "\n";
-        }
-        effectsTmp.SetText(res);
     }
 
     public static int NewId()
