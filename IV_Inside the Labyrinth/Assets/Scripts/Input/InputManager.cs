@@ -1,16 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 using UnityEngine.InputSystem;
 
-[DefaultExecutionOrder(-1)]
-public class InputManager : MonoBehaviour
+public class InputManager : Singleton<InputManager>
 {
     private GameInput gameInput;
-    public static InputManager instance;
 
-    public delegate void InputFunction(InputAction.CallbackContext obj);
-    public event InputFunction OnMenu_performed,
+    public event Action<InputAction.CallbackContext> OnMenu_performed,
         OnMoveForward_performed, OnMoveForward_started, OnMoveForward_canceled,
         OnMoveAside_started, OnMoveAside_canceled,
         OnRotateMouse_started, OnRotateMouse_performed, OnRotateMouse_canceled,
@@ -23,9 +18,10 @@ public class InputManager : MonoBehaviour
         OnMapViewToggle_performed,
         OnStartRotation_started, OnStartRotation_canceled;
 
-    private void Awake()
+    public override void Awake()
     {
-        instance = this;
+        base.Awake();
+
         gameInput = new GameInput();
 
         gameInput.Game.Menu.performed += Menu_performed;
@@ -66,194 +62,122 @@ public class InputManager : MonoBehaviour
 
     private void StartRotation_canceled(InputAction.CallbackContext obj)
     {
-        if (OnStartRotation_canceled != null)
-        {
-            OnStartRotation_canceled(obj);
-        }
+        OnStartRotation_canceled?.Invoke(obj);
     }
 
     private void StartRotation_started(InputAction.CallbackContext obj)
     {
-        if (OnStartRotation_started != null)
-        {
-            OnStartRotation_started(obj);
-        }
+        OnStartRotation_started?.Invoke(obj);
     }
 
     private void MapViewToggle_performed(InputAction.CallbackContext obj)
     {
-        if (OnMapViewToggle_performed != null)
-        {
-            OnMapViewToggle_performed(obj);
-        }
+        OnMapViewToggle_performed?.Invoke(obj);
     }
 
     private void FirstViewToggle_performed(InputAction.CallbackContext obj)
     {
-        if (OnFirstViewToggle_performed != null)
-        {
-            OnFirstViewToggle_performed(obj);
-        }
+        OnFirstViewToggle_performed?.Invoke(obj);
     }
 
     private void Zoom_canceled(InputAction.CallbackContext obj)
     {
-        if (OnZoom_canceled != null)
-        {
-            OnZoom_canceled(obj);
-        }
+        OnZoom_canceled?.Invoke(obj);
     }
 
     private void Zoom_performed(InputAction.CallbackContext obj)
     {
-        if (OnZoom_performed != null)
-        {
-            OnZoom_performed(obj);
-        }
+        OnZoom_performed?.Invoke(obj);
     }
 
     private void Zoom_started(InputAction.CallbackContext obj)
     {
-        if (OnZoom_started != null)
-        {
-            OnZoom_started(obj);
-        }
+        OnZoom_started?.Invoke(obj);
     }
 
     private void JumpUp_performed(InputAction.CallbackContext obj)
     {
-        if (OnJumpUp_performed != null)
-        {
-            OnJumpUp_performed(obj);
-        }
+        OnJumpUp_performed?.Invoke(obj);
     }
 
     private void MouseRightClick_canceled(InputAction.CallbackContext obj)
     {
-        if (OnMouseRightClick_canceled != null)
-        {
-            OnMouseRightClick_canceled(obj);
-        }
+        OnMouseRightClick_canceled?.Invoke(obj);
     }
 
     private void MouseRightClick_started(InputAction.CallbackContext obj)
     {
-        if (OnMouseRightClick_started != null)
-        {
-            OnMouseRightClick_started(obj);
-        }
+        OnMouseRightClick_started?.Invoke(obj);
     }
 
     private void Acceleration_canceled(InputAction.CallbackContext obj)
     {
-        if (OnAcceleration_canceled != null)
-        {
-            OnAcceleration_canceled(obj);
-        }
+        OnAcceleration_canceled?.Invoke(obj);
     }
 
     private void Acceleration_started(InputAction.CallbackContext obj)
     {
-        if (OnAcceleration_started != null)
-        {
-            OnAcceleration_started(obj);
-        }
+        OnAcceleration_started?.Invoke(obj);
     }
 
     private void RotateKeyboard_canceled(InputAction.CallbackContext obj)
     {
-        if (OnRotateKeyboard_canceled != null)
-        {
-            OnRotateKeyboard_canceled(obj);
-        }
+        OnRotateKeyboard_canceled?.Invoke(obj);
     }
 
     private void RotateKeyboard_performed(InputAction.CallbackContext obj)
     {
-        if (OnRotateKeyboard_performed != null)
-        {
-            OnRotateKeyboard_performed(obj);
-        }
+        OnRotateKeyboard_performed?.Invoke(obj);
     }
 
     private void RotateKeyboard_started(InputAction.CallbackContext obj)
     {
-        if (OnRotateKeyboard_started != null)
-        {
-            OnRotateKeyboard_started(obj);
-        }
+        OnRotateKeyboard_started?.Invoke(obj);
     }
 
     private void RotateMouse_canceled(InputAction.CallbackContext obj)
     {
-        if (OnRotateMouse_canceled != null)
-        {
-            OnRotateMouse_canceled(obj);
-        }
+        OnRotateMouse_canceled?.Invoke(obj);
     }
 
     private void RotateMouse_performed(InputAction.CallbackContext obj)
     {
-        if (OnRotateMouse_performed != null)
-        {
-            OnRotateMouse_performed(obj);
-        }
+        OnRotateMouse_performed?.Invoke(obj);
     }
 
     private void RotateMouse_started(InputAction.CallbackContext obj)
     {
-        if (OnRotateMouse_started != null)
-        {
-            OnRotateMouse_started(obj);
-        }
+        OnRotateMouse_started?.Invoke(obj);
     }
 
     private void MoveForward_canceled(InputAction.CallbackContext obj)
     {
-        if (OnMoveForward_canceled != null)
-        {
-            OnMoveForward_canceled(obj);
-        }
+        OnMoveForward_canceled?.Invoke(obj);
     }
 
     private void MoveForward_performed(InputAction.CallbackContext obj)
     {
-        if (OnMoveForward_performed != null)
-        {
-            OnMoveForward_performed(obj);
-        }
+        OnMoveForward_performed?.Invoke(obj);
     }
 
     private void MoveForward_started(InputAction.CallbackContext obj)
     {
-        if (OnMoveForward_started != null)
-        {
-            OnMoveForward_started(obj);
-        }
+        OnMoveForward_started?.Invoke(obj);
     }
 
     private void MoveAside_started(InputAction.CallbackContext obj)
     {
-        if (OnMoveAside_started != null)
-        {
-            OnMoveAside_started(obj);
-        }
+        OnMoveAside_started?.Invoke(obj);
     }
 
     private void MoveAside_canceled(InputAction.CallbackContext obj)
     {
-        if (OnMoveAside_canceled != null)
-        {
-            OnMoveAside_canceled(obj);
-        }
+        OnMoveAside_canceled?.Invoke(obj);
     }
 
     private void Menu_performed(InputAction.CallbackContext obj)
     {
-        if (OnMenu_performed != null)
-        {
-            OnMenu_performed(obj);
-        }
+        OnMenu_performed?.Invoke(obj);
     }
 
     private void OnEnable()

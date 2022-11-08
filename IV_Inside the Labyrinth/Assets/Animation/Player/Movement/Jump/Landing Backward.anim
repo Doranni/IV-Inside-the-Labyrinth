@@ -23902,35 +23902,35 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.033333335
-    functionName: RunningAudioStart
+    functionName: Anim_RunningAudioStart
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.1
-    functionName: RunningAudioFinish
+    functionName: Anim_RunningAudioFinish
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.16666667
-    functionName: RunningAudioStart
+    functionName: Anim_RunningAudioStart
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.23333333
-    functionName: RunningAudioFinish
+    functionName: Anim_RunningAudioFinish
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.33333334
-    functionName: UnlockMovement
+    functionName: Anim_UnlockMovement
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

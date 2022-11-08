@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,14 +15,10 @@ public class SanityController : MonoBehaviour
     Dictionary<int, Effect> effects = new Dictionary<int, Effect>();
     private Dictionary<int, Coroutine> effectCoroutines = new Dictionary<int, Coroutine>();
 
-    public delegate void Delegate();
-    public delegate void ChangeSanityDelegate(float value, float maxValue);
-    public delegate void EffectDelegate(float effectValue, float time);
-
-    public event ChangeSanityDelegate OnChangeSanity;
-    public event Delegate OnLoseMind;
-    public event EffectDelegate OnEffectStarted, OnEffectPerformed;
-    public event Delegate OnEffectEnded;
+    public event Action<(float currentSanity, float maxSanity)> OnChangeSanity, OnGetSanityDamage;
+    public event Action OnLoseMind;
+    public event Action<(float effectValue, float timeLeft)> OnEffectStarted, OnEffectPerformed;
+    public event Action OnEffectEnded;
 
     private void Awake()
     {
@@ -40,15 +37,9 @@ public class SanityController : MonoBehaviour
             {
                 effectsListController.UpdateEffects();
             }
-            if (OnEffectPerformed != null)
-            {
-                OnEffectPerformed(effects[id].effectValue, effects[id].TimeLeft);
-            }
+            OnEffectPerformed?.Invoke((effects[id].effectValue, effects[id].TimeLeft));
         }
-        if (OnEffectEnded != null)
-        {
-            OnEffectEnded();
-        }
+        OnEffectEnded?.Invoke();
         if (effectsListController != null)
         {
             effectsListController.RemoveEffect(id);
@@ -65,10 +56,7 @@ public class SanityController : MonoBehaviour
         {
             return false;
         }
-        if (OnEffectStarted != null)
-        {
-            OnEffectStarted(newEffect.effectValue, newEffect.timeTotal);
-        }
+        OnEffectStarted?.Invoke((newEffect.effectValue, newEffect.timeTotal));
         int id = GameManager.NewId();
         if (effectsListController != null)
         {
@@ -82,10 +70,11 @@ public class SanityController : MonoBehaviour
     public void ChangeSanity(float value)
     {
         sanity = Mathf.Clamp(sanity + value, 0, maxSanity);
-        if (OnChangeSanity != null)
+        if (value < 0)
         {
-            OnChangeSanity(sanity, maxSanity);
+            OnGetSanityDamage?.Invoke((sanity, maxSanity));
         }
+        OnChangeSanity?.Invoke((sanity, maxSanity));
         if (sanity == 0)
         {
             LoseMind();
@@ -94,9 +83,6 @@ public class SanityController : MonoBehaviour
 
     public void LoseMind()
     {
-        if (OnLoseMind != null)
-        {
-            OnLoseMind();
-        }
+        OnLoseMind?.Invoke();
     }
 }

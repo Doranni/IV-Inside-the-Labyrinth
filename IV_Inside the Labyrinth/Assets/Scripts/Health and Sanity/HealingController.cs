@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HealingController : MonoBehaviour
@@ -7,6 +6,7 @@ public class HealingController : MonoBehaviour
     [Header("Ability to start healing while not taking damage")]
     [SerializeField] private float timeBeforeHealing;
     [SerializeField] private float healingPerSecond, healingTimeStep;
+
     private float healingValueStep;
     private Coroutine healingCoroutine;
     private HealthController healthController;

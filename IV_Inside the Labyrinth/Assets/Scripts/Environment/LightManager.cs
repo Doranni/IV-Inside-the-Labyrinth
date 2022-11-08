@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LightManager : MonoBehaviour
 {
+    [SerializeField] private SanityController plSanity;
+
     [Header("Torches")]
-    [SerializeField]
-    private float torchMaxIntensity, torchMinIntensity,
-        torchEffectMaxRange, torchEffectMinRange;
+    [SerializeField] private float torchMaxIntensity;
+    [SerializeField] private float torchMinIntensity, torchEffectMaxRange, torchEffectMinRange;
     private TorchController[] torches;
 
     [Header("Directional Lingh")]
@@ -20,31 +19,31 @@ public class LightManager : MonoBehaviour
 
     private int skyTint_id, sunSize_id;
 
-    private static LightManager instance;
-
-    void Awake()
+    void Start()
     {
-        instance = this;
         torches = FindObjectsOfType<TorchController>();
         skyTint_id = Shader.PropertyToID("_SkyTint");
         sunSize_id = Shader.PropertyToID("_SunSize");
+        plSanity.OnChangeSanity += UpdateLight;
+        UpdateLight((plSanity.Sanity, plSanity.MaxSanity));
+    }
+
+    private void UpdateLight((float currentSanity, float maxSanity) values)
+    {
+        float currentSanity_from0to1 = values.currentSanity / values.maxSanity;
+        UpdateTorches(currentSanity_from0to1);
+        UpdateSkybox(currentSanity_from0to1);
+        UpdateDirectionalLight(currentSanity_from0to1);
     }
 
     private void UpdateTorches(float currentSanity_from0to1)
     {
-        float torchLightIntensity = Mathf.Clamp(currentSanity_from0to1 * torchMaxIntensity, torchMinIntensity, torchMaxIntensity);
-        float torchEffectRange = Mathf.Clamp(currentSanity_from0to1 * torchEffectMaxRange, torchEffectMinRange, torchEffectMaxRange);
+        float torchLightIntensity = Mathf.Lerp(torchMinIntensity, torchMaxIntensity, currentSanity_from0to1);
+        float torchEffectRange = Mathf.Lerp(torchEffectMinRange, torchEffectMaxRange, currentSanity_from0to1);
         foreach (TorchController torch in torches)
         {
             torch.ChangeIntensity(torchLightIntensity, torchEffectRange);
         }
-    }
-
-    public static void UpdateLight(float currentSanity_from0to1)
-    {
-        instance.UpdateTorches(currentSanity_from0to1);
-        instance.UpdateSkybox(currentSanity_from0to1);
-        instance.UpdateDirectionalLight(currentSanity_from0to1);
     }
 
     private void UpdateSkybox(float currentSanity_from0to1)
@@ -59,5 +58,10 @@ public class LightManager : MonoBehaviour
     {
         directionalLingh.color = Color.Lerp(directionalLightColor_withoutSanity,
             directionalLightColor_fullSanity, currentSanity_from0to1);
+    }
+
+    private void OnDestroy()
+    {
+        plSanity.OnChangeSanity -= UpdateLight;
     }
 }

@@ -1,38 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using TMPro;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    enum GameStatus
-    {
-        active,
-        onMenu,
-        onSettings,
-        onExit
-    }
+    public GameStateMachine StateMachine { get; private set; }
 
-    [SerializeField]
-    private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
+    [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
     [SerializeField] private Button settingsButton, exitButton, quitButton, stayButton;
-    [SerializeField] private TextMeshProUGUI healthValueTmp, sanityValueTmp, effectsTmp;
 
-    private InputManager inputManager;
-    private GameStatus gameStatus;
-    
-    public static string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", torchTag = "Torch", sanityLight = "Sanity Light";
+    public static readonly string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", 
+        torchTag = "Torch", sanityLight = "Sanity Light";
 
-    private static GameManager instance;
     private static int lastId = 0;
 
-    private void Awake()
+    public override void Awake()
     {
-        instance = this;
-        inputManager = InputManager.instance;
-        inputManager.OnMenu_performed += Menu_performed;
+        base.Awake();
+        StateMachine = new GameStateMachine(healthAndSanityPanel, menuScreen, settingsScreen, exitScreen);
+        InputManager.instance.OnMenu_performed += Menu_performed;
+        Preferences.OnPauseBehaviorChanged += UpdatePause;
         settingsButton.onClick.AddListener(OpenSettingsScreen);
         exitButton.onClick.AddListener(OpenExitScreen);
         quitButton.onClick.AddListener(QuitGame);
@@ -41,71 +28,28 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        GameObject player = GameObject.FindGameObjectWithTag(playerTag);
-        gameStatus = GameStatus.active;
-        menuScreen.SetActive(false);
-        settingsScreen.SetActive(false);
-        exitScreen.SetActive(false);
-        healthAndSanityPanel.SetActive(true);
-        Cursor.visible = false;
+        StateMachine.Initialize(StateMachine.activeState);
         Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Menu_performed(InputAction.CallbackContext obj)
     {
-        switch (gameStatus)
-        {
-            case GameStatus.active:
-                {
-                    if (Preferences.isPausedWhileInMenu)
-                    {
-                        Time.timeScale = 0;
-                    }
-                    menuScreen.SetActive(true);
-                    healthAndSanityPanel.SetActive(false);
-                    gameStatus = GameStatus.onMenu;
-                    Cursor.visible = true;
-                    break;
-                }
-            case GameStatus.onMenu:
-                {
-                    menuScreen.SetActive(false);
-                    healthAndSanityPanel.SetActive(true);
-                    gameStatus = GameStatus.active;
-                    Cursor.visible = false;
-                    Time.timeScale = 1;
-                    break;
-                }
-            case GameStatus.onSettings:
-                {
-                    menuScreen.SetActive(true);
-                    settingsScreen.SetActive(false);
-                    gameStatus = GameStatus.onMenu;
-                    TooltipController.HideTooltip();
-                    break;
-                }
-            case GameStatus.onExit:
-                {
-                    menuScreen.SetActive(true);
-                    exitScreen.SetActive(false);
-                    gameStatus = GameStatus.onMenu;
-                    break;
-                }
-        }
+        StateMachine.MenuPerformed();
+    }
+
+    public void UpdatePause()
+    {
+        StateMachine.UpdatePause();
     }
 
     private void OpenSettingsScreen()
     {
-        menuScreen.SetActive(false);
-        settingsScreen.SetActive(true);
-        gameStatus = GameStatus.onSettings;
+        StateMachine.TransitionTo(StateMachine.settingsState);
     }
 
     private void OpenExitScreen()
     {
-        menuScreen.SetActive(false);
-        exitScreen.SetActive(true);
-        gameStatus = GameStatus.onExit;
+        StateMachine.TransitionTo(StateMachine.exitState);
     }
 
     private void QuitGame()
@@ -115,49 +59,17 @@ public class GameManager : MonoBehaviour
 
     private void StayInGame()
     {
-        menuScreen.SetActive(true);
-        exitScreen.SetActive(false);
-        gameStatus = GameStatus.onMenu;
-    }
-
-    public static void UpdateHealth(float value, float maxValue)
-    {
-        instance.UpdateHealth_private(value, maxValue);
-    }
-
-    private void UpdateHealth_private(float value, float maxValue)
-    {
-        healthValueTmp.text = Mathf.Round(value) + "/" + maxValue;
-    }
-
-    public static void UpdateSanity(float currentSanity, float maxSanity)
-    {
-        instance.UpdateSanity_private(currentSanity, maxSanity);
-    }
-
-    private void UpdateSanity_private(float currentSanity, float maxSanity)
-    {
-        sanityValueTmp.text = Mathf.Round(currentSanity) + "/" + maxSanity;
-    }
-
-    public static void UpdateEffects(Dictionary<int, Effect> effects)
-    {
-        instance.UpdateEffects_private(effects);
-    }
-    private void UpdateEffects_private(Dictionary<int, Effect> effects)
-    {
-        effectsTmp.text = string.Empty;
-        string res = string.Empty;
-        
-        foreach (KeyValuePair<int, Effect> effect in effects)
-        {
-            res += effect.Value.ToString() + "\n";
-        }
-        effectsTmp.SetText(res);
+        StateMachine.TransitionTo(StateMachine.menuState);
     }
 
     public static int NewId()
     {
         return lastId++;
+    }
+
+    private void OnDestroy()
+    {
+        InputManager.instance.OnMenu_performed -= Menu_performed;
+        Preferences.OnPauseBehaviorChanged -= UpdatePause;
     }
 }
