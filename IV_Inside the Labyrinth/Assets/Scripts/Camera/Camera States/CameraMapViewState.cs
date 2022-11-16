@@ -51,6 +51,11 @@ public class CameraMapViewState : ZoomableCamera, ICameraState
         cameraController.StateMachine.TransitionTo(cameraController.StateMachine.firstViewState);
     }
 
+    public override string ToString()
+    {
+        return "Map View";
+    }
+
     public void Destroy() 
     {
         InputManager.instance.OnZoom_started -= HandleScrollWheelInput;

@@ -89,6 +89,11 @@ public class CameraThitdView_PovState : ZoomableCamera, ICameraThirdViewState
         framingTransposer.m_XDamping = Preferences.camDamping_BodyX;
     }
 
+    public override string ToString()
+    {
+        return "ThirdV: POV";
+    }
+
     public void Destroy()
     {
         InputManager.instance.OnZoom_started -= HandleScrollWheelInput;

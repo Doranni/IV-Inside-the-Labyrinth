@@ -38,5 +38,10 @@ public class CameraFirstViewState : ICameraState
         cameraController.StateMachine.TransitionTo(cameraController.StateMachine.thirdViewState);
     }
 
+    public override string ToString()
+    {
+        return "First View";
+    }
+
     public void Destroy() { }
 }

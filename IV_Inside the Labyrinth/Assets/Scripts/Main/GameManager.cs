@@ -6,10 +6,10 @@ public class GameManager : Singleton<GameManager>
 {
     public GameStateMachine StateMachine { get; private set; }
 
-    [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen, healthAndSanityPanel;
+    [SerializeField] private GameObject menuScreen, settingsScreen, exitScreen;
     [SerializeField] private Button settingsButton, exitButton, quitButton, stayButton;
 
-    public static readonly string playerTag = "Player", trapTag = "Trap", groundTag = "Ground", 
+    public static readonly string playerTag = "Player", mainCameraTag = "MainCamera", trapTag = "Trap", groundTag = "Ground", 
         torchTag = "Torch", sanityLight = "Sanity Light";
 
     private static int lastId = 0;
@@ -17,7 +17,7 @@ public class GameManager : Singleton<GameManager>
     public override void Awake()
     {
         base.Awake();
-        StateMachine = new GameStateMachine(healthAndSanityPanel, menuScreen, settingsScreen, exitScreen);
+        StateMachine = new GameStateMachine(menuScreen, settingsScreen, exitScreen);
         InputManager.instance.OnMenu_performed += Menu_performed;
         Preferences.OnPauseBehaviorChanged += UpdatePause;
         settingsButton.onClick.AddListener(OpenSettingsScreen);

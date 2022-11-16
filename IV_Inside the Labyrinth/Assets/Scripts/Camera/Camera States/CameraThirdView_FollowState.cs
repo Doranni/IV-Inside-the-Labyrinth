@@ -107,6 +107,11 @@ public class CameraThirdView_FollowState : ZoomableCamera, ICameraThirdViewState
         sameAsFollowTarget.m_Damping = Preferences.camDamping_Aim;
     }
 
+    public override string ToString()
+    {
+        return "ThirdV: Follow";
+    }
+
     public void Destroy()
     {
         InputManager.instance.OnZoom_started -= HandleScrollWheelInput;

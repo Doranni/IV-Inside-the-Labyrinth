@@ -9,7 +9,7 @@ public class MovementController : MonoBehaviour
     [SerializeField] private LayerMask floorLM;
     public LayerMask FloorLM => floorLM;
 
-    [SerializeField] private CameraController cameraController;
+    private CameraController cameraController;
     private CharacterController characterController;
 
     [SerializeField] private float movementSpeed, jumpUpForce, jumpForwardForce, moveGravity,
@@ -77,29 +77,13 @@ public class MovementController : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        cameraController = GameObject.FindGameObjectWithTag(GameManager.mainCameraTag).GetComponent<CameraController>();
         animator = GetComponent<Animator>();
+        effectsListController = GetComponent<EffectsListController>();
+        audioSource = GetComponent<AudioSource>();
+
         StateMachine = new MovementStateMachine(this, characterController, animator, cameraController);
         StateMachine.Initialize(StateMachine.stillState);
-
-        InputManager.instance.OnMoveForward_performed += MoveForward_performed; 
-        InputManager.instance.OnMoveForward_started += StateMachine.MoveForward_started;
-        InputManager.instance.OnMoveForward_canceled += StateMachine.MoveForward_canceled;
-        InputManager.instance.OnMoveAside_started += StateMachine.MoveAside_started;
-        InputManager.instance.OnMoveAside_canceled += StateMachine.MoveAside_canceled;
-
-        InputManager.instance.OnRotateMouse_performed += RotateMouse_performed;
-        InputManager.instance.OnRotateKeyboard_performed += RotateKeyboard_performed;
-
-        InputManager.instance.OnAcceleration_started += Acceleration_started;
-        InputManager.instance.OnAcceleration_canceled += Acceleration_canceled;
-
-        InputManager.instance.OnMouseRightClick_started += MouseRightClick_started;
-        InputManager.instance.OnMouseRightClick_canceled += MouseRightClick_canceled;
-        InputManager.instance.OnJumpUp_performed += JumpUp_performed;
-
-        Preferences.OnPlRotStyleChanged += UpdatePlayerRotation;
-        Preferences.OnCamRotStyleChanged += UpdatePlayerRotation;
-        Preferences.OnPlRotSpeedChanged += UpdatePlayerRotation;
 
         animHash_VecticalVelocity_Float = Animator.StringToHash("Vertical Velocity");
         animHash_HorizontalVelocity_Float = Animator.StringToHash("Horizontal Velocity");
@@ -157,9 +141,6 @@ public class MovementController : MonoBehaviour
 
     void Start()
     {
-        effectsListController = GetComponent<EffectsListController>();
-        audioSource = GetComponent<AudioSource>();
-        UpdatePlayerRotation();
         if (moveGravity >= 0)
         {
             moveGravity = Physics.gravity.y;
@@ -168,6 +149,28 @@ public class MovementController : MonoBehaviour
         rotationAccelerationStep = (maxRotationAcceleration - 1) / maxAccelerationTime;
         audioPitchStep = (audioPitchMax - audioPitchMin) / maxAccelerationTime;
         audioSource.pitch = audioPitchMin;
+
+        InputManager.instance.OnMoveForward_performed += MoveForward_performed;
+        InputManager.instance.OnMoveForward_started += StateMachine.MoveForward_started;
+        InputManager.instance.OnMoveForward_canceled += StateMachine.MoveForward_canceled;
+        InputManager.instance.OnMoveAside_started += StateMachine.MoveAside_started;
+        InputManager.instance.OnMoveAside_canceled += StateMachine.MoveAside_canceled;
+
+        InputManager.instance.OnRotateMouse_performed += RotateMouse_performed;
+        InputManager.instance.OnRotateKeyboard_performed += RotateKeyboard_performed;
+
+        InputManager.instance.OnAcceleration_started += Acceleration_started;
+        InputManager.instance.OnAcceleration_canceled += Acceleration_canceled;
+
+        InputManager.instance.OnMouseRightClick_started += MouseRightClick_started;
+        InputManager.instance.OnMouseRightClick_canceled += MouseRightClick_canceled;
+        InputManager.instance.OnJumpUp_performed += JumpUp_performed;
+
+        Preferences.OnPlRotStyleChanged += UpdatePlayerRotation;
+        Preferences.OnCamRotStyleChanged += UpdatePlayerRotation;
+        Preferences.OnPlRotSpeedChanged += UpdatePlayerRotation;
+
+        UpdatePlayerRotation();
     }
 
     void Update()

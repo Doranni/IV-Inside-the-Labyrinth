@@ -11,10 +11,12 @@ public class GameStateMachine
     public GameSettingsState settingsState;
     public GameExitState exitState;
 
-    public GameStateMachine(GameObject healthAndSanityPanel, GameObject menuScreen, 
+    public event Action OnStateChanged;
+
+    public GameStateMachine(GameObject menuScreen, 
         GameObject settingsScreen, GameObject exitScreen)
     {
-        activeState = new GameActiveState(healthAndSanityPanel);
+        activeState = new GameActiveState();
         menuState = new GameMenuState(menuScreen);
         settingsState = new GameSettingsState(settingsScreen);
         exitState = new GameExitState(exitScreen);
@@ -35,6 +37,7 @@ public class GameStateMachine
         CurrentState.Exit();
         CurrentState = nextState;
         nextState.Enter();
+        OnStateChanged?.Invoke();
     }
 
     public void MenuPerformed()

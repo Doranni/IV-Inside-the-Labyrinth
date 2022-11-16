@@ -18,4 +18,9 @@ public class JumpingUpState : IMovementState
         plMovement.moveDirectionGlobal.y += plMovement.MoveGravity * Time.deltaTime;
     }
     public void JumpUp_pressed() { }
+
+    public override string ToString()
+    {
+        return "Jumping Up";
+    }
 }

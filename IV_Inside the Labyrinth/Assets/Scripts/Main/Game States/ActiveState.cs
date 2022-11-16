@@ -2,16 +2,10 @@ using UnityEngine;
 
 public class GameActiveState : IGameState
 {
-    private readonly GameObject healthAndSanityPanel;
-
-    public GameActiveState(GameObject healthAndSanityPanel)
-    {
-        this.healthAndSanityPanel = healthAndSanityPanel;
-    }
+    public GameActiveState() { }
 
     public void Enter()
     {
-        healthAndSanityPanel.SetActive(true);
         Cursor.visible = false;
         UpdatePause();
     }
@@ -26,8 +20,5 @@ public class GameActiveState : IGameState
         Time.timeScale = 1;
     }
 
-    public void Exit()
-    {
-        healthAndSanityPanel.SetActive(false);
-    }
+    public void Exit() { }
 }

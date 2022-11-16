@@ -95,4 +95,9 @@ public class MovingState : GroundedState, IMovementState
             plMovement.StateMachine.TransitionTo(plMovement.StateMachine.stillState);
         }
     }
+
+    public override string ToString()
+    {
+        return "Moving";
+    }
 }
