@@ -80,7 +80,7 @@ public class CameraThirdViewState : ICameraState
                         case Preferences.CameraRotationStyle.withRightClickMouse:
                             {
                                 if (rightClickInput || 
-                                    player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
+                                    !player.StateMachine.CurrentState.Equals(player.StateMachine.movingState))
                                 {
                                     CurrentState = povState;
                                 }
@@ -104,20 +104,20 @@ public class CameraThirdViewState : ICameraState
                             }
                         case Preferences.CameraRotationStyle.followPlayer:
                             {
-                                if (player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
+                                if (player.StateMachine.CurrentState.Equals(player.StateMachine.movingState))
                                 {
-                                    CurrentState = povState;
+                                    CurrentState = followState;
                                 }
                                 else
                                 {
-                                    CurrentState = followState;
+                                    CurrentState = povState;
                                 }
                                 break;
                             }
                         case Preferences.CameraRotationStyle.withRightClickMouse:
                             {
                                 if (rightClickInput ||
-                                    player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
+                                    !player.StateMachine.CurrentState.Equals(player.StateMachine.movingState))
                                 {
                                     CurrentState = povState;
                                 }

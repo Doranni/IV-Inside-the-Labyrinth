@@ -5,8 +5,6 @@ using TMPro;
 
 public class Settings : MonoBehaviour
 {
-    [SerializeField] private Toggle pauseToggle;
-
     // Movement and Camera
     [Header("Player's Movement")]
     [SerializeField] private TMP_Dropdown plRotStyleDropdown;
@@ -37,10 +35,6 @@ public class Settings : MonoBehaviour
 
     private void Start()
     {
-        pauseToggle.onValueChanged.AddListener(SetPauseBehavior);
-        Preferences.OnPauseBehaviorChanged += UpdatePauseUI;
-        UpdatePauseUI();
-
         // Movement and Camera
         playerRotList = new List<TMP_Dropdown.OptionData>();
         cameraRotList = new List<TMP_Dropdown.OptionData>();
@@ -116,11 +110,6 @@ public class Settings : MonoBehaviour
         resetButton_Sounds.onClick.AddListener(ResetPrefs_Sounds);
     }
 
-    private void UpdatePauseUI()
-    {
-        pauseToggle.isOn = Preferences.IsPausedWhileInMenu;
-    }
-
     private void SetSliderRange(Slider slider, float minValue, float maxValue)
     {
         slider.maxValue = maxValue;
@@ -143,11 +132,6 @@ public class Settings : MonoBehaviour
         ChangeBackgroundMusicVolume_Float(Preferences.backMusicVolume_def);
         ChangeStepsVolume_Float(Preferences.stepsVolume_def);
         ChangeDamageEffectVolume_Float(Preferences.damageEffectVolume_def);
-    }
-
-    private void SetPauseBehavior(bool value)
-    {
-        Preferences.IsPausedWhileInMenu = value;
     }
 
     private void PopulatePlayerRotationDropdown()
@@ -378,8 +362,6 @@ public class Settings : MonoBehaviour
 
     private void OnDestroy()
     {
-        Preferences.OnPauseBehaviorChanged -= UpdatePauseUI;
-
         //Movement and Camera
         Preferences.OnPlRotStyleChanged -= UpdatePlayerRotationStyle;
         Preferences.OnCamRotStyleChanged -= UpdateCameraRotationStyle;

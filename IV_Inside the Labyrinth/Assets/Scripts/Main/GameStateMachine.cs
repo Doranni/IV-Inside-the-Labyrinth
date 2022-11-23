@@ -13,13 +13,12 @@ public class GameStateMachine
 
     public event Action OnStateChanged;
 
-    public GameStateMachine(GameObject menuScreen, 
-        GameObject settingsScreen, GameObject exitScreen)
+    public GameStateMachine(GameObject settingsScreen)
     {
         activeState = new GameActiveState();
-        menuState = new GameMenuState(menuScreen);
+        menuState = new GameMenuState();
         settingsState = new GameSettingsState(settingsScreen);
-        exitState = new GameExitState(exitScreen);
+        exitState = new GameExitState();
     }
 
     public void Initialize(IGameState startingState)

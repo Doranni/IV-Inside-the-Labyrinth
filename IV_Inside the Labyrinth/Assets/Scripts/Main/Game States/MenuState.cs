@@ -2,17 +2,11 @@ using UnityEngine;
 
 public class GameMenuState : IGameState
 {
-    private readonly GameObject menuScreen;
-
-    public GameMenuState(GameObject menuScreen)
-    {
-        this.menuScreen = menuScreen;
-    }
+    public GameMenuState() { }
 
     public void Enter()
     {
         UpdatePause();
-        menuScreen.SetActive(true);
         Cursor.visible = true;
     }
 
@@ -33,8 +27,5 @@ public class GameMenuState : IGameState
         }
     }
 
-    public void Exit()
-    {
-        menuScreen.SetActive(false);
-    }
+    public void Exit() { }
 }

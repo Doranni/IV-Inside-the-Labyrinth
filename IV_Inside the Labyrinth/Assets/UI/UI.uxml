@@ -1,35 +1,129 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/StyleSheet.uss?fileID=7433441132597879392&amp;guid=f51ddb687689d0f488ea8e1396a5f109&amp;type=3#StyleSheet" />
-    <ui:VisualElement name="SanityLightEffectScreen" class="FullScreen" style="background-color: rgba(255, 75, 0, 0.04); background-image: none; display: flex; opacity: 1;">
+    <ui:VisualElement name="SanityLightEffectScreen" class="FullScreen" style="background-color: rgba(255, 75, 0, 0.04); background-image: none;">
         <ui:IMGUIContainer style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-image: url(&apos;project://database/Assets/Textures/fire%20sparks.png?fileID=2800000&amp;guid=2505aa8c08675f9409dfa4e2eb3b64e3&amp;type=3#fire sparks&apos;); display: flex; opacity: 1;" />
     </ui:VisualElement>
     <ui:VisualElement name="DamageEffectScreen" class="FullScreen damage_effect" style="background-image: url(&apos;project://database/Assets/Textures/bloody%20screen.png?fileID=2800000&amp;guid=b8ba6deac60b7014abe9292d1c955ea8&amp;type=3#bloody screen&apos;); -unity-background-image-tint-color: rgba(77, 50, 50, 0);">
         <ui:IMGUIContainer name="Darkening" class="damage_effect FullScreen" style="transition-property: -unity-background-image-tint-color; transition-duration: 500ms; background-image: url(&apos;project://database/Assets/Textures/bloody%20screen%20darkening.png?fileID=2800000&amp;guid=d13514dbd10888a48b9bb7383ec7eaf2&amp;type=3#bloody screen darkening&apos;);" />
     </ui:VisualElement>
-    <ui:VisualElement name="HealthAndSanityScreen" class="InfoScreen" style="left: 0; top: 0;">
-        <ui:GroupBox name="Health" class="GroupBox" style="flex-direction: row; width: 200px;">
-            <ui:Label text="Health:" display-tooltip-when-elided="true" name="PlHealth_Label" class="Label Text" style="width: 100px;" />
-            <ui:Label text="100/100" display-tooltip-when-elided="true" name="PlHealth_Value_Label" class="Label Text" style="width: 100px;" />
+    <ui:VisualElement name="HealthAndSanityScreen" class="HealthAndSanity_VisualElement">
+        <ui:GroupBox name="Health" class="HealthAndSanity_GroupBox">
+            <ui:Label text="Health:" display-tooltip-when-elided="true" name="PlHealth_Label" class="HealthAndSanity_Label" />
+            <ui:Label text="100/100" display-tooltip-when-elided="true" name="PlHealth_Value_Label" class="HealthAndSanity_Label" />
         </ui:GroupBox>
-        <ui:GroupBox name="Sanity" class="GroupBox" style="flex-direction: row; width: 200px;">
-            <ui:Label text="Sanity:" display-tooltip-when-elided="true" name="PlSanity_Label" class="Label Text" style="width: 100px;" />
-            <ui:Label text="100/100" display-tooltip-when-elided="true" name="PlSanity_Value_Label" class="Label Text" style="width: 100px;" />
-        </ui:GroupBox>
-    </ui:VisualElement>
-    <ui:VisualElement name="DebugScreen" class="InfoScreen" style="top: 0; right: 0; display: flex;">
-        <ui:GroupBox name="PlState" class="GroupBox" style="flex-direction: row-reverse;">
-            <ui:Label text="Player State" display-tooltip-when-elided="true" name="PlState_Value_Label" class="Label Text" />
-            <ui:Label text="Player State:" display-tooltip-when-elided="true" name="PlState_Label" class="Label Text" />
-        </ui:GroupBox>
-        <ui:GroupBox name="CamState" class="GroupBox" style="flex-direction: row-reverse;">
-            <ui:Label text="Camera State" display-tooltip-when-elided="true" name="CamState_Value_Label" class="Label Text" />
-            <ui:Label text="Camera State:" display-tooltip-when-elided="true" name="CamState_Label" class="Label Text" />
-        </ui:GroupBox>
-        <ui:GroupBox name="IsPlGrounded" class="GroupBox" style="flex-direction: row-reverse;">
-            <ui:Toggle label="Is Player Grounded" name="isPlGrounded_Toggle" class="Toggle Text" />
+        <ui:GroupBox name="Sanity" class="HealthAndSanity_GroupBox">
+            <ui:Label text="Sanity:" display-tooltip-when-elided="true" name="PlSanity_Label" class="HealthAndSanity_Label" />
+            <ui:Label text="100/100" display-tooltip-when-elided="true" name="PlSanity_Value_Label" class="HealthAndSanity_Label" />
         </ui:GroupBox>
     </ui:VisualElement>
-    <ui:VisualElement name="EffectsListScreen" class="InfoScreen" style="background-color: rgba(255, 255, 255, 0); bottom: 0;">
-        <ui:Label display-tooltip-when-elided="true" name="Effects_Label" class="Text Label" style="width: 600px;" />
+    <ui:VisualElement name="DebugScreen" class="Debug_VisualElement">
+        <ui:GroupBox name="GroupBox_Label" class="Debug_GroupBox">
+            <ui:Label text="Debug Info:" display-tooltip-when-elided="true" class="Debug_Label_Name" />
+        </ui:GroupBox>
+        <ui:GroupBox name="GroupBox_PlState" class="Debug_GroupBox">
+            <ui:Label text="Player State:" display-tooltip-when-elided="true" name="PlState_Label" class="Debug_Label" />
+            <ui:Label text="Under Animation" display-tooltip-when-elided="true" name="PlState_Value_Label" class="Debug_Label" />
+        </ui:GroupBox>
+        <ui:GroupBox name="GroupBox_CamState" class="Debug_GroupBox">
+            <ui:Label text="Camera State:" display-tooltip-when-elided="true" name="CamState_Label" class="Debug_Label" />
+            <ui:Label text="Camera State" display-tooltip-when-elided="true" name="CamState_Value_Label" class="Debug_Label" />
+        </ui:GroupBox>
+        <ui:GroupBox name="GroupBox_IsPlGrounded" class="Debug_GroupBox">
+            <ui:Toggle label="Is Player Grounded" name="isPlGrounded_Toggle" class="Debug_Toggle" />
+        </ui:GroupBox>
+    </ui:VisualElement>
+    <ui:VisualElement name="EffectsListScreen" class="EffectsList_VisualElement">
+        <ui:Label display-tooltip-when-elided="true" name="Effects_Label" class="EffectsList_Label" />
+    </ui:VisualElement>
+    <ui:VisualElement name="ExitScreen" class="Exit_VisualElement" style="align-items: center; justify-content: center;">
+        <ui:Label text="Are you sure you want to quit game?" display-tooltip-when-elided="true" class="Exit_Label" />
+        <ui:GroupBox style="flex-direction: row;">
+            <ui:Button text="Quit" display-tooltip-when-elided="true" name="QuitButton" class="Exit_Button" />
+            <ui:Button text="No" display-tooltip-when-elided="true" name="StayButton" class="Exit_Button" />
+        </ui:GroupBox>
+    </ui:VisualElement>
+    <ui:VisualElement name="MenuScreen" class="Menu_VisualElement" style="align-items: center; justify-content: center;">
+        <ui:GroupBox>
+            <ui:Button text="Settings" display-tooltip-when-elided="true" name="SettingsButton" class="Menu_Button_Item" />
+            <ui:Button text="Exit" display-tooltip-when-elided="true" name="ExitButton" class="Menu_Button_Item" />
+        </ui:GroupBox>
+        <ui:Toggle label="Game is paused while in Menu screen" name="Pause_Toggle" class="Menu_Toggle" />
+    </ui:VisualElement>
+    <ui:VisualElement name="SettingsScreen" class="VisualElement_FullScreen_Dark" style="visibility: hidden; display: none; overflow: hidden;">
+        <ui:Label text="Settings" display-tooltip-when-elided="true" class="Settings_Label_Name">
+            <ui:VisualElement class="VisualElement_Settings_Name_Underline" />
+        </ui:Label>
+        <ui:ScrollView mode="Horizontal" style="top: 55px; bottom: 0; left: 0; right: 0; position: absolute;">
+            <ui:ScrollView class="Settings_ScrollView_Chapter">
+                <ui:VisualElement class="Settings_VisualElement_Chapter">
+                    <ui:GroupBox>
+                        <ui:Label text="Movement and Camera" display-tooltip-when-elided="true" class="Settings_Label_ChapterName" />
+                        <ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_PlRotation" class="Settings_GroupBox_Line" style="margin-top: 10px;">
+                                <ui:Label text="Player rotation" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:DropdownField label="Dropdown" index="-1" choices="System.Collections.Generic.List`1[System.String]" class="Settings_Dropdown" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_PlRotSpeed" class="Settings_GroupBox_Line">
+                                <ui:Label text="Rotation speed" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamRotatiom" class="Settings_GroupBox_Line" style="margin-top: 10px;">
+                                <ui:Label text="Camera rotation" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:DropdownField label="Dropdown" index="-1" choices="System.Collections.Generic.List`1[System.String]" class="Settings_Dropdown" />
+                            </ui:GroupBox>
+                            <ui:Label text="Rotation speed" display-tooltip-when-elided="true" class="Settings_Label_ChapterName_2" />
+                            <ui:GroupBox name="GroupBox_CamHorizontalRotSpeed" class="Settings_GroupBox_Line">
+                                <ui:Label text="Horizontal" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamVerticalRotSpeed" class="Settings_GroupBox_Line">
+                                <ui:Label text="Vertical" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:Label text="Camera Damping" display-tooltip-when-elided="true" class="Settings_Label_ChapterName_2" />
+                            <ui:GroupBox name="GroupBox_CamBodyXDamping" class="Settings_GroupBox_Line">
+                                <ui:Label text="Body X damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamBodyYDamping" class="Settings_GroupBox_Line">
+                                <ui:Label text="Body Y damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamBodyZDamping" class="Settings_GroupBox_Line">
+                                <ui:Label text="Body Z damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamAimDamping" class="Settings_GroupBox_Line">
+                                <ui:Label text="Aim damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                        </ui:GroupBox>
+                    </ui:GroupBox>
+                    <ui:Button text="Reset" display-tooltip-when-elided="true" name="Button_Reset_MovementAndCamera" class="Settings_Button_Reset" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+            <ui:ScrollView class="Settings_ScrollView_Chapter">
+                <ui:VisualElement class="Settings_VisualElement_Chapter">
+                    <ui:GroupBox>
+                        <ui:Label text="Sounds" display-tooltip-when-elided="true" class="Settings_Label_ChapterName" />
+                        <ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_PlRotSpeed" class="Settings_GroupBox_Line">
+                                <ui:Label text="Background Music" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamHorizontalRotSpeed" class="Settings_GroupBox_Line">
+                                <ui:Label text="Steps" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                            <ui:GroupBox name="GroupBox_CamVerticalRotSpeed" class="Settings_GroupBox_Line">
+                                <ui:Label text="Damage Effect" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                            </ui:GroupBox>
+                        </ui:GroupBox>
+                    </ui:GroupBox>
+                    <ui:Button text="Reset" display-tooltip-when-elided="true" name="Button_Reset_Sounds" class="Settings_Button_Reset" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>
