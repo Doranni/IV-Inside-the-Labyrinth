@@ -49,7 +49,7 @@
         </ui:GroupBox>
         <ui:Toggle label="Game is paused while in Menu screen" name="Pause_Toggle" class="Menu_Toggle" />
     </ui:VisualElement>
-    <ui:VisualElement name="SettingsScreen" class="VisualElement_FullScreen_Dark" style="visibility: hidden; display: none; overflow: hidden;">
+    <ui:VisualElement name="SettingsScreen" class="VisualElement_FullScreen_Dark" style="visibility: visible; display: flex; overflow: visible;">
         <ui:Label text="Settings" display-tooltip-when-elided="true" class="Settings_Label_Name">
             <ui:VisualElement class="VisualElement_Settings_Name_Underline" />
         </ui:Label>
@@ -61,45 +61,45 @@
                         <ui:GroupBox>
                             <ui:GroupBox name="GroupBox_PlRotation" class="Settings_GroupBox_Line" style="margin-top: 10px;">
                                 <ui:Label text="Player rotation" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:DropdownField label="Dropdown" index="-1" choices="System.Collections.Generic.List`1[System.String]" class="Settings_Dropdown" />
+                                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="DropdownField_PlRotStyle" class="Settings_Dropdown" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_PlRotSpeed" class="Settings_GroupBox_Line">
                                 <ui:Label text="Rotation speed" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_PlRotSpeed" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamRotatiom" class="Settings_GroupBox_Line" style="margin-top: 10px;">
                                 <ui:Label text="Camera rotation" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:DropdownField label="Dropdown" index="-1" choices="System.Collections.Generic.List`1[System.String]" class="Settings_Dropdown" />
+                                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="DropdownField_CamRotStyle" class="Settings_Dropdown" />
                             </ui:GroupBox>
                             <ui:Label text="Rotation speed" display-tooltip-when-elided="true" class="Settings_Label_ChapterName_2" />
                             <ui:GroupBox name="GroupBox_CamHorizontalRotSpeed" class="Settings_GroupBox_Line">
                                 <ui:Label text="Horizontal" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamRotSpeed_Horizontal" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamVerticalRotSpeed" class="Settings_GroupBox_Line">
                                 <ui:Label text="Vertical" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamRotSpeed_Vertical" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:Label text="Camera Damping" display-tooltip-when-elided="true" class="Settings_Label_ChapterName_2" />
                             <ui:GroupBox name="GroupBox_CamBodyXDamping" class="Settings_GroupBox_Line">
                                 <ui:Label text="Body X damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_BodyX" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamBodyYDamping" class="Settings_GroupBox_Line">
                                 <ui:Label text="Body Y damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_BodyY" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamBodyZDamping" class="Settings_GroupBox_Line">
                                 <ui:Label text="Body Z damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_BodyZ" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamAimDamping" class="Settings_GroupBox_Line">
                                 <ui:Label text="Aim damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_Aim" class="Settings_Slider" />
                             </ui:GroupBox>
                         </ui:GroupBox>
                     </ui:GroupBox>
-                    <ui:Button text="Reset" display-tooltip-when-elided="true" name="Button_Reset_MovementAndCamera" class="Settings_Button_Reset" />
+                    <ui:Button text="RESET" display-tooltip-when-elided="true" name="Button_Reset_MovementAndCamera" class="Settings_Button_Reset" />
                 </ui:VisualElement>
             </ui:ScrollView>
             <ui:ScrollView class="Settings_ScrollView_Chapter">
@@ -109,19 +109,19 @@
                         <ui:GroupBox>
                             <ui:GroupBox name="GroupBox_PlRotSpeed" class="Settings_GroupBox_Line">
                                 <ui:Label text="Background Music" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_BackgroundMusicVolume" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamHorizontalRotSpeed" class="Settings_GroupBox_Line">
                                 <ui:Label text="Steps" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_StepsVolume" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamVerticalRotSpeed" class="Settings_GroupBox_Line">
                                 <ui:Label text="Damage Effect" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
-                                <ui:SliderInt picking-mode="Ignore" label="100" value="42" high-value="100" class="Settings_Slider" />
+                                <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_DamageEffectVolume" class="Settings_Slider" />
                             </ui:GroupBox>
                         </ui:GroupBox>
                     </ui:GroupBox>
-                    <ui:Button text="Reset" display-tooltip-when-elided="true" name="Button_Reset_Sounds" class="Settings_Button_Reset" />
+                    <ui:Button text="RESET" display-tooltip-when-elided="true" name="Button_Reset_Sounds" class="Settings_Button_Reset" />
                 </ui:VisualElement>
             </ui:ScrollView>
         </ui:ScrollView>

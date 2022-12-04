@@ -155,7 +155,53 @@
     margin-right: 20px;
     margin-top: 5px;
     margin-bottom: 5px;
-    background-color: rgba(0, 0, 0, 0.42);
+    background-color: rgba(0, 0, 0, 0.45);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: rgb(210, 210, 210);
+    font-size: 28px;
+    height: 60px;
+}
+
+.Exit_Button:hover {
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    -unity-text-align: middle-center;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.53);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: rgba(212, 197, 197, 255);
+    font-size: 28px;
+    height: 60px;
+}
+
+.Exit_Button:active {
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    -unity-text-align: middle-center;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(36, 31, 31, 0.53);
     border-left-color: rgba(0, 0, 0, 0.11);
     border-right-color: rgba(0, 0, 0, 0.11);
     border-top-color: rgba(0, 0, 0, 0.11);
@@ -193,7 +239,49 @@
     align-items: center;
     width: 300px;
     -unity-text-align: middle-center;
-    background-color: rgba(0, 0, 0, 0.42);
+    background-color: rgba(0, 0, 0, 0.45);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    font-size: 40px;
+    color: rgb(210, 210, 210);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    height: 80px;
+}
+
+.Menu_Button_Item:hover {
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    -unity-text-align: middle-center;
+    background-color: rgba(0, 0, 0, 0.53);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    font-size: 40px;
+    color: rgba(212, 197, 197, 255);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    height: 80px;
+}
+
+.Menu_Button_Item:active {
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    -unity-text-align: middle-center;
+    background-color: rgba(36, 31, 31, 0.53);
     border-left-color: rgba(0, 0, 0, 0.11);
     border-right-color: rgba(0, 0, 0, 0.11);
     border-top-color: rgba(0, 0, 0, 0.11);
@@ -223,38 +311,63 @@
 
 .Settings_Label_ChapterName {
     color: rgb(214, 214, 214);
-    font-size: 28px;
+    font-size: 24px;
     justify-content: center;
     align-items: center;
+    -unity-font-style: bold;
 }
 
 .Settings_Label_ChapterName_2 {
     color: rgb(214, 214, 214);
-    font-size: 27px;
+    font-size: 19px;
     margin-left: 5px;
     margin-top: 5px;
+    -unity-font-style: bold;
 }
 
 .Settings_Label_Normal {
     color: rgb(214, 214, 214);
-    font-size: 25px;
+    font-size: 18px;
     align-items: center;
     justify-content: center;
 }
 
 .Settings_Dropdown {
-    color: rgb(214, 214, 214);
-    font-size: 25px;
+    color: rgb(29, 29, 29);
+    font-size: 18px;
     align-items: center;
     justify-content: center;
+    width: 350px;
 }
 
 .Settings_Slider {
-    color: rgb(214, 214, 214);
-    font-size: 25px;
+    color: rgba(210, 210, 210, 255);
+    font-size: 18px;
     align-items: center;
-    justify-content: center;
-    width: 300px;
+    justify-content: flex-end;
+    width: 240px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.Settings_Slider:selected {
+    color: rgb(255, 0, 0);
+    font-size: 18px;
+    align-items: center;
+    justify-content: flex-end;
+    width: 240px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.Settings_Slider:hover {
+    color: rgba(212, 197, 197, 255);
+    font-size: 18px;
+    align-items: center;
+    justify-content: flex-end;
+    width: 240px;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 .Settings_GroupBox_Line {
@@ -262,11 +375,71 @@
     justify-content: space-between;
     align-items: center;
     -unity-text-align: middle-center;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .Settings_Button_Reset {
+    font-size: 24px;
+    color: rgb(210, 210, 210);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-font-style: bold;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.Settings_Button_Reset:hover {
+    font-size: 24px;
+    color: rgba(212, 197, 197, 255);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.53);
+    -unity-font-style: bold;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.Settings_Button_Reset:active {
+    font-size: 24px;
+    color: rgb(210, 210, 210);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(36, 31, 31, 0.53);
+    -unity-font-style: bold;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
 }
 
 .Settings_ScrollView_Chapter {

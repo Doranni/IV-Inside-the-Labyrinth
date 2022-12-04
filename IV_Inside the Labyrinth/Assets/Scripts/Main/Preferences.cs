@@ -44,23 +44,23 @@ public class Preferences : Singleton<Preferences>
         set
         {
             isPausedWhileInMenu = value;
-            PlayerPrefs.SetString(isPausedWhileInMenuKey, isPausedWhileInMenu.ToString());
+            PlayerPrefs.SetString(key_isPausedWhileInMenu, isPausedWhileInMenu.ToString());
             OnPauseBehaviorChanged?.Invoke();
         }
     }
 
-    private static readonly string plRotStyleKey = "player_rot_style", plRotSpeedKey = "player_rot_speed",
-        camRotStyleKey = "camera_rot_style", 
-        camRotSpeed_HorizontalKey = "camera_rot_speed_horizontal", camRotSpeed_VerticalKey = "camera_rot_speed_vertical",
-        camDamping_BodyXKey = "camera_damping_body_x", camDamping_BodyYKey = "camera_damping_body_y",
-        camDamping_BodyZKey = "camera_damping_body_z", camDamping_AimKey = "camera_damping_aim",
-        isPausedWhileInMenuKey = "is_paused_in_menu";
+    private static readonly string key_plRotStyle = "player_rot_style", key_plRotSpeed = "player_rot_speed",
+        key_camRotStyle = "camera_rot_style", 
+        key_camRotSpeed_Horizontal = "camera_rot_speed_horizontal", key_camRotSpeed_Vertical = "camera_rot_speed_vertical",
+        key_camDamping_BodyX = "camera_damping_body_x", key_camDamping_BodyY = "camera_damping_body_y",
+        key_camDamping_BodyZ = "camera_damping_body_z", key_camDamping_Aim = "camera_damping_aim",
+        key_isPausedWhileInMenu = "is_paused_in_menu";
        
 
-    public static readonly float plRotSpeed_def = 150, 
-        camRotSpeed_Horizontal_def = 150, camRotSpeed_Vertical_def = 70,
-        camDamping_BodyX_def = 1, camDamping_BodyY_def = 1, camDamping_BodyZ_def = 1,
-        camDamping_Aim_def = 2;
+    public static readonly float def_plRotSpeed = 150, 
+        def_camRotSpeed_Horizontal = 150, def_camRotSpeed_Vertical = 70,
+        def_camDamping_BodyX = 1, def_camDamping_BodyY = 1, def_camDamping_BodyZ = 1,
+        def_camDamping_Aim = 2;
 
     public static event Action OnPauseBehaviorChanged,
         OnPlRotStyleChanged, OnCamRotStyleChanged,
@@ -68,12 +68,12 @@ public class Preferences : Singleton<Preferences>
         OnCamDamping_BodyXChanged, OnCamDamping_BodyYChanged, OnCamDamping_BodyZChanged, OnCamDamping_AimChanged;
 
     // Sounds
-    private static readonly string backMusicVolumeKey = "background_music_volume", stepsVolumeKey = "steps_volume",
-        damageEffectVolumeKey = "damage_effect_volume";
+    private static readonly string key_backMusicVolume = "background_music_volume", key_stepsVolume = "steps_volume",
+        key_damageEffectVolume = "damage_effect_volume";
 
     public static float backMusicVolume, stepsVolume, damageEffectVolume;
 
-    public static readonly float backMusicVolume_def = 30, stepsVolume_def = 100, damageEffectVolume_def = 100;
+    public static readonly float def_backMusicVolume = 30, def_stepsVolume = 100, def_damageEffectVolume = 100;
 
     public static event Action OnBackgroundMusicVolumeChanged, OnStepsVolumeChanged, OnDamageEffectVolumeChanged;
 
@@ -95,20 +95,20 @@ public class Preferences : Singleton<Preferences>
         CamRotStyles_info.Add(CameraRotationStyle.withMouse, ("Mouse", false, true));
         CamRotStyles_info.Add(CameraRotationStyle.withRightClickMouse, ("Right click mouse", true, true));
 
-        isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(isPausedWhileInMenuKey, "true"));
-        SetPlayerRotationStyle(PlayerPrefs.GetInt(plRotStyleKey, 0));
-        SetPlayerRotationSpeed(PlayerPrefs.GetFloat(plRotSpeedKey, plRotSpeed_def));
-        SetCameraRotationSpeed_Horizontal(PlayerPrefs.GetFloat(camRotSpeed_HorizontalKey, camRotSpeed_Horizontal_def));
-        SetCameraRotationSpeed_Vertical(PlayerPrefs.GetFloat(camRotSpeed_VerticalKey, camRotSpeed_Vertical_def));
-        SetCameraDamping_BodyX(PlayerPrefs.GetFloat(camDamping_BodyXKey, camDamping_BodyX_def));
-        SetCameraDamping_BodyY(PlayerPrefs.GetFloat(camDamping_BodyYKey, camDamping_BodyY_def));
-        SetCameraDamping_BodyZ(PlayerPrefs.GetFloat(camDamping_BodyZKey, camDamping_BodyZ_def));
-        SetCameraDamping_Aim(PlayerPrefs.GetFloat(camDamping_AimKey, camDamping_Aim_def));
+        isPausedWhileInMenu = bool.Parse(PlayerPrefs.GetString(key_isPausedWhileInMenu, "true"));
+        SetPlayerRotationStyle(PlayerPrefs.GetInt(key_plRotStyle, 0));
+        SetPlayerRotationSpeed(PlayerPrefs.GetFloat(key_plRotSpeed, def_plRotSpeed));
+        SetCameraRotationSpeed_Horizontal(PlayerPrefs.GetFloat(key_camRotSpeed_Horizontal, def_camRotSpeed_Horizontal));
+        SetCameraRotationSpeed_Vertical(PlayerPrefs.GetFloat(key_camRotSpeed_Vertical, def_camRotSpeed_Vertical));
+        SetCameraDamping_BodyX(PlayerPrefs.GetFloat(key_camDamping_BodyX, def_camDamping_BodyX));
+        SetCameraDamping_BodyY(PlayerPrefs.GetFloat(key_camDamping_BodyY, def_camDamping_BodyY));
+        SetCameraDamping_BodyZ(PlayerPrefs.GetFloat(key_camDamping_BodyZ, def_camDamping_BodyZ));
+        SetCameraDamping_Aim(PlayerPrefs.GetFloat(key_camDamping_Aim, def_camDamping_Aim));
 
         // Sounds
-        SetBackgroundMusicVolume(PlayerPrefs.GetFloat(backMusicVolumeKey, backMusicVolume_def));
-        SetStepsVolume(PlayerPrefs.GetFloat(stepsVolumeKey, stepsVolume_def));
-        SetDamageEffectVolume(PlayerPrefs.GetFloat(damageEffectVolumeKey, damageEffectVolume_def));
+        SetBackgroundMusicVolume(PlayerPrefs.GetFloat(key_backMusicVolume, def_backMusicVolume));
+        SetStepsVolume(PlayerPrefs.GetFloat(key_stepsVolume, def_stepsVolume));
+        SetDamageEffectVolume(PlayerPrefs.GetFloat(key_damageEffectVolume, def_damageEffectVolume));
     }
 
     public static string GetPlayerRotationStyleName()
@@ -131,8 +131,30 @@ public class Preferences : Singleton<Preferences>
         {
             PlRotStyle = (PlayerRotationStyle)key;
         }
-        SetCameraRotationStyle(PlayerPrefs.GetInt(camRotStyleKey, (int)CamRotStyle));
-        PlayerPrefs.SetInt(plRotStyleKey, (int)PlRotStyle);
+        SetCameraRotationStyle(PlayerPrefs.GetInt(key_camRotStyle, (int)CamRotStyle));
+        PlayerPrefs.SetInt(key_plRotStyle, (int)PlRotStyle);
+        OnPlRotStyleChanged?.Invoke();
+    }
+
+    public static void SetPlayerRotationStyle(string value)
+    {
+        if (!PlRotStyles_info.ContainsValue(value))
+        {
+            PlRotStyle = PlayerRotationStyle.withMouse;
+        }
+        else
+        {
+            foreach (KeyValuePair<PlayerRotationStyle, string> style in PlRotStyles_info)
+            {
+                if (value.Equals(style.Value))
+                {
+                    PlRotStyle = style.Key;
+                    break;
+                }
+            }
+        }
+        SetCameraRotationStyle(PlayerPrefs.GetInt(key_camRotStyle, (int)CamRotStyle));
+        PlayerPrefs.SetInt(key_plRotStyle, (int)PlRotStyle);
         OnPlRotStyleChanged?.Invoke();
     }
 
@@ -165,77 +187,130 @@ public class Preferences : Singleton<Preferences>
                     break;
                 }
         }
-        PlayerPrefs.SetInt(camRotStyleKey, (int)CamRotStyle);
+        PlayerPrefs.SetInt(key_camRotStyle, (int)CamRotStyle);
         OnCamRotStyleChanged?.Invoke();
+    }
+
+    public static void SetCameraRotationStyle(string value)
+    {
+        foreach (KeyValuePair<CameraRotationStyle, (string name, bool, bool)> style in CamRotStyles_info)
+        {
+            if (value.Equals(style.Value.name))
+            {
+                SetCameraRotationStyle((int)style.Key);
+                return;
+            }
+        }
+        SetCameraRotationStyle(0);
     }
 
     public static void SetPlayerRotationSpeed(float speed)
     {
         plRotSpeed = Mathf.Clamp(speed, plRotSpeedMin, plRotSpeedMax);
-        PlayerPrefs.SetFloat(plRotSpeedKey, plRotSpeed);
+        PlayerPrefs.SetFloat(key_plRotSpeed, plRotSpeed);
         OnPlRotSpeedChanged?.Invoke();
+    }
+    public static void ResetPlayerRotationSpeed()
+    {
+        SetPlayerRotationSpeed(def_plRotSpeed);
     }
 
     public static void SetCameraRotationSpeed_Horizontal(float speed)
     {
         camRot_HorizontalSpeed = Mathf.Clamp(speed, camRotHorizontal_SpeedMin, camRot_HorizontalSpeedMax);
-        PlayerPrefs.SetFloat(camRotSpeed_HorizontalKey, camRot_HorizontalSpeed);
+        PlayerPrefs.SetFloat(key_camRotSpeed_Horizontal, camRot_HorizontalSpeed);
         OnCamRotSpeed_HorizontalChanged?.Invoke();
+    }
+    public static void ResetCameraRotationSpeed_Horizontal()
+    {
+        SetCameraRotationSpeed_Horizontal(def_camRotSpeed_Horizontal);
     }
 
     public static void SetCameraRotationSpeed_Vertical(float speed)
     {
         camRot_VerticalSpeed = Mathf.Clamp(speed, camRotVertical_SpeedMin, camRot_VerticalSpeedMax);
-        PlayerPrefs.SetFloat(camRotSpeed_VerticalKey, camRot_VerticalSpeed);
+        PlayerPrefs.SetFloat(key_camRotSpeed_Vertical, camRot_VerticalSpeed);
         OnCamRotSpeed_VerticalChanged?.Invoke();
+    }
+    public static void ResetCameraRotationSpeed_Vertical()
+    {
+        SetCameraRotationSpeed_Vertical(def_camRotSpeed_Vertical);
     }
 
     public static void SetCameraDamping_BodyX(float damping)
     {
         camDamping_BodyX = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camDamping_BodyXKey, camDamping_BodyX);
+        PlayerPrefs.SetFloat(key_camDamping_BodyX, camDamping_BodyX);
         OnCamDamping_BodyXChanged?.Invoke();
+    }
+    public static void ResetCameraDamping_BodyX()
+    {
+        SetCameraDamping_BodyX(def_camDamping_BodyX);
     }
 
     public static void SetCameraDamping_BodyY(float damping)
     {
         camDamping_BodyY = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camDamping_BodyYKey, camDamping_BodyY);
+        PlayerPrefs.SetFloat(key_camDamping_BodyY, camDamping_BodyY);
         OnCamDamping_BodyYChanged?.Invoke();
+    }
+    public static void ResetCameraDamping_BodyY()
+    {
+        SetCameraDamping_BodyY(def_camDamping_BodyY);
     }
 
     public static void SetCameraDamping_BodyZ(float damping)
     {
         camDamping_BodyZ = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camDamping_BodyZKey, camDamping_BodyZ);
+        PlayerPrefs.SetFloat(key_camDamping_BodyZ, camDamping_BodyZ);
         OnCamDamping_BodyZChanged?.Invoke();
+    }
+    public static void ResetCameraDamping_BodyZ()
+    {
+        SetCameraDamping_BodyZ(def_camDamping_BodyZ);
     }
 
     public static void SetCameraDamping_Aim(float damping)
     {
         camDamping_Aim = Mathf.Clamp(damping, camDampingMin, camDampingMax);
-        PlayerPrefs.SetFloat(camDamping_AimKey, camDamping_Aim);
+        PlayerPrefs.SetFloat(key_camDamping_Aim, camDamping_Aim);
         OnCamDamping_AimChanged?.Invoke();
+    }
+    public static void ResetCameraDamping_Aim()
+    {
+        SetCameraDamping_Aim(def_camDamping_Aim);
     }
 
     public static void SetBackgroundMusicVolume(float volume)
     {
         backMusicVolume = Mathf.Clamp(volume, 0, 100);
-        PlayerPrefs.SetFloat(backMusicVolumeKey, backMusicVolume);
+        PlayerPrefs.SetFloat(key_backMusicVolume, backMusicVolume);
         OnBackgroundMusicVolumeChanged?.Invoke();
+    }
+    public static void ResetBackgroundMusicVolume()
+    {
+        SetBackgroundMusicVolume(def_backMusicVolume);
     }
 
     public static void SetStepsVolume(float volume)
     {
         stepsVolume = Mathf.Clamp(volume, 0, 100);
-        PlayerPrefs.SetFloat(stepsVolumeKey, stepsVolume);
+        PlayerPrefs.SetFloat(key_stepsVolume, stepsVolume);
         OnStepsVolumeChanged?.Invoke();
+    }
+    public static void ResetStepsVolume()
+    {
+        SetStepsVolume(def_stepsVolume);
     }
 
     public static void SetDamageEffectVolume(float volume)
     {
         damageEffectVolume = Mathf.Clamp(volume, 0, 100);
-        PlayerPrefs.SetFloat(damageEffectVolumeKey, damageEffectVolume);
+        PlayerPrefs.SetFloat(key_damageEffectVolume, damageEffectVolume);
         OnDamageEffectVolumeChanged?.Invoke();
+    }
+    public static void ResetDamageEffectVolume()
+    {
+        SetDamageEffectVolume(def_damageEffectVolume);
     }
 }

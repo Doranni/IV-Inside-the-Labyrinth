@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 [Serializable]
 public class GameStateMachine
@@ -13,11 +12,11 @@ public class GameStateMachine
 
     public event Action OnStateChanged;
 
-    public GameStateMachine(GameObject settingsScreen)
+    public GameStateMachine()
     {
         activeState = new GameActiveState();
         menuState = new GameMenuState();
-        settingsState = new GameSettingsState(settingsScreen);
+        settingsState = new GameSettingsState();
         exitState = new GameExitState();
     }
 

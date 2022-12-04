@@ -118,20 +118,20 @@ public class Settings : MonoBehaviour
 
     private void ResetPrefs_MovementAndCamera()
     {
-        ChangePlayerRotSpeed_Float(Preferences.plRotSpeed_def);
-        ChangeCamRotSpeed_Horizontal_Float(Preferences.camRotSpeed_Horizontal_def);
-        ChangeCamRotSpeed_Vertical_Float(Preferences.camRotSpeed_Vertical_def);
-        ChangeCamDamping_BodyX_Float(Preferences.camDamping_BodyX_def);
-        ChangeCamDamping_BodyY_Float(Preferences.camDamping_BodyY_def);
-        ChangeCamDamping_BodyZ_Float(Preferences.camDamping_BodyZ_def);
-        ChangeCamDamping_Aim_Float(Preferences.camDamping_Aim_def);
+        ChangePlayerRotSpeed_Float(Preferences.def_plRotSpeed);
+        ChangeCamRotSpeed_Horizontal_Float(Preferences.def_camRotSpeed_Horizontal);
+        ChangeCamRotSpeed_Vertical_Float(Preferences.def_camRotSpeed_Vertical);
+        ChangeCamDamping_BodyX_Float(Preferences.def_camDamping_BodyX);
+        ChangeCamDamping_BodyY_Float(Preferences.def_camDamping_BodyY);
+        ChangeCamDamping_BodyZ_Float(Preferences.def_camDamping_BodyZ);
+        ChangeCamDamping_Aim_Float(Preferences.def_camDamping_Aim);
     }
 
     private void ResetPrefs_Sounds()
     {
-        ChangeBackgroundMusicVolume_Float(Preferences.backMusicVolume_def);
-        ChangeStepsVolume_Float(Preferences.stepsVolume_def);
-        ChangeDamageEffectVolume_Float(Preferences.damageEffectVolume_def);
+        ChangeBackgroundMusicVolume_Float(Preferences.def_backMusicVolume);
+        ChangeStepsVolume_Float(Preferences.def_stepsVolume);
+        ChangeDamageEffectVolume_Float(Preferences.def_damageEffectVolume);
     }
 
     private void PopulatePlayerRotationDropdown()

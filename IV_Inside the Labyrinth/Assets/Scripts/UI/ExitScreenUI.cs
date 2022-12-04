@@ -4,12 +4,12 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class ExitScreenUI : MonoBehaviour
 {
-    private VisualElement ExitScreen;
-    private Button QuitButton, StayButton;
+    private VisualElement exitScreen;
+    private Button quitButton, stayButton;
 
-    const string ExitScreen_Name = "ExitScreen";
-    const string QuitButton_Name = "QuitButton";
-    const string StayButton_Name = "StayButton";
+    const string exitScreen_Name = "ExitScreen";
+    const string quitButton_Name = "QuitButton";
+    const string stayButton_Name = "StayButton";
 
     UIDocument gameScreen;
 
@@ -17,15 +17,15 @@ public class ExitScreenUI : MonoBehaviour
     {
         gameScreen = GetComponent<UIDocument>();
         VisualElement rootElement = gameScreen.rootVisualElement;
-        ExitScreen = rootElement.Q(ExitScreen_Name);
-        QuitButton = rootElement.Q<Button>(QuitButton_Name);
-        StayButton = rootElement.Q<Button>(StayButton_Name);
+        exitScreen = rootElement.Q(exitScreen_Name);
+        quitButton = rootElement.Q<Button>(quitButton_Name);
+        stayButton = rootElement.Q<Button>(stayButton_Name);
     }
 
     private void Start()
     {
-        QuitButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.QuitGame());
-        StayButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.StayInGame());
+        quitButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.QuitGame());
+        stayButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.StayInGame());
         GameManager.instance.StateMachine.OnStateChanged += UpdateVisibility;
         UpdateVisibility();
     }
@@ -34,11 +34,11 @@ public class ExitScreenUI : MonoBehaviour
     {
         if (GameManager.instance.StateMachine.CurrentState.Equals(GameManager.instance.StateMachine.exitState))
         {
-            ExitScreen.style.display = DisplayStyle.Flex;
+            exitScreen.style.display = DisplayStyle.Flex;
         }
         else
         {
-            ExitScreen.style.display = DisplayStyle.None;
+            exitScreen.style.display = DisplayStyle.None;
         }
     }
 

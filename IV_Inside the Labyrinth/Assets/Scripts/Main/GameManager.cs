@@ -5,8 +5,6 @@ public class GameManager : Singleton<GameManager>
 {
     public GameStateMachine StateMachine { get; private set; }
 
-    [SerializeField] private GameObject settingsScreen;
-
     public static readonly string playerTag = "Player", mainCameraTag = "MainCamera", trapTag = "Trap", groundTag = "Ground", 
         torchTag = "Torch", sanityLight = "Sanity Light";
 
@@ -15,7 +13,7 @@ public class GameManager : Singleton<GameManager>
     public override void Awake()
     {
         base.Awake();
-        StateMachine = new GameStateMachine(settingsScreen);
+        StateMachine = new GameStateMachine();
         InputManager.instance.OnMenu_performed += Menu_performed;
         Preferences.OnPauseBehaviorChanged += UpdatePause;
     }
