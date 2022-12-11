@@ -10,25 +10,23 @@ public class DamageEffectUI : MonoBehaviour
     [SerializeField] private AudioClip damageClip;
 
     private AudioSource audioSource;
-    UIDocument gameScreen;
 
     private VisualElement damageEffectScreen;
     private IMGUIContainer darkeningEffect;
 
-    const string damageEffectScreen_Name = "DamageEffectScreen";
-    const string darkeningEffect_Name = "Darkening";
+    const string k_damageEffectScreen = "DamageEffectScreen";
+    const string k_darkeningEffect = "Darkening";
 
-    const string darkeningAnimation_Name = "damage_effect-triggered";
+    const string k_uiAnim_darkening = "damage_effect-triggered";
 
     private bool isDamageRoutineRunning = false;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
-        gameScreen = GetComponent<UIDocument>();
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        damageEffectScreen = rootElement.Q(damageEffectScreen_Name);
-        darkeningEffect = rootElement.Q<IMGUIContainer>(darkeningEffect_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        damageEffectScreen = rootElement.Q(k_damageEffectScreen);
+        darkeningEffect = rootElement.Q<IMGUIContainer>(k_darkeningEffect);
     }
 
     private void Start()
@@ -58,10 +56,10 @@ public class DamageEffectUI : MonoBehaviour
     private IEnumerator DamageAnimationRoutine()
     {
         isDamageRoutineRunning = true;
-        darkeningEffect.AddToClassList(darkeningAnimation_Name);
+        darkeningEffect.AddToClassList(k_uiAnim_darkening);
         audioSource.PlayOneShot(damageClip);
         yield return new WaitForSeconds(darkeningTimeStep);
-        darkeningEffect.RemoveFromClassList(darkeningAnimation_Name);
+        darkeningEffect.RemoveFromClassList(k_uiAnim_darkening);
         yield return new WaitForSeconds(darkeningTimeStep);
         isDamageRoutineRunning = false;
     }

@@ -5,27 +5,24 @@ using UnityEngine.UIElements;
 public class ExitScreenUI : MonoBehaviour
 {
     private VisualElement exitScreen;
-    private Button quitButton, stayButton;
+    private Button button_quit, button_stay;
 
-    const string exitScreen_Name = "ExitScreen";
-    const string quitButton_Name = "QuitButton";
-    const string stayButton_Name = "StayButton";
-
-    UIDocument gameScreen;
+    const string k_exitScreen = "ExitScreen";
+    const string k_button_quit = "QuitButton";
+    const string k_button_stay = "StayButton";
 
     private void Awake()
     {
-        gameScreen = GetComponent<UIDocument>();
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        exitScreen = rootElement.Q(exitScreen_Name);
-        quitButton = rootElement.Q<Button>(quitButton_Name);
-        stayButton = rootElement.Q<Button>(stayButton_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        exitScreen = rootElement.Q(k_exitScreen);
+        button_quit = rootElement.Q<Button>(k_button_quit);
+        button_stay = rootElement.Q<Button>(k_button_stay);
     }
 
     private void Start()
     {
-        quitButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.QuitGame());
-        stayButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.StayInGame());
+        button_quit.RegisterCallback<ClickEvent>((_) => GameManager.Instance.QuitGame());
+        button_stay.RegisterCallback<ClickEvent>((_) => GameManager.Instance.StayInGame());
         GameManager.instance.StateMachine.OnStateChanged += UpdateVisibility;
         UpdateVisibility();
     }

@@ -22,12 +22,7 @@ public class GameStateMachine
 
     public void Initialize(IGameState startingState)
     {
-        activeState.Exit();
-        menuState.Exit();
-        settingsState.Exit();
-        exitState.Exit();
         CurrentState = startingState;
-        startingState.Enter();
     }
 
     public void TransitionTo(IGameState nextState)
@@ -40,17 +35,16 @@ public class GameStateMachine
 
     public void MenuPerformed()
     {
-        if (CurrentState != null)
-        {
-            CurrentState.MenuPerformed();
-        }
+        CurrentState?.MenuPerformed();
     }
 
     public void UpdatePause()
     {
-        if (CurrentState != null)
-        {
-            CurrentState.UpdatePause();
-        }
+        CurrentState?.UpdatePause();
+    }
+
+    public void Start()
+    {
+        CurrentState?.Enter();
     }
 }

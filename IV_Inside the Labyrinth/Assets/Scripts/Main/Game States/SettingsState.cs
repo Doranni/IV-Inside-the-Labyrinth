@@ -6,8 +6,8 @@ public class GameSettingsState : IGameState
 
     public void Enter()
     {
-        UpdatePause();
         Cursor.visible = true;
+        UpdatePause();
     }
 
     public void MenuPerformed()
@@ -27,8 +27,5 @@ public class GameSettingsState : IGameState
         }
     }
 
-    public void Exit()
-    {
-        TooltipController.HideTooltip();
-    }
+    public void Exit() { }
 }

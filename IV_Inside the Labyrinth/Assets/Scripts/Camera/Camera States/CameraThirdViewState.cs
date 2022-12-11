@@ -42,6 +42,12 @@ public class CameraThirdViewState : ICameraState
         SetCurrentState();
         povState.Initialize();
         followState.Initialize();
+    }
+
+    public void Start() 
+    {
+        povState.Start();
+        followState.Start();
         Preferences.OnCamRotStyleChanged += SetCurrentState;
         player.StateMachine.OnMoving_started += SetCurrentState;
         player.StateMachine.OnMoving_canceled += SetCurrentState;

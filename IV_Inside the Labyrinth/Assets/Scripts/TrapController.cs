@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TrapController : MonoBehaviour
@@ -18,9 +16,13 @@ public class TrapController : MonoBehaviour
     public Effect[] Effects => effects;
     public bool IsCharged => isCharged;
 
-    private void Start()
+    private void Awake()
     {
         trapHealth = GetComponent<HealthController>();
+    }
+
+    private void Start()
+    {
         trapHealth.OnDeath += TrapHealth_OnDeath;
     }
 
@@ -49,5 +51,10 @@ public class TrapController : MonoBehaviour
         isCharged = false;
         rechargingTimeLeft = rechargingTime;
         trapHealth.ChangeHealth(-damage);
+    }
+
+    private void OnDestroy()
+    {
+        trapHealth.OnDeath -= TrapHealth_OnDeath;
     }
 }

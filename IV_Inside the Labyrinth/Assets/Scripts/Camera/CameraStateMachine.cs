@@ -47,6 +47,13 @@ public class CameraStateMachine
         OnStateChanged?.Invoke();
     }
 
+    public void Start()
+    {
+        thirdViewState.Start();
+        mapViewState.Start();
+        firstViewState.Start();
+    }
+
     public void TransitionTo(ICameraState nextState)
     {
         CurrentState.Exit();

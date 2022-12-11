@@ -7,17 +7,12 @@ public class SanityLightEffectUI : MonoBehaviour
     [SerializeField] private SanityLightRecoveryController plSanityRestore;
 
     private VisualElement SanityLightEffectScreen;
-    const string SanityLightEffectScreen_Name = "SanityLightEffectScreen";
-
-    UIDocument gameScreen;
-
+    const string k_SanityLightEffectScreen = "SanityLightEffectScreen";
 
     private void Awake()
     {
-        gameScreen = GetComponent<UIDocument>();
-
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        SanityLightEffectScreen = rootElement.Q(SanityLightEffectScreen_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        SanityLightEffectScreen = rootElement.Q(k_SanityLightEffectScreen);
     }
 
     void Start()

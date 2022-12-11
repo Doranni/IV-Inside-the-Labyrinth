@@ -5,8 +5,8 @@ public class GameManager : Singleton<GameManager>
 {
     public GameStateMachine StateMachine { get; private set; }
 
-    public static readonly string playerTag = "Player", mainCameraTag = "MainCamera", trapTag = "Trap", groundTag = "Ground", 
-        torchTag = "Torch", sanityLight = "Sanity Light";
+    public static readonly string tag_player = "Player", tag_mainCamera = "MainCamera", 
+        tag_trap = "Trap", tag_ground = "Ground", tag_torch = "Torch", tag_sanityLight = "Sanity Light";
 
     private static int lastId = 0;
 
@@ -14,13 +14,14 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         StateMachine = new GameStateMachine();
-        InputManager.instance.OnMenu_performed += Menu_performed;
-        Preferences.OnPauseBehaviorChanged += UpdatePause;
+        StateMachine.Initialize(StateMachine.activeState);
     }
 
     void Start()
     {
-        StateMachine.Initialize(StateMachine.activeState);
+        StateMachine.Start();
+        InputManager.instance.OnMenu_performed += Menu_performed;
+        Preferences.OnPauseBehaviorChanged += UpdatePause;
         Cursor.lockState = CursorLockMode.Confined;
     }
 

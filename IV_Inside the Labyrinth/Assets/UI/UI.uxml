@@ -60,15 +60,15 @@
                         <ui:Label text="Movement and Camera" display-tooltip-when-elided="true" class="Settings_Label_ChapterName" />
                         <ui:GroupBox>
                             <ui:GroupBox name="GroupBox_PlRotation" class="Settings_GroupBox_Line" style="margin-top: 10px;">
-                                <ui:Label text="Player rotation" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Player rotation" display-tooltip-when-elided="true" name="Label_PlRotStyle" tooltip="How the player rotation is controlled." class="Settings_Label_Normal" />
                                 <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="DropdownField_PlRotStyle" class="Settings_Dropdown" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_PlRotSpeed" class="Settings_GroupBox_Line">
-                                <ui:Label text="Rotation speed" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Rotation speed" display-tooltip-when-elided="true" name="Label_PlRotSpeed" class="Settings_Label_Normal" />
                                 <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_PlRotSpeed" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamRotatiom" class="Settings_GroupBox_Line" style="margin-top: 10px;">
-                                <ui:Label text="Camera rotation" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Camera rotation" display-tooltip-when-elided="true" tooltip="How the camera rotation is controlled." name="Label_CamRotStyle" class="Settings_Label_Normal" />
                                 <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="DropdownField_CamRotStyle" class="Settings_Dropdown" />
                             </ui:GroupBox>
                             <ui:Label text="Rotation speed" display-tooltip-when-elided="true" class="Settings_Label_ChapterName_2" />
@@ -82,19 +82,19 @@
                             </ui:GroupBox>
                             <ui:Label text="Camera Damping" display-tooltip-when-elided="true" class="Settings_Label_ChapterName_2" />
                             <ui:GroupBox name="GroupBox_CamBodyXDamping" class="Settings_GroupBox_Line">
-                                <ui:Label text="Body X damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Body X damping" display-tooltip-when-elided="true" tooltip="How responsively the camera tries to maintain the offset in the x-axis.\nSmall numbers make the camera more responsive.\nLarger numbers make the camera respond more slowly." name="Label_CamDamping_BodyX" class="Settings_Label_Normal" />
                                 <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_BodyX" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamBodyYDamping" class="Settings_GroupBox_Line">
-                                <ui:Label text="Body Y damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Body Y damping" display-tooltip-when-elided="true" tooltip="How responsively the camera tries to maintain the offset in the y-axis.\nSmall numbers make the camera more responsive.\nLarger numbers make the camera respond more slowly." name="Label_CamDamping_BodyY" class="Settings_Label_Normal" />
                                 <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_BodyY" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamBodyZDamping" class="Settings_GroupBox_Line">
-                                <ui:Label text="Body Z damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Body Z damping" display-tooltip-when-elided="true" tooltip="How responsively the camera tries to maintain the offset in the z-axis.\nSmall numbers make the camera more responsive.\nLarger numbers make the camera respond more slowly." name="Label_CamDamping_BodyZ" class="Settings_Label_Normal" />
                                 <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_BodyZ" class="Settings_Slider" />
                             </ui:GroupBox>
                             <ui:GroupBox name="GroupBox_CamAimDamping" class="Settings_GroupBox_Line">
-                                <ui:Label text="Aim damping" display-tooltip-when-elided="true" class="Settings_Label_Normal" />
+                                <ui:Label text="Aim damping" display-tooltip-when-elided="true" tooltip="How responsively the camera tracks the target rotation’s y angle.\nSmall numbers make the camera more responsive.\nLarger numbers make the camera respond more slowly." name="Label_CamDamping_Aim" class="Settings_Label_Normal" />
                                 <ui:Slider picking-mode="Ignore" label="100" value="42" high-value="100" name="Slider_CamDamping_Aim" class="Settings_Slider" />
                             </ui:GroupBox>
                         </ui:GroupBox>

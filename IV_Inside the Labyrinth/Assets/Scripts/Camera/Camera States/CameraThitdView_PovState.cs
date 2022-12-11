@@ -14,6 +14,10 @@ public class CameraThitdView_PovState : ZoomableCamera, ICameraThirdViewState
     public void Initialize()
     {
         camera.Priority = 0;
+    }
+
+    public void Start()
+    {
         ResetDistance();
         UpdateRotation();
         UpdateDamping();

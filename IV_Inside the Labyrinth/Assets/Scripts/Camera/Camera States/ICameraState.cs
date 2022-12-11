@@ -1,6 +1,7 @@
 public interface ICameraState
 {
     public void Initialize() { }
+    public void Start() { }
     public void Enter() { }
     public void Exit() { }
     public void LateUpdate() { }

@@ -6,8 +6,8 @@ public class GameMenuState : IGameState
 
     public void Enter()
     {
-        UpdatePause();
         Cursor.visible = true;
+        UpdatePause();
     }
 
     public void MenuPerformed()

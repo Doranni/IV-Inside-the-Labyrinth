@@ -8,24 +8,21 @@ public class DebugUI : MonoBehaviour
     [SerializeField] CameraController cameraController;
 
     private VisualElement debugScreen;
-    private Label playerStateLabel, cameraStateLabel;
-    private Toggle isPlGroundedToggle;
+    private Label label_playerState, label_cameraState;
+    private Toggle toggle_isPlGrounded;
 
-    const string debugScreen_Name = "DebugScreen";
-    const string plStateLabel_Name = "PlState_Value_Label";
-    const string camStateLabel_Name = "CamState_Value_Label";
-    const string isPlGroundedToggle_Name = "isPlGrounded_Toggle";
-
-    UIDocument gameScreen;
+    const string k_debugScreen = "DebugScreen";
+    const string k_label_playerState = "PlState_Value_Label";
+    const string k_label_cameraState = "CamState_Value_Label";
+    const string k_toggle_isPlGrounded = "isPlGrounded_Toggle";
 
     private void Awake()
     {
-        gameScreen = GetComponent<UIDocument>();
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        debugScreen = rootElement.Q(debugScreen_Name);
-        playerStateLabel = rootElement.Q<Label>(plStateLabel_Name);
-        cameraStateLabel = rootElement.Q<Label>(camStateLabel_Name);
-        isPlGroundedToggle = rootElement.Q<Toggle>(isPlGroundedToggle_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        debugScreen = rootElement.Q(k_debugScreen);
+        label_playerState = rootElement.Q<Label>(k_label_playerState);
+        label_cameraState = rootElement.Q<Label>(k_label_cameraState);
+        toggle_isPlGrounded = rootElement.Q<Toggle>(k_toggle_isPlGrounded);
     }
 
     private void Start()
@@ -39,19 +36,19 @@ public class DebugUI : MonoBehaviour
 
     private void Camera_OnStateChanged()
     {
-        cameraStateLabel.text = cameraController.StateMachine.CurrentState.ToString();
+        label_cameraState.text = cameraController.StateMachine.CurrentState.ToString();
     }
 
     private void Player_OnStateChanged()
     {
-        playerStateLabel.text = plMovement.StateMachine.CurrentState.ToString();
+        label_playerState.text = plMovement.StateMachine.CurrentState.ToString();
         if (plMovement.StateMachine.CurrentState is GroundedState)
         {
-            isPlGroundedToggle.value = true;
+            toggle_isPlGrounded.value = true;
         }
         else
         {
-            isPlGroundedToggle.value = false;
+            toggle_isPlGrounded.value = false;
         }
     }
 

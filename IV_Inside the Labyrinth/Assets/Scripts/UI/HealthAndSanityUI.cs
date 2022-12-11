@@ -10,24 +10,21 @@ public class HealthAndSanityUI : MonoBehaviour
     private SanityController plSanity;
 
     private VisualElement healthAndSanityScreen;
-    private Label healthLabel, sanityLabel;
+    private Label label_health, label_sanity;
 
-    const string healthAndSanityScreen_Name = "HealthAndSanityScreen";
-    const string healthLabel_Name = "PlHealth_Value_Label";
-    const string sanityLabel_Name = "PlSanity_Value_Label";
-
-    UIDocument gameScreen;
+    const string k_healthAndSanityScreen = "HealthAndSanityScreen";
+    const string k_label_health = "PlHealth_Value_Label";
+    const string k_label_sanity = "PlSanity_Value_Label";
 
     private void Awake()
     {
         plHealth = player.GetComponent<HealthController>();
         plSanity = player.GetComponent<SanityController>();
-        gameScreen = GetComponent<UIDocument>();
 
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        healthAndSanityScreen = rootElement.Q(healthAndSanityScreen_Name);
-        healthLabel = rootElement.Q<Label>(healthLabel_Name);
-        sanityLabel = rootElement.Q<Label>(sanityLabel_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        healthAndSanityScreen = rootElement.Q(k_healthAndSanityScreen);
+        label_health = rootElement.Q<Label>(k_label_health);
+        label_sanity = rootElement.Q<Label>(k_label_sanity);
     }
 
     private void UpdateVisibility()
@@ -55,12 +52,12 @@ public class HealthAndSanityUI : MonoBehaviour
 
     private void UpdateHealth((float currentHealth, float maxHealth) values)
     {
-        healthLabel.text = Mathf.Round(values.currentHealth) + "/" + values.maxHealth;
+        label_health.text = Mathf.Round(values.currentHealth) + "/" + values.maxHealth;
     }
 
     private void UpdateSanity((float currentSanity, float maxSanity) values)
     {
-        sanityLabel.text = Mathf.Round(values.currentSanity) + "/" + values.maxSanity;
+        label_sanity.text = Mathf.Round(values.currentSanity) + "/" + values.maxSanity;
     }
 
     private void OnDestroy()

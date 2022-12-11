@@ -4,32 +4,29 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class MenuScreenUI : MonoBehaviour
 {
-    private VisualElement MenuScreen;
-    private Button SettingsButton, ExitButton;
-    private Toggle isPausedToggle;
+    private VisualElement menuScreen;
+    private Button button_settings, button_exit;
+    private Toggle toggle_isPaused;
 
-    const string MenuScreen_Name = "MenuScreen";
-    const string SettingsButton_Name = "SettingsButton";
-    const string ExitButton_Name = "ExitButton";
-    const string isPausedToggle_Name = "Pause_Toggle";
-
-    UIDocument gameScreen;
+    const string k_menuScreen = "MenuScreen";
+    const string k_button_settings = "SettingsButton";
+    const string k_button_exit = "ExitButton";
+    const string k_toggle_isPaused = "Pause_Toggle";
 
     private void Awake()
     {
-        gameScreen = GetComponent<UIDocument>();
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        MenuScreen = rootElement.Q(MenuScreen_Name);
-        SettingsButton = rootElement.Q<Button>(SettingsButton_Name);
-        ExitButton = rootElement.Q<Button>(ExitButton_Name);
-        isPausedToggle = rootElement.Q<Toggle>(isPausedToggle_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        menuScreen = rootElement.Q(k_menuScreen);
+        button_settings = rootElement.Q<Button>(k_button_settings);
+        button_exit = rootElement.Q<Button>(k_button_exit);
+        toggle_isPaused = rootElement.Q<Toggle>(k_toggle_isPaused);
     }
 
     void Start()
     {
-        SettingsButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.OpenSettingsScreen());
-        ExitButton.RegisterCallback<ClickEvent>((_) => GameManager.Instance.OpenExitScreen());
-        isPausedToggle.RegisterValueChangedCallback(SetPauseBehavior);
+        button_settings.RegisterCallback<ClickEvent>((_) => GameManager.Instance.OpenSettingsScreen());
+        button_exit.RegisterCallback<ClickEvent>((_) => GameManager.Instance.OpenExitScreen());
+        toggle_isPaused.RegisterValueChangedCallback(SetPauseBehavior);
         GameManager.instance.StateMachine.OnStateChanged += UpdateVisibility;
         Preferences.OnPauseBehaviorChanged += UpdatePauseUI;
         UpdatePauseUI();
@@ -40,11 +37,11 @@ public class MenuScreenUI : MonoBehaviour
     {
         if (GameManager.instance.StateMachine.CurrentState.Equals(GameManager.instance.StateMachine.menuState))
         {
-            MenuScreen.style.display = DisplayStyle.Flex;
+            menuScreen.style.display = DisplayStyle.Flex;
         }
         else
         {
-            MenuScreen.style.display = DisplayStyle.None;
+            menuScreen.style.display = DisplayStyle.None;
         }
     }
 
@@ -55,7 +52,7 @@ public class MenuScreenUI : MonoBehaviour
 
     private void UpdatePauseUI()
     {
-        isPausedToggle.value = Preferences.IsPausedWhileInMenu;
+        toggle_isPaused.value = Preferences.IsPausedWhileInMenu;
     }
 
     private void OnDestroy()

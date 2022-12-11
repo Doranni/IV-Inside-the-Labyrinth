@@ -16,6 +16,8 @@ public class CameraFirstViewState : ICameraState
         camera.Priority = 0;
     }
 
+    public void Start() { }
+
     public void Enter()
     {
         camera.Priority = 1;

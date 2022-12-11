@@ -77,7 +77,7 @@ public class MovementController : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        cameraController = GameObject.FindGameObjectWithTag(GameManager.mainCameraTag).GetComponent<CameraController>();
+        cameraController = GameObject.FindGameObjectWithTag(GameManager.tag_mainCamera).GetComponent<CameraController>();
         animator = GetComponent<Animator>();
         effectsListController = GetComponent<EffectsListController>();
         audioSource = GetComponent<AudioSource>();
@@ -141,6 +141,8 @@ public class MovementController : MonoBehaviour
 
     void Start()
     {
+        StateMachine.Start();
+
         if (moveGravity >= 0)
         {
             moveGravity = Physics.gravity.y;

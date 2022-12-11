@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     private MovementController plMovement;
     private SanityLightRecoveryController plSanityRestore;
 
-    private void Start()
+    private void Awake()
     {  
         plHealth = GetComponent<HealthController>();
         plSanity = GetComponent<SanityController>();
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Enter the Trap
-        if (other.CompareTag(GameManager.trapTag))
+        if (other.CompareTag(GameManager.tag_trap))
         {
             TrapController trap = other.gameObject.GetComponent<TrapController>();
             if (trap.IsCharged)
@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         // Enter Sanity Light
-        if (other.CompareTag(GameManager.sanityLight))
+        if (other.CompareTag(GameManager.tag_sanityLight))
         {
             plSanityRestore.EnterSanityLight();
         }
@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         // Exit Sanity Light
-        if (other.CompareTag(GameManager.sanityLight))
+        if (other.CompareTag(GameManager.tag_sanityLight))
         {
             plSanityRestore.ExitSanityLight();
         }

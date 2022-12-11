@@ -26,6 +26,10 @@ public class CameraThirdView_FollowState : ZoomableCamera, ICameraThirdViewState
     public void Initialize()
     {
         camera.Priority = 0;
+    }
+
+    public void Start()
+    {
         ResetDistance();
         UpdateDamping();
         InputManager.instance.OnZoom_started += HandleScrollWheelInput;

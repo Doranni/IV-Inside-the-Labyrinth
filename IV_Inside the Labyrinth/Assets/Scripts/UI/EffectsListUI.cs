@@ -8,19 +8,16 @@ public class EffectsListUI : MonoBehaviour
     [SerializeField] private EffectsListController plEffects;
 
     private VisualElement effectsListScreen;
-    private Label effectsListLabel;
+    private Label label_effectsList;
 
-    const string effectsListScreen_Name = "EffectsListScreen";
-    const string effectsListLabel_Name = "Effects_Label";
-
-    UIDocument gameScreen;
+    const string k_effectsListScreen = "EffectsListScreen";
+    const string k_label_effectsList = "Effects_Label";
 
     private void Awake()
     {
-        gameScreen = GetComponent<UIDocument>();
-        VisualElement rootElement = gameScreen.rootVisualElement;
-        effectsListScreen = rootElement.Q(effectsListScreen_Name);
-        effectsListLabel = rootElement.Q<Label>(effectsListLabel_Name);
+        VisualElement rootElement = GetComponent<UIDocument>().rootVisualElement;
+        effectsListScreen = rootElement.Q(k_effectsListScreen);
+        label_effectsList = rootElement.Q<Label>(k_label_effectsList);
     }
 
     // Start is called before the first frame update
@@ -32,14 +29,14 @@ public class EffectsListUI : MonoBehaviour
 
     private void UpdateEffects(Dictionary<int, Effect> effects)
     {
-        effectsListLabel.text = string.Empty;
+        label_effectsList.text = string.Empty;
         string res = string.Empty;
 
         foreach (KeyValuePair<int, Effect> effect in effects)
         {
             res += effect.Value.ToString() + "\n";
         }
-        effectsListLabel.text = res;
+        label_effectsList.text = res;
     }
 
     private void OnDestroy()

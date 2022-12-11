@@ -17,13 +17,13 @@ public class LightManager : MonoBehaviour
     [SerializeField] private Color skyboxColor_fullSanity, skyboxColor_withoutSanity;
     [SerializeField] private float sunSize_fullSanity, sunSize_withoutSanity;
 
-    private int skyTint_id, sunSize_id;
+    private int id_skyTint, id_sunSize;
 
     void Start()
     {
         torches = FindObjectsOfType<TorchController>();
-        skyTint_id = Shader.PropertyToID("_SkyTint");
-        sunSize_id = Shader.PropertyToID("_SunSize");
+        id_skyTint = Shader.PropertyToID("_SkyTint");
+        id_sunSize = Shader.PropertyToID("_SunSize");
         plSanity.OnChangeSanity += UpdateLight;
         UpdateLight((plSanity.Sanity, plSanity.MaxSanity));
     }
@@ -48,9 +48,9 @@ public class LightManager : MonoBehaviour
 
     private void UpdateSkybox(float currentSanity_from0to1)
     {
-        RenderSettings.skybox.SetColor(skyTint_id, Color.Lerp(skyboxColor_withoutSanity, 
+        RenderSettings.skybox.SetColor(id_skyTint, Color.Lerp(skyboxColor_withoutSanity, 
             skyboxColor_fullSanity, currentSanity_from0to1));
-        RenderSettings.skybox.SetFloat(sunSize_id, Mathf.Lerp(sunSize_withoutSanity,
+        RenderSettings.skybox.SetFloat(id_sunSize, Mathf.Lerp(sunSize_withoutSanity,
             sunSize_fullSanity, currentSanity_from0to1));
     }
 

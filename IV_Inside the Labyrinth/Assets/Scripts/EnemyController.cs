@@ -51,8 +51,8 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
-        player = GameObject.FindGameObjectWithTag(GameManager.playerTag).transform;
-        Bounds environmentBounds = GameObject.FindGameObjectWithTag(GameManager.groundTag).GetComponent<Collider>().bounds;
+        player = GameObject.FindGameObjectWithTag(GameManager.tag_player).transform;
+        Bounds environmentBounds = GameObject.FindGameObjectWithTag(GameManager.tag_ground).GetComponent<Collider>().bounds;
         environmentExtents = environmentBounds.extents;
         environmentCenter = environmentBounds.center;
         yRange = 2 * environmentExtents.y + 0.5f;

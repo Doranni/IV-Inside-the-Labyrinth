@@ -26,8 +26,12 @@ public class MovementStateMachine
     public void Initialize(IMovementState startingState)
     {
         CurrentState = startingState;
-        startingState.Enter();
         OnStateChanged?.Invoke();
+    }
+
+    public void Start()
+    {
+        CurrentState.Enter();
     }
 
     public void TransitionTo(IMovementState nextState)

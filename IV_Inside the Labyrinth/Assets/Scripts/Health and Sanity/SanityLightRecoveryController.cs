@@ -17,7 +17,7 @@ public class SanityLightRecoveryController : MonoBehaviour
 
     public event Action OnSanityLightEnter, OnSanityLightExit;
 
-    void Start()
+    private void Awake()
     {
         sanityController = GetComponent<SanityController>();
         sanityRestoringValueStep = sanityRestoringPerSecond * restoringTimeStep;
