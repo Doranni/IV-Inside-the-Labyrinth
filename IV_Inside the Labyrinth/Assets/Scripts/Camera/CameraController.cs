@@ -11,16 +11,16 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera thirdViewCameraPOV, thirdViewCameraFollow,
         firstViewCamera, mapViewCamera;
 
-    [SerializeField] private float scrollWheelRange;
+    [SerializeField] private float scrollWheelRange = 1200;
 
-    [SerializeField] private float thirdViewZoomingSpeed;
-    [SerializeField] private float thirdViewDistanceMin, thirdViewDistanceMax;
+    [SerializeField] private float thirdViewZoomingSpeed = 10;
+    [SerializeField] private float thirdViewDistanceMin = 1.5f, thirdViewDistanceMax = 12;
 
-    [SerializeField] private float mapViewZoomingSpeed;
-    [SerializeField] private float mapViewDistanceMin, mapViewDistanceMax;
+    [SerializeField] private float mapViewZoomingSpeed = 40;
+    [SerializeField] private float mapViewDistanceMin = 10, mapViewDistanceMax = 70;
 
-    [SerializeField] private float thirdViewFollowOffset_minDistance, thirdViewFollowOffset_maxDistance,
-        thirdViewFollowTilt_minDistance, thirdViewFollowTilt_maxDistance;
+    [SerializeField] private float thirdViewFollowOffset_minDistance = 0, thirdViewFollowOffset_maxDistance = 2,
+        thirdViewFollowTilt_minDistance = 2, thirdViewFollowTilt_maxDistance = 1;
 
     private void Awake()
 
