@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class TooltipController : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI text_Tmp;
+
+    private static TooltipController instance;
+    private RectTransform rectTransform;
+    private float textOffset = 4f;
+    private float maxtWidth = 400f;
+
+    private void Awake()
+    {
+        instance = this;
+        rectTransform = GetComponent<RectTransform>();
+        instance.gameObject.SetActive(false);
+    }
+
+    public static void ShowTooltip(string tooltipText, Vector3 position)
+    {
+        instance.ShowTooltip_private(tooltipText, position);
+    }
+
+    public static void HideTooltip()
+    {
+        instance.gameObject.SetActive(false);
+    }
+
+    private void ShowTooltip_private(string tooltipText, Vector3 position)
+    {
+        if(tooltipText.Length == 0)
+        {
+            return;
+        }
+        text_Tmp.text = tooltipText;
+        Vector2 size = new Vector2(Mathf.Clamp(text_Tmp.preferredWidth, 10, maxtWidth) + 2 * textOffset, 
+            text_Tmp.preferredHeight + 2 * textOffset);
+        rectTransform.sizeDelta = size;
+        rectTransform.position = position;
+        gameObject.SetActive(true);
+    }
+}

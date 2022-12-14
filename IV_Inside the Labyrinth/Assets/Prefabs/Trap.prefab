@@ -12,10 +12,12 @@ GameObject:
   - component: {fileID: 2167539923476551443}
   - component: {fileID: 2171662474617629211}
   - component: {fileID: 8700435794590780617}
+  - component: {fileID: 602517124}
+  - component: {fileID: 602517125}
   - component: {fileID: 206245868}
   m_Layer: 0
   m_Name: Trap
-  m_TagString: Untagged
+  m_TagString: Trap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,8 +30,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7669927526903900961}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 0, z: 3}
-  m_LocalScale: {x: 1, y: 0.2, z: 1}
+  m_LocalPosition: {x: 27.9, y: -47.4, z: 2.2}
+  m_LocalScale: {x: 1, y: 0.05, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -53,6 +56,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -61,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6d99b29aa78a17b44be8a947f1ea1b68, type: 2}
+  - {fileID: 2100000, guid: 87360071ca8a2404487a03dfedf9336d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -94,8 +98,37 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.1274037, y: 3.193375, z: 1.1099374}
+  m_Center: {x: -0.0076441765, y: 1.0966878, z: 0.016198754}
+--- !u!54 &602517124
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7669927526903900961}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &602517125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7669927526903900961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4fa7e680ec6a474bb4248674bdcf480, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 8
 --- !u!114 &206245868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,3 +141,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a8747cc1c4d411d98add96e71b195f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthDamage_Immediate: 8
+  sanityDamage_Immediate: 12
+  rechargingTime: 4
+  effects:
+  - type: 0
+    isPositive: 0
+    effectValue: -1
+    timeTotal: 10
+  - type: 1
+    isPositive: 0
+    effectValue: -1.5
+    timeTotal: 6
+  - type: 2
+    isPositive: 0
+    effectValue: 0.4
+    timeTotal: 7

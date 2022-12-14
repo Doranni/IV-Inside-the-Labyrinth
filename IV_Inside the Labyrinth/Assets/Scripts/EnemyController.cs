@@ -5,43 +5,54 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    Transform player;
-    public LayerMask playerLMask, hidingObstacleLMask;
-    NavMeshAgent navMeshAgent;
-    ActionStatus actionStatus = ActionStatus.undefined;
-    Vector3 environmentExtents, environmentCenter;
-    float yRange;
+    enum ActionStatus
+    {
+        undefined,
+        walking,
+        idle,
+        chasing,
+        attacking,
+        searching
+    }
+
+    [SerializeField] private LayerMask playerLMask, hidingObstacleLMask;
 
     // Walking
-    Vector3 walkPoint;
-    bool isWalkPointSet = false;
-    public float walkingSpeed;
-    public float walkPointRange;
+    [SerializeField] private float walkingSpeed;
+    [SerializeField] private float walkPointRange;
+    private Vector3 walkPoint;
+    private bool isWalkPointSet = false;
 
     // Idle
-    float idleTime;
-    bool isIdleTimeSet = false, wasIdle = false;
-    public float maxIdleTime, minIdleTime;
+    [SerializeField] private float maxIdleTime, minIdleTime;
+    private float idleTime;
+    private bool isIdleTimeSet = false, wasIdle = false;
 
     // Chasing
-    public float seeRange, feelRange;
-    bool isPlayerSeen = false;
-    public float chasingSpeed;
+    [SerializeField] private float seeRange, feelRange;
+    [SerializeField] private float chasingSpeed;
+    private bool isPlayerSeen = false;
 
     // Attacking
-    public float attackRange;
-    bool isPlayerInAttackRange = false;
+    [SerializeField] private float attackRange;
+    private bool isPlayerInAttackRange = false;
 
     // Seaching for Player
-    public float searchTime;
-    float searchTimeLeft;
-    public float searchPointRange;
-    Vector3 searchingPoint;
+    [SerializeField] private float searchTime;
+    [SerializeField] private float searchPointRange;
+    private float searchTimeLeft;
+    private Vector3 searchingPoint;
+
+    private Transform player;
+    private NavMeshAgent navMeshAgent;
+    private ActionStatus actionStatus = ActionStatus.undefined;
+    private Vector3 environmentExtents, environmentCenter;
+    private float yRange;
 
     private void Awake()
     {
-        player = GameObject.Find("Player").transform;
-        Bounds environmentBounds = GameObject.Find("Plane").GetComponent<Collider>().bounds;
+        player = GameObject.FindGameObjectWithTag(GameManager.tag_player).transform;
+        Bounds environmentBounds = GameObject.FindGameObjectWithTag(GameManager.tag_ground).GetComponent<Collider>().bounds;
         environmentExtents = environmentBounds.extents;
         environmentCenter = environmentBounds.center;
         yRange = 2 * environmentExtents.y + 0.5f;
@@ -302,15 +313,5 @@ public class EnemyController : MonoBehaviour
                 }
             }
         }
-    }
-
-    enum ActionStatus
-    {
-        undefined,
-        walking,
-        idle,
-        chasing,
-        attacking,
-        searching
     }
 }
