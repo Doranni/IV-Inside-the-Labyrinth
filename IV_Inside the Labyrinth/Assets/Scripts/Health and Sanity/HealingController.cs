@@ -11,7 +11,7 @@ public class HealingController : MonoBehaviour
     private Coroutine healingCoroutine;
     private HealthController healthController;
 
-    private void Start()
+    private void Awake()
     {
         healthController = GetComponent<HealthController>();
         healingValueStep = healingPerSecond * healingTimeStep;

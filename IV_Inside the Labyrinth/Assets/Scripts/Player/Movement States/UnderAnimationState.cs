@@ -12,4 +12,9 @@ public class UnderAnimationState : IMovementState
     public void Exit() { }
     public void Update() { }
     public void JumpUp_pressed() { }
+
+    public override string ToString()
+    {
+        return "Under Animation";
+    }
 }

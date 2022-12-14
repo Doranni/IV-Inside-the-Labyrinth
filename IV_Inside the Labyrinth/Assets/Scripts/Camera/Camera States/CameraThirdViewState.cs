@@ -42,6 +42,12 @@ public class CameraThirdViewState : ICameraState
         SetCurrentState();
         povState.Initialize();
         followState.Initialize();
+    }
+
+    public void Start() 
+    {
+        povState.Start();
+        followState.Start();
         Preferences.OnCamRotStyleChanged += SetCurrentState;
         player.StateMachine.OnMoving_started += SetCurrentState;
         player.StateMachine.OnMoving_canceled += SetCurrentState;
@@ -80,7 +86,7 @@ public class CameraThirdViewState : ICameraState
                         case Preferences.CameraRotationStyle.withRightClickMouse:
                             {
                                 if (rightClickInput || 
-                                    player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
+                                    !player.StateMachine.CurrentState.Equals(player.StateMachine.movingState))
                                 {
                                     CurrentState = povState;
                                 }
@@ -104,20 +110,20 @@ public class CameraThirdViewState : ICameraState
                             }
                         case Preferences.CameraRotationStyle.followPlayer:
                             {
-                                if (player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
+                                if (player.StateMachine.CurrentState.Equals(player.StateMachine.movingState))
                                 {
-                                    CurrentState = povState;
+                                    CurrentState = followState;
                                 }
                                 else
                                 {
-                                    CurrentState = followState;
+                                    CurrentState = povState;
                                 }
                                 break;
                             }
                         case Preferences.CameraRotationStyle.withRightClickMouse:
                             {
                                 if (rightClickInput ||
-                                    player.StateMachine.CurrentState.Equals(player.StateMachine.stillState))
+                                    !player.StateMachine.CurrentState.Equals(player.StateMachine.movingState))
                                 {
                                     CurrentState = povState;
                                 }

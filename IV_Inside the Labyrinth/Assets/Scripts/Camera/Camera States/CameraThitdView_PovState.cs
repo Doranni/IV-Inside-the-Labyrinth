@@ -14,6 +14,10 @@ public class CameraThitdView_PovState : ZoomableCamera, ICameraThirdViewState
     public void Initialize()
     {
         camera.Priority = 0;
+    }
+
+    public void Start()
+    {
         ResetDistance();
         UpdateRotation();
         UpdateDamping();
@@ -87,6 +91,11 @@ public class CameraThitdView_PovState : ZoomableCamera, ICameraThirdViewState
     private void UpdateDamping_BodyX()
     {
         framingTransposer.m_XDamping = Preferences.camDamping_BodyX;
+    }
+
+    public override string ToString()
+    {
+        return "ThirdV: POV";
     }
 
     public void Destroy()

@@ -1,0 +1,476 @@
+Label {
+    color: rgb(210, 210, 210);
+}
+
+DropdownField VisualElement {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: rgb(224, 224, 224);
+}
+
+PopupTextElement {
+    margin-left: 10px;
+    -unity-text-align: upper-left;
+    white-space: normal;
+}
+
+.FullScreen {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.VisualElement_FullScreen_Dark {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.43);
+}
+
+.damage_effect {
+    -unity-background-image-tint-color: rgba(82, 43, 43, 0);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.damage_effect-triggered {
+    -unity-background-image-tint-color: rgba(82, 43, 43, 0.5);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.HealthAndSanity_VisualElement {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.27);
+    position: absolute;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.HealthAndSanity_GroupBox {
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    flex-direction: row;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.HealthAndSanity_Label {
+    -unity-text-align: middle-left;
+    white-space: normal;
+    width: 120px;
+    font-size: 22px;
+    color: rgb(210, 210, 210);
+}
+
+.Debug_VisualElement {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.27);
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+    align-items: flex-start;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.Debug_GroupBox {
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.Debug_Label_Name {
+    -unity-text-align: middle-left;
+    white-space: normal;
+    width: 200px;
+    font-size: 20px;
+    color: rgb(210, 210, 210);
+    -unity-font-style: bold;
+}
+
+.Debug_Label {
+    -unity-text-align: middle-left;
+    white-space: normal;
+    width: 200px;
+    font-size: 18px;
+    color: rgb(192, 192, 192);
+}
+
+.Debug_Toggle {
+    font-size: 18px;
+    color: rgb(210, 210, 210);
+}
+
+.EffectsList_VisualElement {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.EffectsList_Label {
+    color: rgb(210, 210, 210);
+    font-size: 24px;
+    width: 600px;
+}
+
+.Exit_VisualElement {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.43);
+    padding-bottom: 100px;
+}
+
+.Exit_Button {
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    -unity-text-align: middle-center;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: rgb(210, 210, 210);
+    font-size: 28px;
+    height: 60px;
+}
+
+.Exit_Button:hover {
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    -unity-text-align: middle-center;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.53);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: rgb(212, 197, 197);
+    font-size: 28px;
+    height: 60px;
+}
+
+.Exit_Button:active {
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    -unity-text-align: middle-center;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(36, 31, 31, 0.53);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: rgb(210, 210, 210);
+    font-size: 28px;
+    height: 60px;
+}
+
+.Exit_Label {
+    color: rgb(214, 214, 214);
+    font-size: 28px;
+    -unity-text-align: middle-center;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.Menu_VisualElement {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.43);
+    padding-bottom: 100px;
+}
+
+.Menu_Button_Item {
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    -unity-text-align: middle-center;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    font-size: 40px;
+    color: rgb(210, 210, 210);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    height: 80px;
+}
+
+.Menu_Button_Item:hover {
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    -unity-text-align: middle-center;
+    background-color: rgba(0, 0, 0, 0.53);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    font-size: 40px;
+    color: rgb(212, 197, 197);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    height: 80px;
+}
+
+.Menu_Button_Item:active {
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    -unity-text-align: middle-center;
+    background-color: rgba(36, 31, 31, 0.53);
+    border-left-color: rgba(0, 0, 0, 0.11);
+    border-right-color: rgba(0, 0, 0, 0.11);
+    border-top-color: rgba(0, 0, 0, 0.11);
+    border-bottom-color: rgba(0, 0, 0, 0.11);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    font-size: 40px;
+    color: rgb(210, 210, 210);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    height: 80px;
+}
+
+.Menu_Toggle {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    color: rgb(192, 192, 192);
+    font-size: 20px;
+}
+
+.Settings_Label_ChapterName {
+    color: rgb(214, 214, 214);
+    font-size: 24px;
+    justify-content: center;
+    align-items: center;
+    -unity-font-style: bold;
+}
+
+.Settings_Label_ChapterName_2 {
+    color: rgb(214, 214, 214);
+    font-size: 19px;
+    margin-left: 5px;
+    margin-top: 5px;
+    -unity-font-style: bold;
+}
+
+.Settings_Label_Normal {
+    color: rgb(214, 214, 214);
+    font-size: 18px;
+    align-items: center;
+    justify-content: center;
+}
+
+.Settings_Dropdown {
+    color: rgb(29, 29, 29);
+    font-size: 18px;
+    align-items: center;
+    justify-content: center;
+    width: 350px;
+}
+
+.Settings_Slider {
+    color: rgb(210, 210, 210);
+    font-size: 18px;
+    align-items: center;
+    justify-content: flex-end;
+    width: 240px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.Settings_GroupBox_Line {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    -unity-text-align: middle-center;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.Settings_Button_Reset {
+    font-size: 24px;
+    color: rgb(210, 210, 210);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-font-style: bold;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.Settings_Button_Reset:hover {
+    font-size: 24px;
+    color: rgb(212, 197, 197);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.53);
+    -unity-font-style: bold;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.Settings_Button_Reset:active {
+    font-size: 24px;
+    color: rgb(210, 210, 210);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(36, 31, 31, 0.53);
+    -unity-font-style: bold;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.Settings_ScrollView_Chapter {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    width: 700px;
+}
+
+.Settings_VisualElement_Chapter {
+    justify-content: space-between;
+    align-items: stretch;
+    height: 950px;
+}
+
+.Settings_Label_Name {
+    width: 125px;
+    height: 37px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 30px;
+    color: rgb(210, 210, 210);
+}
+
+.Settings_VisualElement_Name_Underline {
+    flex-grow: 1;
+    margin-bottom: 2px;
+    border-left-color: rgb(210, 210, 210);
+    border-right-color: rgb(210, 210, 210);
+    border-top-color: rgb(210, 210, 210);
+    border-bottom-color: rgb(210, 210, 210);
+    border-bottom-width: 2px;
+}

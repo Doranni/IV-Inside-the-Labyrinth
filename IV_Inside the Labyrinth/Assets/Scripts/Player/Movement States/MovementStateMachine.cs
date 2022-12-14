@@ -26,8 +26,12 @@ public class MovementStateMachine
     public void Initialize(IMovementState startingState)
     {
         CurrentState = startingState;
-        startingState.Enter();
         OnStateChanged?.Invoke();
+    }
+
+    public void Start()
+    {
+        CurrentState.Enter();
     }
 
     public void TransitionTo(IMovementState nextState)
@@ -36,11 +40,11 @@ public class MovementStateMachine
         CurrentState.Exit();
         CurrentState = nextState;
         nextState.Enter();
-        if (prevState.Equals(stillState) && CurrentState.Equals(movingState))
+        if (!prevState.Equals(movingState) && CurrentState.Equals(movingState))
         {
             OnMoving_started?.Invoke();
         }
-        if (prevState.Equals(movingState) && CurrentState.Equals(stillState))
+        if (!prevState.Equals(stillState) && CurrentState.Equals(stillState))
         {
             OnMoving_canceled?.Invoke();
         }

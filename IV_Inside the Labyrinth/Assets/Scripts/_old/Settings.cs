@@ -5,8 +5,6 @@ using TMPro;
 
 public class Settings : MonoBehaviour
 {
-    [SerializeField] private Toggle pauseToggle;
-
     // Movement and Camera
     [Header("Player's Movement")]
     [SerializeField] private TMP_Dropdown plRotStyleDropdown;
@@ -37,10 +35,6 @@ public class Settings : MonoBehaviour
 
     private void Start()
     {
-        pauseToggle.onValueChanged.AddListener(SetPauseBehavior);
-        Preferences.OnPauseBehaviorChanged += UpdatePauseUI;
-        UpdatePauseUI();
-
         // Movement and Camera
         playerRotList = new List<TMP_Dropdown.OptionData>();
         cameraRotList = new List<TMP_Dropdown.OptionData>();
@@ -116,11 +110,6 @@ public class Settings : MonoBehaviour
         resetButton_Sounds.onClick.AddListener(ResetPrefs_Sounds);
     }
 
-    private void UpdatePauseUI()
-    {
-        pauseToggle.isOn = Preferences.IsPausedWhileInMenu;
-    }
-
     private void SetSliderRange(Slider slider, float minValue, float maxValue)
     {
         slider.maxValue = maxValue;
@@ -129,25 +118,20 @@ public class Settings : MonoBehaviour
 
     private void ResetPrefs_MovementAndCamera()
     {
-        ChangePlayerRotSpeed_Float(Preferences.plRotSpeed_def);
-        ChangeCamRotSpeed_Horizontal_Float(Preferences.camRotSpeed_Horizontal_def);
-        ChangeCamRotSpeed_Vertical_Float(Preferences.camRotSpeed_Vertical_def);
-        ChangeCamDamping_BodyX_Float(Preferences.camDamping_BodyX_def);
-        ChangeCamDamping_BodyY_Float(Preferences.camDamping_BodyY_def);
-        ChangeCamDamping_BodyZ_Float(Preferences.camDamping_BodyZ_def);
-        ChangeCamDamping_Aim_Float(Preferences.camDamping_Aim_def);
+        ChangePlayerRotSpeed_Float(Preferences.def_plRotSpeed);
+        ChangeCamRotSpeed_Horizontal_Float(Preferences.def_camRotSpeed_Horizontal);
+        ChangeCamRotSpeed_Vertical_Float(Preferences.def_camRotSpeed_Vertical);
+        ChangeCamDamping_BodyX_Float(Preferences.def_camDamping_BodyX);
+        ChangeCamDamping_BodyY_Float(Preferences.def_camDamping_BodyY);
+        ChangeCamDamping_BodyZ_Float(Preferences.def_camDamping_BodyZ);
+        ChangeCamDamping_Aim_Float(Preferences.def_camDamping_Aim);
     }
 
     private void ResetPrefs_Sounds()
     {
-        ChangeBackgroundMusicVolume_Float(Preferences.backMusicVolume_def);
-        ChangeStepsVolume_Float(Preferences.stepsVolume_def);
-        ChangeDamageEffectVolume_Float(Preferences.damageEffectVolume_def);
-    }
-
-    private void SetPauseBehavior(bool value)
-    {
-        Preferences.IsPausedWhileInMenu = value;
+        ChangeBackgroundMusicVolume_Float(Preferences.def_backMusicVolume);
+        ChangeStepsVolume_Float(Preferences.def_stepsVolume);
+        ChangeDamageEffectVolume_Float(Preferences.def_damageEffectVolume);
     }
 
     private void PopulatePlayerRotationDropdown()
@@ -378,8 +362,6 @@ public class Settings : MonoBehaviour
 
     private void OnDestroy()
     {
-        Preferences.OnPauseBehaviorChanged -= UpdatePauseUI;
-
         //Movement and Camera
         Preferences.OnPlRotStyleChanged -= UpdatePlayerRotationStyle;
         Preferences.OnCamRotStyleChanged -= UpdateCameraRotationStyle;

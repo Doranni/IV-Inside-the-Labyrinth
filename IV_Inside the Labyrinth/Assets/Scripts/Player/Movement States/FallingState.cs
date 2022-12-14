@@ -61,4 +61,9 @@ public class FallingState : IMovementState
         }
     }
     public void JumpUp_pressed() { }
+
+    public override string ToString()
+    {
+        return "Falling";
+    }
 }

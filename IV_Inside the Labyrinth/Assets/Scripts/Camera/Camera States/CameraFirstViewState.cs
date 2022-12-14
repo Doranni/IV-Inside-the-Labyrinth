@@ -16,6 +16,8 @@ public class CameraFirstViewState : ICameraState
         camera.Priority = 0;
     }
 
+    public void Start() { }
+
     public void Enter()
     {
         camera.Priority = 1;
@@ -36,6 +38,11 @@ public class CameraFirstViewState : ICameraState
     public void FirstViewToggle_performed() 
     {
         cameraController.StateMachine.TransitionTo(cameraController.StateMachine.thirdViewState);
+    }
+
+    public override string ToString()
+    {
+        return "First View";
     }
 
     public void Destroy() { }

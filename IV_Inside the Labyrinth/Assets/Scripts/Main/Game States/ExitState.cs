@@ -2,18 +2,12 @@ using UnityEngine;
 
 public class GameExitState : IGameState
 {
-    private readonly GameObject exitScreen;
-
-    public GameExitState(GameObject exitScreen)
-    {
-        this.exitScreen = exitScreen;
-    }
+    public GameExitState() { }
 
     public void Enter()
     {
-        UpdatePause();
-        exitScreen.SetActive(true);
         Cursor.visible = true;
+        UpdatePause();
     }
 
     public void MenuPerformed()
@@ -33,8 +27,5 @@ public class GameExitState : IGameState
         }
     }
 
-    public void Exit()
-    {
-        exitScreen.SetActive(false);
-    }
+    public void Exit() { }
 }

@@ -26,6 +26,10 @@ public class CameraThirdView_FollowState : ZoomableCamera, ICameraThirdViewState
     public void Initialize()
     {
         camera.Priority = 0;
+    }
+
+    public void Start()
+    {
         ResetDistance();
         UpdateDamping();
         InputManager.instance.OnZoom_started += HandleScrollWheelInput;
@@ -105,6 +109,11 @@ public class CameraThirdView_FollowState : ZoomableCamera, ICameraThirdViewState
     public void UpdateDamping_Aim()
     {
         sameAsFollowTarget.m_Damping = Preferences.camDamping_Aim;
+    }
+
+    public override string ToString()
+    {
+        return "ThirdV: Follow";
     }
 
     public void Destroy()

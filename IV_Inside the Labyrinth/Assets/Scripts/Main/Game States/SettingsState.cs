@@ -2,18 +2,12 @@ using UnityEngine;
 
 public class GameSettingsState : IGameState
 {
-    private readonly GameObject settingsScreen;
-
-    public GameSettingsState(GameObject settingsScreen)
-    {
-        this.settingsScreen = settingsScreen;
-    }
+    public GameSettingsState() { }
 
     public void Enter()
     {
-        UpdatePause();
-        settingsScreen.SetActive(true);
         Cursor.visible = true;
+        UpdatePause();
     }
 
     public void MenuPerformed()
@@ -33,9 +27,5 @@ public class GameSettingsState : IGameState
         }
     }
 
-    public void Exit()
-    {
-        settingsScreen.SetActive(false);
-        TooltipController.HideTooltip();
-    }
+    public void Exit() { }
 }

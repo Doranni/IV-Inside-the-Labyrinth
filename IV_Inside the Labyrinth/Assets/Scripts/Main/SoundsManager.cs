@@ -5,10 +5,13 @@ public class SoundsManager : MonoBehaviour
     [SerializeField] private AudioSource playerSteps, damageEffect;
     private AudioSource backGroundMusic;
 
-    private void Start()
+    private void Awake()
     {
         backGroundMusic = GetComponent<AudioSource>();
+    }
 
+    private void Start()
+    {
         Preferences.OnBackgroundMusicVolumeChanged += Preferences_OnBackgroundMusicVolumeChanged;
         Preferences.OnStepsVolumeChanged += Preferences_OnStepsVolumeChanged;
         Preferences.OnDamageEffectVolumeChanged += Preferences_OnDamageEffectVolumeChanged;

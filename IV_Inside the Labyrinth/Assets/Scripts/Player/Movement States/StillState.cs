@@ -47,4 +47,9 @@ public class StillState : GroundedState, IMovementState
         }
 
     }
+
+    public override string ToString()
+    {
+        return "Still";
+    }
 }

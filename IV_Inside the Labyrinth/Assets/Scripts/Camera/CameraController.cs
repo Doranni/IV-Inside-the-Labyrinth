@@ -39,7 +39,11 @@ public class CameraController : MonoBehaviour
             mapViewCamera: mapViewCamera,  mapViewZoomingSpeed: mapViewZoomingSpeed,
             mapViewDistanceMin: mapViewDistanceMin,  mapViewDistanceMax: mapViewDistanceMax);
         StateMachine.Initialize(StateMachine.thirdViewState);
+    }
 
+    private void Start()
+    {
+        StateMachine.Start();
         // TODO: to fix first view camera
         //InputManager.instance.OnFirstViewToggle_performed += FirstViewToggle_performed;
         InputManager.instance.OnMapViewToggle_performed += MapViewToggle_performed;

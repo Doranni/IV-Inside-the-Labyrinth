@@ -21,9 +21,12 @@ public class InputManager : Singleton<InputManager>
     public override void Awake()
     {
         base.Awake();
-
         gameInput = new GameInput();
 
+    }
+
+    private void Start()
+    {
         gameInput.Game.Menu.performed += Menu_performed;
 
         gameInput.Movement.MoveForward.performed += MoveForward_performed;
@@ -188,5 +191,43 @@ public class InputManager : Singleton<InputManager>
     private void OnDisable()
     {
         gameInput.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        gameInput.Game.Menu.performed -= Menu_performed;
+
+        gameInput.Movement.MoveForward.performed -= MoveForward_performed;
+        gameInput.Movement.MoveForwardButton.started -= MoveForward_started;
+        gameInput.Movement.MoveForwardButton.canceled -= MoveForward_canceled;
+        gameInput.Movement.MoveAsideButton.started -= MoveAside_started;
+        gameInput.Movement.MoveAsideButton.canceled -= MoveAside_canceled;
+
+        gameInput.Movement.RotateMouse.started -= RotateMouse_started;
+        gameInput.Movement.RotateMouse.performed -= RotateMouse_performed;
+        gameInput.Movement.RotateMouse.canceled -= RotateMouse_canceled;
+
+        gameInput.Movement.RotateKeyboard.started -= RotateKeyboard_started;
+        gameInput.Movement.RotateKeyboard.performed -= RotateKeyboard_performed;
+        gameInput.Movement.RotateKeyboard.canceled -= RotateKeyboard_canceled;
+
+        gameInput.Movement.Acceleration.started -= Acceleration_started;
+        gameInput.Movement.Acceleration.canceled -= Acceleration_canceled;
+
+        gameInput.Movement.MouseRightClick.started -= MouseRightClick_started;
+        gameInput.Movement.MouseRightClick.canceled -= MouseRightClick_canceled;
+
+        gameInput.Movement.JumpUp.performed -= JumpUp_performed;
+
+        gameInput.Camera.Zoom.started -= Zoom_started;
+        gameInput.Camera.Zoom.performed -= Zoom_performed;
+        gameInput.Camera.Zoom.canceled -= Zoom_canceled;
+
+        gameInput.Camera.FirstViewToggle.performed -= FirstViewToggle_performed;
+
+        gameInput.Camera.MapViewToggle.performed -= MapViewToggle_performed;
+
+        gameInput.Camera.StartRotation.started -= StartRotation_started;
+        gameInput.Camera.StartRotation.canceled -= StartRotation_canceled;
     }
 }

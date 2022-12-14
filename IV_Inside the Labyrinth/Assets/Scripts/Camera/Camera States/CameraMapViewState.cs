@@ -13,6 +13,10 @@ public class CameraMapViewState : ZoomableCamera, ICameraState
     {
         ResetDistance();
         camera.Priority = 0;
+    }
+
+    public void Start()
+    {
         InputManager.instance.OnZoom_started += HandleScrollWheelInput;
         InputManager.instance.OnZoom_performed += HandleScrollWheelInput;
         InputManager.instance.OnZoom_canceled += HandleScrollWheelInput;
@@ -49,6 +53,11 @@ public class CameraMapViewState : ZoomableCamera, ICameraState
     public void FirstViewToggle_performed()
     {
         cameraController.StateMachine.TransitionTo(cameraController.StateMachine.firstViewState);
+    }
+
+    public override string ToString()
+    {
+        return "Map View";
     }
 
     public void Destroy() 
